@@ -1,5 +1,7 @@
 package sleppynavigators.studyupbackend.presentation.user;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,7 @@ import sleppynavigators.studyupbackend.presentation.common.SU_Response;
 import sleppynavigators.studyupbackend.presentation.common.SU_ResponseResult;
 import sleppynavigators.studyupbackend.presentation.user.dto.SampleResponse;
 
+@Tag(name = "User", description = "사용자 관련 API")
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,9 +21,10 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/sample")
-    public SU_Response sample() {
+    @Operation(summary = "샘플 사용자 조회", description = "샘플 사용자를 조회합니다.")
+    public SU_Response<SampleResponse> sample() {
         User queryResult = userService.sampleUser();
         SampleResponse data = SampleResponse.from(queryResult);
-        return new SU_Response(SU_ResponseResult.QUERY_OK, data);
+        return new SU_Response<>(SU_ResponseResult.QUERY_OK, data);
     }
 }
