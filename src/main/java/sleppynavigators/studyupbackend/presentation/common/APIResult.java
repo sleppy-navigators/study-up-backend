@@ -6,10 +6,10 @@ import lombok.Getter;
  * API 응답 결과를 나타내는 Enum 클래스
  *
  * @version 1.0
- * @see SU_Response
+ * @see APIResponse
  */
 @Getter
-public enum SU_ResponseResult {
+public enum APIResult {
     QUERY_OK("S20", "Query Success"),
 
     QUERY_NOTFOUND("F44", "Query Fail"),
@@ -29,7 +29,7 @@ public enum SU_ResponseResult {
      */
     private final String message;
 
-    SU_ResponseResult(String code, String message) {
+    APIResult(String code, String message) {
         this.code = code;
         this.message = message;
     }
