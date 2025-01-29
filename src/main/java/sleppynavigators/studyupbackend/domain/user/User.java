@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.user.vo.SampleVO;
 
-@Entity
+@Entity(name = "users")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class User {

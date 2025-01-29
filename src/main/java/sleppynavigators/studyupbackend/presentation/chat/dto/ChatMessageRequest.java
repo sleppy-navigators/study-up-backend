@@ -2,11 +2,15 @@ package sleppynavigators.studyupbackend.presentation.chat.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessageRequest {
     
     @NotNull(message = "그룹 ID는 필수입니다")
