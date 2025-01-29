@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.chat.handler;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,7 @@ public class ChatMessageHandler {
     private final ChatService chatService;
 
     @MessageMapping("/chat/message")
-    public void handle(ChatMessageRequest message) {
+    public void handle(@Valid ChatMessageRequest message) {
         String destination = String.format(GROUP_DESTINATION, message.getGroupId());
         chatService.sendMessage(message, destination);
     }
