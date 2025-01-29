@@ -1,7 +1,10 @@
 package sleppynavigators.studyupbackend.presentation.chat.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import sleppynavigators.studyupbackend.presentation.common.APIResponse;
 import sleppynavigators.studyupbackend.presentation.common.APIResult;
 
@@ -9,18 +12,23 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class WebSocketErrorResponse {
-    private final String code;
-    private final String message;
-    private final String detail;
-    private final LocalDateTime timestamp;
+    
+    private String code;
+    private String message;
+    private String detail;
+    private LocalDateTime timestamp;
 
     public static WebSocketErrorResponse from(APIResponse<String> response) {
         APIResult result = response.apiResult();
+        String message = response.data() != null ? response.data() : result.getMessage();
+        
         return WebSocketErrorResponse.builder()
                 .code(result.getCode())
-                .message(result.getMessage())
-                .detail(response.data())
+                .message(message)
+                .detail(null)
                 .timestamp(LocalDateTime.now())
                 .build();
     }

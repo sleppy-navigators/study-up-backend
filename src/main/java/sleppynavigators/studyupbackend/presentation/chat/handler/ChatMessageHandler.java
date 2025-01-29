@@ -19,4 +19,4 @@ public class ChatMessageHandler {
         String destination = String.format(GROUP_DESTINATION, message.getGroupId());
         chatService.sendMessage(message, destination);
     }
-} 
+}
