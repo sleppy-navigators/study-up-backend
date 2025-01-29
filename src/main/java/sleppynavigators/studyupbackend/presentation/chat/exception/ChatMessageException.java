@@ -24,4 +24,4 @@ public class ChatMessageException extends RuntimeException {
         super(message, cause);
         this.result = result;
     }
-} 
+}

@@ -18,18 +18,15 @@ public class WebSocketErrorResponse {
     
     private String code;
     private String message;
-    private String detail;
     private LocalDateTime timestamp;
 
     public static WebSocketErrorResponse from(APIResponse<String> response) {
         APIResult result = response.apiResult();
-        String message = response.data() != null ? response.data() : result.getMessage();
-        
+
         return WebSocketErrorResponse.builder()
                 .code(result.getCode())
-                .message(message)
-                .detail(null)
+                .message(result.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
     }
-} 
+}

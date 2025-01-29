@@ -55,4 +55,4 @@ public class WebSocketExceptionHandler {
             messagingTemplate.convertAndSend(PUBLIC_ERROR_DESTINATION, errorResponse);
         }
     }
-} 
+}

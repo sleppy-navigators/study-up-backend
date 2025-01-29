@@ -10,4 +10,4 @@ public class ChatViewController {
     public String chatView() {
         return "chat";
     }
-} 
+}
