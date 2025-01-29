@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
-import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import sleppynavigators.studyupbackend.presentation.chat.dto.WebSocketErrorResponse;
 import sleppynavigators.studyupbackend.presentation.chat.exception.ChatMessageException;
@@ -14,8 +12,6 @@ import sleppynavigators.studyupbackend.presentation.common.APIResponse;
 import sleppynavigators.studyupbackend.presentation.common.APIResult;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
@@ -30,12 +26,6 @@ public class WebSocketExceptionHandler {
     @MessageExceptionHandler(MethodArgumentNotValidException.class)
     public void handleValidationException(MethodArgumentNotValidException exception, Principal principal) {
         sendError(principal, new APIResponse<>(APIResult.BAD_REQUEST));
-    }
-
-    @MessageExceptionHandler(MessageDeliveryException.class)
-    public void handleMessageDeliveryException(MessageDeliveryException exception, Principal principal) {
-        log.error("Message delivery failed", exception);
-        sendError(principal, new APIResponse<>(APIResult.INTERNAL_SERVER_ERROR));
     }
 
     @MessageExceptionHandler(ChatMessageException.class)

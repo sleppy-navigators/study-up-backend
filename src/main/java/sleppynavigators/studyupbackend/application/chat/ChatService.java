@@ -29,9 +29,6 @@ public class ChatService {
 
             messagingTemplate.convertAndSend(destination, response);
             log.info("Message sent to destination {}: {}", destination, request.getContent());
-        } catch (MessageDeliveryException e) {
-            log.error("메시지 전송 실패 - 대상: {}, 원인: {}", destination, e.getMessage());
-            throw new ChatMessageException("메시지 전송에 실패했습니다", e);
         } catch (Exception e) {
             log.error("예상치 못한 메시지 처리 오류 - 대상: {}, 원인: {}", destination, e.getMessage(), e);
             throw new ChatMessageException("메시지 처리 중 오류가 발생했습니다", e);
