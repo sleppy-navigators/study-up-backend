@@ -117,15 +117,20 @@
             stompClient.connect({}, function(frame) {
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/group/' + groupId, function(response) {
-                    showMessage(JSON.parse(response.body));
+                    const apiResponse = JSON.parse(response.body);
+                    showMessage(apiResponse.data);
                 });
                 
                 stompClient.subscribe('/user/queue/errors', function(response) {
-                    showErrorMessage(JSON.parse(response.body));
+                    const apiResponse = JSON.parse(response.body);
+                    console.log('Error response:', apiResponse);
+                    showErrorMessage(apiResponse);
                 });
 
                 stompClient.subscribe('/topic/errors', function(response) {
-                    showErrorMessage(JSON.parse(response.body));
+                    const apiResponse = JSON.parse(response.body);
+                    console.log('Error response:', apiResponse);
+                    showErrorMessage(apiResponse);
                 });
                 
                 showMessage({
@@ -167,16 +172,17 @@
             const messageElement = document.createElement('div');
             messageElement.classList.add('message');
             const sender = message.senderId === 'System' ? 'System' : `User-${message.senderId}`;
-            messageElement.textContent = `${sender}: ${message.content}`;
+            const timestamp = message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : '';
+            messageElement.textContent = `${sender} ${timestamp}: ${message.content}`;
             messageArea.appendChild(messageElement);
             messageArea.scrollTop = messageArea.scrollHeight;
         }
 
-        function showErrorMessage(error) {
+        function showErrorMessage(apiResponse) {
             const messageArea = document.getElementById('messageArea');
             const messageElement = document.createElement('div');
             messageElement.classList.add('message', 'error');
-            messageElement.textContent = `Error: ${error.message}`;
+            messageElement.textContent = `Error: ${apiResponse.apiResult}`;
             messageArea.appendChild(messageElement);
             messageArea.scrollTop = messageArea.scrollHeight;
         }

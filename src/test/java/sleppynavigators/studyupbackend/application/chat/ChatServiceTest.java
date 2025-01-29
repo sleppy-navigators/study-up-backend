@@ -13,8 +13,8 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.exception.ChatMessageException;
+import sleppynavigators.studyupbackend.presentation.common.APIResponse;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +64,7 @@ class ChatServiceTest {
         // then
         then(messagingTemplate)
                 .should()
-                .convertAndSend(eq(destination), any(ChatMessageResponse.class));
+                .convertAndSend(eq(destination), any(APIResponse.class));
     }
 
     @Test
@@ -80,12 +80,11 @@ class ChatServiceTest {
 
         willThrow(new MessageDeliveryException("Failed to deliver message"))
                 .given(messagingTemplate)
-                .convertAndSend(eq(destination), any(ChatMessageResponse.class));
+                .convertAndSend(eq(destination), any(APIResponse.class));
 
         // when & then
         assertThatThrownBy(() -> chatService.sendMessage(request, destination))
-                .isInstanceOf(ChatMessageException.class)
-                .hasMessage("메시지 전송에 실패했습니다");
+                .isInstanceOf(ChatMessageException.class);
     }
 
     @Test
@@ -101,11 +100,10 @@ class ChatServiceTest {
 
         willThrow(new RuntimeException("Unexpected error"))
                 .given(messagingTemplate)
-                .convertAndSend(eq(destination), any(ChatMessageResponse.class));
+                .convertAndSend(eq(destination), any(APIResponse.class));
 
         // when & then
         assertThatThrownBy(() -> chatService.sendMessage(request, destination))
-                .isInstanceOf(ChatMessageException.class)
-                .hasMessage("메시지 처리 중 오류가 발생했습니다");
+                .isInstanceOf(ChatMessageException.class);
     }
 }

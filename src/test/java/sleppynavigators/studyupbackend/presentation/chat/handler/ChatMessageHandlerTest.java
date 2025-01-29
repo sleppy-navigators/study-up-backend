@@ -8,12 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.test.context.ActiveProfiles;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
-import sleppynavigators.studyupbackend.presentation.chat.dto.WebSocketErrorResponse;
 import sleppynavigators.studyupbackend.presentation.chat.support.WebSocketTestSupport;
+import sleppynavigators.studyupbackend.presentation.common.APIResponse;
 import sleppynavigators.studyupbackend.presentation.common.APIResult;
 
 import java.util.concurrent.CompletableFuture;
@@ -56,9 +57,10 @@ class ChatMessageHandlerTest {
         // given
         Long groupId = 1L;
         String destination = webSocketTestSupport.getGroupDestination(groupId);
-        CompletableFuture<ChatMessageResponse> future = webSocketTestSupport.subscribeAndReceive(
-                destination, 
-                ChatMessageResponse.class
+        CompletableFuture<APIResponse<ChatMessageResponse>> future = webSocketTestSupport.subscribeAndReceive(
+                destination,
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         ChatMessageRequest request = ChatMessageRequest.builder()
@@ -71,8 +73,7 @@ class ChatMessageHandlerTest {
         stompSession.send(webSocketTestSupport.getSendEndpoint(), request);
 
         // then
-        ChatMessageResponse response = future.get(10, TimeUnit.SECONDS);
-        assertThat(response).isNotNull();
+        ChatMessageResponse response = future.get(10, TimeUnit.SECONDS).data();
         assertThat(response.getContent()).isEqualTo("테스트 메시지");
         assertThat(response.getSenderId()).isEqualTo(1L);
         assertThat(response.getGroupId()).isEqualTo(groupId);
@@ -83,7 +84,7 @@ class ChatMessageHandlerTest {
     @DisplayName("메시지 내용이 없는 경우 예외가 발생한다")
     void whenEmptyContent_thenThrowsException() throws Exception {
         // given
-        CompletableFuture<WebSocketErrorResponse> errorFuture = webSocketTestSupport.subscribeToErrors();
+        CompletableFuture<APIResponse<?>> errorFuture = webSocketTestSupport.subscribeToErrors();
 
         ChatMessageRequest request = ChatMessageRequest.builder()
                 .groupId(1L)
@@ -95,16 +96,16 @@ class ChatMessageHandlerTest {
         stompSession.send(webSocketTestSupport.getSendEndpoint(), request);
 
         // then
-        WebSocketErrorResponse error = errorFuture.get(5, TimeUnit.SECONDS);
-        assertThat(error.getCode()).isEqualTo(APIResult.BAD_REQUEST.getCode());
+        APIResponse<?> error = errorFuture.get(5, TimeUnit.SECONDS);
+        assertThat(error.apiResult().getCode()).isEqualTo(APIResult.BAD_REQUEST.getCode());
     }
 
     @Test
     @DisplayName("메시지 길이가 제한을 초과하면 예외가 발생한다")
     void whenContentTooLong_thenThrowsException() throws Exception {
         // given
-        CompletableFuture<WebSocketErrorResponse> errorFuture = webSocketTestSupport.subscribeToErrors();
-        
+        CompletableFuture<APIResponse<?>> errorFuture = webSocketTestSupport.subscribeToErrors();
+
         String longContent = "a".repeat(1001); // 1000자 제한
         ChatMessageRequest request = ChatMessageRequest.builder()
                 .groupId(1L)
@@ -116,7 +117,7 @@ class ChatMessageHandlerTest {
         stompSession.send(webSocketTestSupport.getSendEndpoint(), request);
 
         // then
-        WebSocketErrorResponse error = errorFuture.get(5, TimeUnit.SECONDS);
-        assertThat(error.getCode()).isEqualTo(APIResult.BAD_REQUEST.getCode());
+        APIResponse<?> error = errorFuture.get(5, TimeUnit.SECONDS);
+        assertThat(error.apiResult().getCode()).isEqualTo(APIResult.BAD_REQUEST.getCode());
     }
 }

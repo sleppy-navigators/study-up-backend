@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.exception.ChatMessageException;
+import sleppynavigators.studyupbackend.presentation.common.APIResponse;
+import sleppynavigators.studyupbackend.presentation.common.APIResult;
 
 import java.time.LocalDateTime;
 
@@ -26,8 +28,7 @@ public class ChatService {
                     .content(request.getContent())
                     .timestamp(LocalDateTime.now())
                     .build();
-
-            messagingTemplate.convertAndSend(destination, response);
+            messagingTemplate.convertAndSend(destination, new APIResponse<>(APIResult.QUERY_OK, response));
             log.info("Message sent to destination {}: {}", destination, request.getContent());
         } catch (Exception e) {
             log.error("예상치 못한 메시지 처리 오류 - 대상: {}, 원인: {}", destination, e.getMessage(), e);
