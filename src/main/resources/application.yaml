@@ -10,6 +10,13 @@ spring:
     hibernate:
       ddl-auto: update # TODO: change to validate
 
+authentication:
+  refresh-token:
+    expiration-in-minutes: ${REFRESH_TOKEN_EXPIRATION_IN_MINUTES}
+  access-token:
+    secret: ${ACCESS_TOKEN_SECRET}
+    expiration-in-milliseconds: ${ACCESS_TOKEN_EXPIRATION_IN_MILLISECONDS}
+
 springdoc:
   swagger-ui:
     path: /docs/index.html
