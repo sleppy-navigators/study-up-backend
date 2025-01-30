@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.chat;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.MessageDeliveryException;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatService {
 
     private final SimpMessageSendingOperations messagingTemplate;

@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.chat.handler;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -14,7 +15,7 @@ import java.security.Principal;
 
 @Slf4j
 @ControllerAdvice
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class WebSocketExceptionHandler {
 
     private static final String USER_ERROR_DESTINATION = "/user/queue/errors";
