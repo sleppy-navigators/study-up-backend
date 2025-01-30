@@ -24,6 +24,8 @@ public class RdbmsSessionManager implements SessionManager {
 
     @Override
     public void startSession(UserSession userSession, UserCredential userCredential) {
+        validateStartRequest(userSession, userCredential);
+
         RefreshToken refreshToken = new RefreshToken();
         AccessToken accessToken = createAccessToken(userCredential, accessTokenProperties);
 
@@ -45,6 +47,12 @@ public class RdbmsSessionManager implements SessionManager {
         LocalDateTime newExpiration = LocalDateTime.now().plusMinutes(refreshTokenProperties.expirationInMinutes());
 
         userSession.update(newRefreshToken, newAccessToken, newExpiration);
+    }
+
+    private void validateStartRequest(UserSession userSession, UserCredential userCredential) {
+        if (!userSession.getUser().equals(userCredential.getUser())) {
+            throw new InvalidCredentialException();
+        }
     }
 
     private AccessToken createAccessToken(UserCredential userCredential, AccessTokenProperties accessTokenProperties) {
