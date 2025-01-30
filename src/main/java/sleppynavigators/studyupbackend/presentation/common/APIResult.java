@@ -17,6 +17,7 @@ public enum APIResult {
     BAD_REQUEST("F40", "Query Fail"),
     UNAUTHORIZED("F41", "Authentication Fail"),
     FORBIDDEN("F43", "Authorization Fail"),
+    EXPIRED_TOKEN("F4X", "Token Expired"),
 
     INTERNAL_SERVER_ERROR("F50", "Retry Later");
 
