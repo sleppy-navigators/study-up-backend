@@ -10,10 +10,13 @@ import lombok.Getter;
  */
 @Getter
 public enum APIResult {
+
     QUERY_OK("S20", "Query Success"),
 
     QUERY_NOTFOUND("F44", "Query Fail"),
     BAD_REQUEST("F40", "Query Fail"),
+    UNAUTHORIZED("F41", "Authentication Fail"),
+    FORBIDDEN("F43", "Authorization Fail"),
 
     INTERNAL_SERVER_ERROR("F50", "Retry Later");
 

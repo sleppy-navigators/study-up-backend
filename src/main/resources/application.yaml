@@ -9,3 +9,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update # TODO: change to validate
+
+springdoc:
+  swagger-ui:
+    path: /docs/index.html
+    disable-swagger-default-url: true
+  api-docs:
+    path: /docs
