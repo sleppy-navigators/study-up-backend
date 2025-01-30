@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -10,9 +11,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-// TODO: complement exception handling
+// TODO: complement exception handling and add a `reason' field in `@ResponseStatus'
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(org.springframework.http.HttpStatus.BAD_REQUEST)
     public APIResponse<?> handleMissingServletRequestParameterException(
@@ -53,8 +56,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
-    public APIResponse<?> handleException(Exception ignored) {
-        // TODO: log exception
+    public APIResponse<?> handleException(Exception exception) {
+        if (exception instanceof ClientException) {
+            return new APIResponse<>(APIResult.BAD_REQUEST);
+        }
+
+        log.error("An unexpected error occurred", exception);
         return new APIResponse<>(APIResult.INTERNAL_SERVER_ERROR);
     }
 }
