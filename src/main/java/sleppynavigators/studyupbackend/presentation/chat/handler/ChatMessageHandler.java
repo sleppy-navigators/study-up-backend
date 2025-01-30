@@ -16,7 +16,7 @@ public class ChatMessageHandler {
 
     @MessageMapping("/chat/message")
     public void handle(@Valid ChatMessageRequest message) {
-        String destination = String.format(GROUP_DESTINATION, message.getGroupId());
+        String destination = String.format(GROUP_DESTINATION, message.groupId());
         chatService.sendMessage(message, destination);
     }
 }

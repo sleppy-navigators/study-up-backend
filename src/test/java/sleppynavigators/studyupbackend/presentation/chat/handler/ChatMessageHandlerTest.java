@@ -74,10 +74,10 @@ class ChatMessageHandlerTest {
 
         // then
         ChatMessageResponse response = future.get(10, TimeUnit.SECONDS).data();
-        assertThat(response.getContent()).isEqualTo("테스트 메시지");
-        assertThat(response.getSenderId()).isEqualTo(1L);
-        assertThat(response.getGroupId()).isEqualTo(groupId);
-        assertThat(response.getTimestamp()).isNotNull();
+        assertThat(response.content()).isEqualTo("테스트 메시지");
+        assertThat(response.senderId()).isEqualTo(1L);
+        assertThat(response.groupId()).isEqualTo(groupId);
+        assertThat(response.timestamp()).isNotNull();
     }
 
     @Test
