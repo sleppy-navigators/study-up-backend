@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 
 @RequiredArgsConstructor
@@ -114,12 +115,12 @@ public class AccessToken {
         }
 
         List<?> authorities = claims.get("authorities", List.class);
-        if (authorities == null || authorities.isEmpty()) {
+        if (CollectionUtils.isEmpty(authorities)) {
             throw new IllegalArgumentException("Authorities cannot be null or empty");
         }
 
         String issuer = claims.getIssuer();
-        if (issuer == null || !issuer.equals(ISSUER)) {
+        if (!StringUtils.equals(issuer, ISSUER)) {
             throw new IllegalArgumentException("Issuer must be '" + ISSUER + "'");
         }
     }
