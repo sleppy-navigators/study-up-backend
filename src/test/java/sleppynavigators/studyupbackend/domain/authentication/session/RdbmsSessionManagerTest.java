@@ -46,7 +46,7 @@ class RdbmsSessionManagerTest {
         assertThat(userSession.getRefreshToken()).isNotBlank();
         AccessToken issuedAccessToken = AccessToken.deserialize(userSession.getAccessToken(), accessTokenProperties);
         assertThat(issuedAccessToken.getUserProfile().username()).isEqualTo("test-user");
-        assertThat(userSession.isExpired()).isFalse();
+        assertThat(userSession.isAlive()).isTrue();
     }
 
     @Test
@@ -84,7 +84,7 @@ class RdbmsSessionManagerTest {
         assertThat(userSession.getRefreshToken()).isNotBlank();
         AccessToken issuedAccessToken = AccessToken.deserialize(userSession.getAccessToken(), accessTokenProperties);
         assertThat(issuedAccessToken.getUserId()).isEqualTo(1L);
-        assertThat(userSession.isExpired()).isFalse();
+        assertThat(userSession.isAlive()).isTrue();
     }
 
     @Test

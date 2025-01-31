@@ -68,7 +68,7 @@ public class RdbmsSessionManager implements SessionManager {
             throw new InvalidCredentialException();
         }
 
-        if (userSession.isExpired()) {
+        if (!userSession.isAlive()) {
             throw new SessionExpiredException();
         }
     }

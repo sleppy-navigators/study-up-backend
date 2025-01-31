@@ -41,8 +41,8 @@ public class UserSession {
         this.expiration = expiration;
     }
 
-    public boolean isExpired() {
-        return expiration == null || LocalDateTime.now().isAfter(expiration);
+    public boolean isAlive() {
+        return expiration != null && LocalDateTime.now().isBefore(expiration);
     }
 
     public boolean isValidToken(String refreshToken, String accessToken) {
