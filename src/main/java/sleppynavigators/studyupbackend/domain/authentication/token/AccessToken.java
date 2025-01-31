@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 
 @RequiredArgsConstructor
@@ -98,17 +99,17 @@ public class AccessToken {
         }
 
         String subject = claims.getSubject();
-        if (subject == null || subject.isBlank()) {
+        if (StringUtils.isBlank(subject)) {
             throw new IllegalArgumentException("Subject cannot be null or blank");
         }
 
         String username = claims.get("username", String.class);
-        if (username == null || username.isBlank()) {
+        if (StringUtils.isBlank(username)) {
             throw new IllegalArgumentException("Username cannot be null or blank");
         }
 
         String userEmail = claims.get("email", String.class);
-        if (userEmail == null || userEmail.isBlank()) {
+        if (StringUtils.isBlank(userEmail)) {
             throw new IllegalArgumentException("Email cannot be null or blank");
         }
 
@@ -118,8 +119,8 @@ public class AccessToken {
         }
 
         String issuer = claims.getIssuer();
-        if (issuer == null || !issuer.equals("study-up")) {
-            throw new IllegalArgumentException("Issuer must be 'study-up'");
+        if (issuer == null || !issuer.equals(ISSUER)) {
+            throw new IllegalArgumentException("Issuer must be '" + ISSUER + "'");
         }
     }
 }
