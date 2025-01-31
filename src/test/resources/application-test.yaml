@@ -10,3 +10,10 @@ spring:
     hibernate:
       ddl-auto: create
     database-platform: org.hibernate.dialect.H2Dialect
+
+authentication:
+  refresh-token:
+    expiration-in-minutes: 180
+  access-token:
+    secret: testsecretfortestspringbootapplication
+    expiration-in-milliseconds: 3600000
