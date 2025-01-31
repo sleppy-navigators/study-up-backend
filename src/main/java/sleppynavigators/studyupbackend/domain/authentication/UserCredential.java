@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.user.User;
 
-@Entity
+@Entity(name = "user_credentials")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class UserCredential {
