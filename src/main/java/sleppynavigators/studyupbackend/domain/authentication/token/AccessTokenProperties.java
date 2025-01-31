@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.domain.authentication.token;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "authentication.access-token")
@@ -10,7 +11,7 @@ public record AccessTokenProperties(String secret, Long expirationInMilliseconds
     }
 
     private void validateSecret(String secret) {
-        if (secret == null || secret.isBlank()) {
+        if (StringUtils.isBlank(secret)) {
             throw new IllegalArgumentException("Secret must not be null or empty");
         }
     }
