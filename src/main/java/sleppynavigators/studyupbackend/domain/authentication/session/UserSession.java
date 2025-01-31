@@ -7,8 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,20 +18,17 @@ import sleppynavigators.studyupbackend.domain.user.User;
 public class UserSession {
 
     @Id
-    @Column
     private Long userId;
 
-    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn
-    @NotNull
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column
     private String refreshToken;
 
-    @Column
-    @Size(max = 512)
+    @Column(length = 512)
     private String accessToken;
 
     @Column

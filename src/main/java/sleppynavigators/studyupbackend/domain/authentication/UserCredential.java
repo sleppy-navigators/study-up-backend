@@ -8,8 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -19,21 +17,18 @@ import sleppynavigators.studyupbackend.domain.user.User;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class UserCredential {
 
-    @NotBlank
-    @Column
-    String subject;
-
-    @NotBlank
-    @Column
-    String provider;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
+    private String subject;
+
+    @Column(nullable = false)
+    private String provider;
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public UserCredential(String subject, String provider, User user) {

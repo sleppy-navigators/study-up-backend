@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
@@ -20,7 +19,6 @@ public class User {
     private Long id;
 
     @Embedded
-    @NotNull
     private UserProfile userProfile;
 
     public User(UserProfile userProfile) {
