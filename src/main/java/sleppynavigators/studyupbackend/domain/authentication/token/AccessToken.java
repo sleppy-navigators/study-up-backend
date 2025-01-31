@@ -11,6 +11,8 @@ import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 @RequiredArgsConstructor
 public class AccessToken {
 
+    private final static String ISSUER = "study-up";
+
     private final Claims claims;
 
     public AccessToken(Long userId, UserProfile userProfile, List<String> authorities,
@@ -86,7 +88,7 @@ public class AccessToken {
                 .add("authorities", authorities)
                 .issuedAt(now)
                 .expiration(expiration)
-                .issuer("study-up")
+                .issuer(ISSUER)
                 .build();
     }
 
