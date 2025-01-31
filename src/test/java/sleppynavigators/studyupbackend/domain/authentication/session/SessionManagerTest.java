@@ -21,11 +21,11 @@ import sleppynavigators.studyupbackend.presentation.authentication.exception.Ses
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@DisplayName("RDBMS 기반 Session Manager 테스트")
-class RdbmsSessionManagerTest {
+@DisplayName("Session Manager 테스트")
+class SessionManagerTest {
 
     @Autowired
-    private RdbmsSessionManager rdbmsSessionManager;
+    private SessionManager sessionManager;
 
     @Autowired
     private AccessTokenProperties accessTokenProperties;
@@ -40,7 +40,7 @@ class RdbmsSessionManagerTest {
         UserCredential userCredential = new UserCredential("test-sub", "provider", user);
 
         // when
-        rdbmsSessionManager.startSession(userSession, userCredential);
+        sessionManager.startSession(userSession, userCredential);
 
         // then
         assertThat(userSession.getRefreshToken()).isNotBlank();
@@ -61,7 +61,7 @@ class RdbmsSessionManagerTest {
         UserCredential userCredential = new UserCredential("test-sub", "provider", invalidUser);
 
         // when & then
-        assertThatThrownBy(() -> rdbmsSessionManager.startSession(userSession, userCredential))
+        assertThatThrownBy(() -> sessionManager.startSession(userSession, userCredential))
                 .isInstanceOf(InvalidCredentialException.class);
     }
 
@@ -78,7 +78,7 @@ class RdbmsSessionManagerTest {
                 refreshToken.serialize(), accessToken.serialize(accessTokenProperties), notExpiredTime);
 
         // when
-        rdbmsSessionManager.extendSession(userSession, refreshToken, accessToken);
+        sessionManager.extendSession(userSession, refreshToken, accessToken);
 
         // then
         assertThat(userSession.getRefreshToken()).isNotBlank();
@@ -101,7 +101,7 @@ class RdbmsSessionManagerTest {
                 refreshToken.serialize(), accessToken.serialize(accessTokenProperties), expiredTime);
 
         // when & then
-        assertThatThrownBy(() -> rdbmsSessionManager.extendSession(userSession, refreshToken, accessToken))
+        assertThatThrownBy(() -> sessionManager.extendSession(userSession, refreshToken, accessToken))
                 .isInstanceOf(SessionExpiredException.class);
     }
 
@@ -114,13 +114,13 @@ class RdbmsSessionManagerTest {
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
 
         RefreshToken invalidRefreshToken = new RefreshToken();
-        AccessToken invalidAccessToken = new AccessToken(1L, userProfile, List.of("profile"),
-                accessTokenProperties);
+        AccessToken invalidAccessToken =
+                new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
         UserSession userSession = new UserSession(user, "refresh-token", "access-token", notExpiredTime);
 
         // when & then
         assertThatThrownBy(
-                () -> rdbmsSessionManager.extendSession(userSession, invalidRefreshToken, invalidAccessToken))
+                () -> sessionManager.extendSession(userSession, invalidRefreshToken, invalidAccessToken))
                 .isInstanceOf(InvalidCredentialException.class);
     }
 }
