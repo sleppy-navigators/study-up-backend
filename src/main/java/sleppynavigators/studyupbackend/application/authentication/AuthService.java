@@ -51,7 +51,7 @@ public class AuthService {
             RefreshToken refreshToken = RefreshToken.deserialize(request.refreshToken());
 
             Long userId = accessToken.getUserId();
-            UserSession userSession = userSessionRepository.findById(userId)
+            UserSession userSession = userSessionRepository.findByUserId(userId)
                     .orElseThrow(InvalidCredentialException::new);
 
             sessionManager.extendSession(userSession, refreshToken, accessToken);
