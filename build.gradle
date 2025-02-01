@@ -27,12 +27,17 @@ repositories {
 dependencies {
     // Spring Boot Core
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.apache.commons:commons-lang3:3.14.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+
+    // Http Client
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.12'
 
     // Socket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'

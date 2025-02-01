@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.authentication;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
+import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
@@ -31,27 +33,15 @@ public class AuthService {
     private final UserSessionRepository userSessionRepository;
     private final SessionManager sessionManager;
     private final AccessTokenProperties accessTokenProperties;
+    private final GoogleOidcClient googleOidcClient;
 
     @Transactional
     public TokenResponse googleSignIn(SignInRequest request) {
-        // TODO: implement real id-token verification
-        //       for now, just fake it
-        String subject = "fake-subject";
-
-        UserCredential userCredential = userCredentialRepository.findBySubject(subject)
-                .orElseGet(() -> {
-                    // TODO: get user information from id-token
-                    // TODO: extract user signup logic
-                    UserProfile fakeProfile = new UserProfile("fake-name", "fake-email@test.com");
-                    User user = userRepository.save(new User(fakeProfile));
-                    return userCredentialRepository.save(new UserCredential(subject, "google", user));
-                });
-
-        User user = userCredential.getUser();
-        UserSession userSession = userSessionRepository.findById(user.getId())
-                .orElseGet(() -> userSessionRepository.save(new UserSession(user, null, null, null)));
-        sessionManager.startSession(userSession);
-        return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
+        Claims idTokenClaims = googleOidcClient.deserialize(request.idToken());
+        String subject = idTokenClaims.getSubject();
+        String username = idTokenClaims.get("name", String.class);
+        String email = idTokenClaims.get("email", String.class);
+        return signIn(subject, new UserProfile(username, email), "google");
     }
 
     @Transactional
@@ -69,5 +59,20 @@ public class AuthService {
         } catch (JwtException ignored) {
             throw new InvalidCredentialException();
         }
+    }
+
+    private TokenResponse signIn(String subject, UserProfile userProfile, String provider) {
+        UserCredential userCredential = userCredentialRepository
+                .findBySubject(subject)
+                .orElseGet(() -> { // sign up
+                    User user = userRepository.save(new User(userProfile));
+                    return userCredentialRepository.save(new UserCredential(subject, provider, user));
+                });
+
+        User user = userCredential.getUser();
+        UserSession userSession = userSessionRepository.findById(user.getId())
+                .orElseGet(() -> userSessionRepository.save(new UserSession(user, null, null, null)));
+        sessionManager.startSession(userSession);
+        return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
     }
 }
