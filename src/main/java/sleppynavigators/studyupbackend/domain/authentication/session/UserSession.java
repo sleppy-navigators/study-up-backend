@@ -20,9 +20,9 @@ public class UserSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -46,7 +46,7 @@ public class UserSession {
         return expiration != null && LocalDateTime.now().isBefore(expiration);
     }
 
-    public boolean isValidToken(String refreshToken, String accessToken) {
+    public boolean isRegistered(String refreshToken, String accessToken) {
         if (this.refreshToken == null || this.accessToken == null) {
             return false;
         }
