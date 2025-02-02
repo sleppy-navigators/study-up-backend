@@ -29,9 +29,9 @@ import sleppynavigators.studyupbackend.presentation.authentication.exception.Inv
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoogleOidcClient implements OidcClient {
 
-    private static final String GOOGLE_CERT_URL = "https://www.googleapis.com/oauth2/v1/certs";
-    private static final String GOOGLE_ISSUER = "https://accounts.google.com";
-    private static final String GOOGLE_AUDIENCE = "425832297557-7serit12s908077334e928rclpdu6uqm.apps.googleusercontent.com";
+    private static final String GOOGLE_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com";
+    private static final String GOOGLE_ISSUER = "https://securetoken.google.com/study-up-448918";
+    private static final String GOOGLE_AUDIENCE = "study-up-448918";
 
     private final ObjectMapper objectMapper;
     private final OkHttpClient okHttpClient;
