@@ -9,7 +9,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -144,13 +143,15 @@ class AuthServiceTest {
     void refresh_Success() {
         // given
         User user = new User(new UserProfile("test-user", "test-email"));
-        AccessToken accessToken = new AccessToken(1L, user.getUserProfile(), List.of("profile"), accessTokenProperties);
+        userRepository.saveAndFlush(user);
+
+        AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
+                accessTokenProperties);
         RefreshToken refreshToken = new RefreshToken();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
+
         UserSession userSession = new UserSession(user, refreshToken.serialize(),
                 accessToken.serialize(accessTokenProperties), notExpiredTime);
-
-        userRepository.save(user);
         userSessionRepository.save(userSession);
 
         // when
@@ -168,13 +169,15 @@ class AuthServiceTest {
     void whenExpiredSession_ThrowsInvalidCredentialException() {
         // given
         User user = new User(new UserProfile("test-user", "test-email"));
-        AccessToken accessToken = new AccessToken(1L, user.getUserProfile(), List.of("profile"), accessTokenProperties);
+        userRepository.saveAndFlush(user);
+
+        AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
+                accessTokenProperties);
         RefreshToken refreshToken = new RefreshToken();
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
+
         UserSession userSession = new UserSession(user, refreshToken.serialize(),
                 accessToken.serialize(accessTokenProperties), expiredTime);
-
-        userRepository.save(user);
         userSessionRepository.save(userSession);
 
         // when & then
@@ -190,13 +193,15 @@ class AuthServiceTest {
     void whenInvalidToken_ThrowsInvalidCredentialException() {
         // given
         User user = new User(new UserProfile("test-user", "test-email"));
-        AccessToken accessToken = new AccessToken(1L, user.getUserProfile(), List.of("profile"), accessTokenProperties);
+        userRepository.saveAndFlush(user);
+
+        AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
+                accessTokenProperties);
         RefreshToken refreshToken = new RefreshToken();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
+
         UserSession userSession = new UserSession(user, refreshToken.serialize(),
                 accessToken.serialize(accessTokenProperties), notExpiredTime);
-
-        userRepository.save(user);
         userSessionRepository.save(userSession);
 
         // when & then
