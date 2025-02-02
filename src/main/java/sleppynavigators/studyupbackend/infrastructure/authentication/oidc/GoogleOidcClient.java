@@ -32,6 +32,18 @@ public class GoogleOidcClient implements OidcClient {
     private static final String GOOGLE_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com";
     private static final String GOOGLE_ISSUER = "https://securetoken.google.com/study-up-448918";
     private static final String GOOGLE_AUDIENCE = "study-up-448918";
+    private static final String KEY_HEADER = "-----BEGIN CERTIFICATE-----";
+    private static final String KEY_FOOTER = "-----END CERTIFICATE-----";
+    private static final String CERTIFICATE_TYPE = "X.509";
+    private static final CertificateFactory certFactory;
+
+    static {
+        try {
+            certFactory = CertificateFactory.getInstance(CERTIFICATE_TYPE);
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private final ObjectMapper objectMapper;
     private final OkHttpClient okHttpClient;
@@ -86,12 +98,11 @@ public class GoogleOidcClient implements OidcClient {
     private PublicKey decodePublicKey(String publicKey) {
         try {
             String trimmed = publicKey
-                    .replace("-----BEGIN CERTIFICATE-----", "")
-                    .replace("-----END CERTIFICATE-----", "")
+                    .replace(KEY_HEADER, "")
+                    .replace(KEY_FOOTER, "")
                     .replaceAll("\\s", "");
             byte[] encoded = Base64.getDecoder().decode(trimmed);
 
-            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
             X509Certificate cert = (X509Certificate) certFactory
                     .generateCertificate(new ByteArrayInputStream(encoded));
             return cert.getPublicKey();
