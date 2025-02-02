@@ -3,6 +3,7 @@ package sleppynavigators.studyupbackend.presentation.common.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,8 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(apiInfo())
-                .components(securitySchemeComponents());
+                .components(securitySchemeComponents())
+                .addSecurityItem(securityRequirement());
     }
 
     private Info apiInfo() {
@@ -27,9 +29,14 @@ public class SwaggerConfig {
                 .version("1.0.0");
     }
 
+    private SecurityRequirement securityRequirement() {
+        return new SecurityRequirement().addList("bearer-key");
+    }
+
     private Components securitySchemeComponents() {
         SecurityScheme securityScheme = new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
+                .in(SecurityScheme.In.HEADER)
                 .scheme("bearer")
                 .bearerFormat("JWT");
         return new Components().addSecuritySchemes("bearer-key", securityScheme);

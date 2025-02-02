@@ -64,7 +64,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private Authentication converToAuthentication(AccessToken accessToken) {
         Long userId = accessToken.getUserId();
         UserProfile userProfile = accessToken.getUserProfile();
+        UserPrincipal userPrincipal = new UserPrincipal(userId, userProfile);
         List<String> authorities = accessToken.getAuthorities();
-        return new UserAuthentication(userId, userProfile, authorities);
+        return new UserAuthentication(userPrincipal, authorities);
     }
 }
