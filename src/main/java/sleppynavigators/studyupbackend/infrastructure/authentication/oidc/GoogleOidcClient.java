@@ -29,9 +29,6 @@ import sleppynavigators.studyupbackend.presentation.authentication.exception.Inv
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoogleOidcClient implements OidcClient {
 
-    private static final String GOOGLE_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com";
-    private static final String GOOGLE_ISSUER = "https://securetoken.google.com/study-up-448918";
-    private static final String GOOGLE_AUDIENCE = "study-up-448918";
     private static final String KEY_HEADER = "-----BEGIN CERTIFICATE-----";
     private static final String KEY_FOOTER = "-----END CERTIFICATE-----";
     private static final String CERTIFICATE_TYPE = "X.509";
@@ -45,6 +42,7 @@ public class GoogleOidcClient implements OidcClient {
         }
     }
 
+    private final GoogleProperties googleProperties;
     private final ObjectMapper objectMapper;
     private final OkHttpClient okHttpClient;
 
@@ -79,7 +77,7 @@ public class GoogleOidcClient implements OidcClient {
 
     private String fetchPublicKey(String kid) throws IOException {
         Request request = new Request.Builder()
-                .url(GOOGLE_CERT_URL)
+                .url(googleProperties.certificateUrl())
                 .build();
 
         Call call = okHttpClient.newCall(request);
@@ -123,6 +121,8 @@ public class GoogleOidcClient implements OidcClient {
 
     // TODO: extract to JwtUtils
     private boolean isTokenValid(Claims claims) {
-        return claims.getIssuer().equals(GOOGLE_ISSUER) && claims.getAudience().contains(GOOGLE_AUDIENCE);
+        String issuer = googleProperties.issuer();
+        String audience = googleProperties.audience();
+        return claims.getIssuer().equals(issuer) && claims.getAudience().contains(audience);
     }
 }
