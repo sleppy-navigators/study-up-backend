@@ -95,6 +95,7 @@ public class GoogleOidcClient implements OidcClient {
         }
     }
 
+    // TODO: extract to JwtUtils
     private PublicKey decodePublicKey(String publicKey) {
         try {
             String trimmed = publicKey
@@ -111,6 +112,7 @@ public class GoogleOidcClient implements OidcClient {
         }
     }
 
+    // TODO: extract to JwtUtils
     private Claims parseClaims(String idToken, PublicKey publicKey) {
         return Jwts.parser()
                 .verifyWith(publicKey)
@@ -119,6 +121,7 @@ public class GoogleOidcClient implements OidcClient {
                 .getPayload();
     }
 
+    // TODO: extract to JwtUtils
     private boolean isTokenValid(Claims claims) {
         return claims.getIssuer().equals(GOOGLE_ISSUER) && claims.getAudience().contains(GOOGLE_AUDIENCE);
     }
