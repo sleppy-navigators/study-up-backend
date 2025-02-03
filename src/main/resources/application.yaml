@@ -16,6 +16,11 @@ authentication:
   access-token:
     secret: ${ACCESS_TOKEN_SECRET}
     expiration-in-milliseconds: ${ACCESS_TOKEN_EXPIRATION_IN_MILLISECONDS}
+  oidc:
+    google:
+      certificate-url: ${GOOGLE_CERTIFICATE_URL}
+      issuer: ${GOOGLE_ISSUER}
+      audience: ${GOOGLE_AUDIENCE}
 
 springdoc:
   swagger-ui:

@@ -29,6 +29,7 @@ public class AccessToken {
         this.claims = claims;
     }
 
+    // TODO: extract to JwtUtils
     public static AccessToken deserialize(String token, AccessTokenProperties properties) {
         String secret = properties.secret();
         Claims claims = Jwts.parser()
@@ -63,6 +64,7 @@ public class AccessToken {
                 .before(now);
     }
 
+    // TODO: extract to JwtUtils
     public String serialize(AccessTokenProperties properties) {
         String secret = properties.secret();
         return Jwts.builder()
@@ -78,6 +80,7 @@ public class AccessToken {
         return new AccessToken(userId, userProfile, authorities, properties);
     }
 
+    // TODO: extract to JwtUtils
     private Claims makeClaims(String subject, String username, String userEmail,
                               List<String> authorities, Long expirationInMilliseconds) {
         Date now = new Date();

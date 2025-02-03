@@ -6,13 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 
 @RequiredArgsConstructor
 public class UserAuthentication implements Authentication {
 
-    private final Long userId;
-    private final UserProfile userProfile;
+    private final UserPrincipal principal;
     private final List<String> authorities;
     private boolean authenticated = true;
 
@@ -30,11 +28,11 @@ public class UserAuthentication implements Authentication {
 
     @Override
     public Object getDetails() {
-        return userProfile;
+        return null;
     }
 
     public Object getPrincipal() {
-        return userId;
+        return principal;
     }
 
     @Override
@@ -49,6 +47,6 @@ public class UserAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return userProfile.username();
+        return principal.userProfile().username();
     }
 }

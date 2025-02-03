@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
@@ -34,13 +33,11 @@ class SessionManagerTest {
     @DisplayName("세션을 시작한다")
     void whenStartSession_Success() {
         // given
-        UserProfile userProfile = new UserProfile("test-user", "email@test.com");
-        User user = new User(userProfile);
+        User user = new User(new UserProfile("test-user", "email@test.com"));
         UserSession userSession = new UserSession(user, null, null, null);
-        UserCredential userCredential = new UserCredential("test-sub", "provider", user);
 
         // when
-        sessionManager.startSession(userSession, userCredential);
+        sessionManager.startSession(userSession);
 
         // then
         assertThat(userSession.getRefreshToken()).isNotBlank();
@@ -50,31 +47,16 @@ class SessionManagerTest {
     }
 
     @Test
-    @DisplayName("유저 정보가 맞지 않으면 세션 시작에 실패한다")
-    void whenStartSession_InvalidUser_thenFail() {
-        // given
-        UserProfile userProfile = new UserProfile("test-user", "email@test.com");
-        User user = new User(userProfile);
-        UserSession userSession = new UserSession(user, null, null, null);
-
-        User invalidUser = new User(userProfile);
-        UserCredential userCredential = new UserCredential("test-sub", "provider", invalidUser);
-
-        // when & then
-        assertThatThrownBy(() -> sessionManager.startSession(userSession, userCredential))
-                .isInstanceOf(InvalidCredentialException.class);
-    }
-
-    @Test
     @DisplayName("세션을 연장한다")
     void whenExtendSession_Success() {
         // given
         UserProfile userProfile = new UserProfile("test-user", "email@test.com");
-        User user = new User(userProfile);
-        LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
+
         RefreshToken refreshToken = new RefreshToken();
         AccessToken accessToken = new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
-        UserSession userSession = new UserSession(user,
+        LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
+
+        UserSession userSession = new UserSession(new User(userProfile),
                 refreshToken.serialize(), accessToken.serialize(accessTokenProperties), notExpiredTime);
 
         // when
@@ -92,12 +74,12 @@ class SessionManagerTest {
     void whenExtendSession_ExpiredSession_thenFail() {
         // given
         UserProfile userProfile = new UserProfile("test-user", "email@test.com");
-        User user = new User(userProfile);
+
         RefreshToken refreshToken = new RefreshToken();
         AccessToken accessToken = new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
 
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
-        UserSession userSession = new UserSession(user,
+        UserSession userSession = new UserSession(new User(userProfile),
                 refreshToken.serialize(), accessToken.serialize(accessTokenProperties), expiredTime);
 
         // when & then
@@ -110,13 +92,13 @@ class SessionManagerTest {
     void whenExtendSession_InvalidToken_thenFail() {
         // given
         UserProfile userProfile = new UserProfile("test-user", "email@test.com");
-        User user = new User(userProfile);
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
 
         RefreshToken invalidRefreshToken = new RefreshToken();
         AccessToken invalidAccessToken =
                 new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
-        UserSession userSession = new UserSession(user, "refresh-token", "access-token", notExpiredTime);
+        UserSession userSession = new UserSession(new User(userProfile),
+                "refresh-token", "access-token", notExpiredTime);
 
         // when & then
         assertThatThrownBy(
