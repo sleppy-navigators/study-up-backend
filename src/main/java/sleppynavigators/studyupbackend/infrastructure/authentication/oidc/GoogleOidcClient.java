@@ -59,7 +59,7 @@ public class GoogleOidcClient implements OidcClient {
             return claims;
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             throw new InvalidCredentialException();
         }
     }
