@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.exception.ChatMessageException;
-import sleppynavigators.studyupbackend.presentation.common.APIResponse;
+import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,7 +64,7 @@ class ChatServiceTest {
         // then
         then(messagingTemplate)
                 .should()
-                .convertAndSend(eq(destination), any(APIResponse.class));
+                .convertAndSend(eq(destination), any(SuccessResponse.class));
     }
 
     @Test
@@ -80,7 +80,7 @@ class ChatServiceTest {
 
         willThrow(new MessageDeliveryException("Failed to deliver message"))
                 .given(messagingTemplate)
-                .convertAndSend(eq(destination), any(APIResponse.class));
+                .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
         assertThatThrownBy(() -> chatService.sendMessage(request, destination))
@@ -100,7 +100,7 @@ class ChatServiceTest {
 
         willThrow(new RuntimeException("Unexpected error"))
                 .given(messagingTemplate)
-                .convertAndSend(eq(destination), any(APIResponse.class));
+                .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
         assertThatThrownBy(() -> chatService.sendMessage(request, destination))
