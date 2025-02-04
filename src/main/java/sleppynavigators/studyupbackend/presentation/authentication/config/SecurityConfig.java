@@ -1,7 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.authentication.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,9 +14,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+import sleppynavigators.studyupbackend.exception.ErrorResponse;
+import sleppynavigators.studyupbackend.exception.ExceptionBase;
+import sleppynavigators.studyupbackend.exception.request.ForbiddenException;
+import sleppynavigators.studyupbackend.exception.request.UnAuthorizedException;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.AccessTokenAuthenticationFilter;
-import sleppynavigators.studyupbackend.presentation.common.APIResponse;
-import sleppynavigators.studyupbackend.presentation.common.APIResult;
 
 @Configuration
 @EnableWebSecurity
@@ -62,16 +63,20 @@ public class SecurityConfig {
     private AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
             response.setContentType("application/json");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            objectMapper.writeValue(response.getWriter(), new APIResponse<>(APIResult.UNAUTHORIZED));
+            ExceptionBase exception = new UnAuthorizedException();
+            response.setStatus(exception.getStatus());
+            objectMapper.writeValue(response.getWriter(),
+                    new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));
         };
     }
 
     private AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
             response.setContentType("application/json");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            objectMapper.writeValue(response.getWriter(), new APIResponse<>(APIResult.FORBIDDEN));
+            ExceptionBase exception = new ForbiddenException();
+            response.setStatus(exception.getStatus());
+            objectMapper.writeValue(response.getWriter(),
+                    new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));
         };
     }
 }
