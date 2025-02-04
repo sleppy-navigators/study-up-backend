@@ -22,7 +22,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Component;
-import sleppynavigators.studyupbackend.presentation.authentication.exception.InvalidCredentialException;
+import sleppynavigators.studyupbackend.exception.client.UnsuccessfulResponseException;
+import sleppynavigators.studyupbackend.exception.request.InvalidCredentialException;
 
 @Slf4j
 @Component
@@ -57,9 +58,7 @@ public class GoogleOidcClient implements OidcClient {
                 throw new InvalidCredentialException();
             }
             return claims;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (IOException | JwtException | IllegalArgumentException ignored) {
             throw new InvalidCredentialException();
         }
     }
@@ -75,7 +74,7 @@ public class GoogleOidcClient implements OidcClient {
         return headerJson.get("kid").asText();
     }
 
-    private String fetchPublicKey(String kid) throws IOException {
+    private String fetchPublicKey(String kid) {
         Request request = new Request.Builder()
                 .url(googleProperties.certificateUrl())
                 .build();
@@ -83,13 +82,15 @@ public class GoogleOidcClient implements OidcClient {
         Call call = okHttpClient.newCall(request);
         try (Response response = call.execute()) {
             if (!response.isSuccessful()) {
-                log.error("Failed to get public key from Google: {}", response.body().string());
-                throw new IOException("Failed to get public key from Google");
+                throw new IOException();
             }
 
             String responseBody = response.body().string();
             Map<?, ?> certs = objectMapper.readValue(responseBody, Map.class);
             return (String) certs.get(kid);
+        } catch (IOException e) {
+            log.error("Failed to get public key from Google: {}", e.getMessage());
+            throw new UnsuccessfulResponseException("Failed to get public key from Google");
         }
     }
 
@@ -105,8 +106,8 @@ public class GoogleOidcClient implements OidcClient {
             X509Certificate cert = (X509Certificate) certFactory
                     .generateCertificate(new ByteArrayInputStream(encoded));
             return cert.getPublicKey();
-        } catch (CertificateException e) {
-            throw new RuntimeException(e);
+        } catch (CertificateException ignored) {
+            throw new InvalidCredentialException();
         }
     }
 

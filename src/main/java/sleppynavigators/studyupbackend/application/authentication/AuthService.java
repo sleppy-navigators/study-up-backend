@@ -14,6 +14,7 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
+import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
@@ -21,7 +22,7 @@ import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.TokenResponse;
-import sleppynavigators.studyupbackend.presentation.authentication.exception.InvalidCredentialException;
+import sleppynavigators.studyupbackend.exception.request.InvalidCredentialException;
 
 @Service
 @Transactional(readOnly = true)
@@ -52,7 +53,7 @@ public class AuthService {
 
             Long userId = accessToken.getUserId();
             UserSession userSession = userSessionRepository.findByUserId(userId)
-                    .orElseThrow(InvalidCredentialException::new);
+                    .orElseThrow(EntityNotFoundException::new);
 
             sessionManager.extendSession(userSession, refreshToken, accessToken);
             return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
