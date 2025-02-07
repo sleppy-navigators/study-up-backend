@@ -15,7 +15,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
-import sleppynavigators.studyupbackend.exception.ExceptionBase;
+import sleppynavigators.studyupbackend.exception.BaseException;
 import sleppynavigators.studyupbackend.exception.request.ForbiddenException;
 import sleppynavigators.studyupbackend.exception.request.UnAuthorizedException;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.AccessTokenAuthenticationFilter;
@@ -63,7 +63,7 @@ public class SecurityConfig {
     private AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
             response.setContentType("application/json");
-            ExceptionBase exception = new UnAuthorizedException();
+            BaseException exception = new UnAuthorizedException();
             response.setStatus(exception.getStatus());
             objectMapper.writeValue(response.getWriter(),
                     new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));
@@ -73,7 +73,7 @@ public class SecurityConfig {
     private AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
             response.setContentType("application/json");
-            ExceptionBase exception = new ForbiddenException();
+            BaseException exception = new ForbiddenException();
             response.setStatus(exception.getStatus());
             objectMapper.writeValue(response.getWriter(),
                     new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));

@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.exception.business;
 
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 
-public class SessionExpiredException extends BusinessExceptionBase {
+public class SessionExpiredException extends BusinessBaseException {
 
     protected SessionExpiredException(int status, String code, String message) {
         super(status, code, message);

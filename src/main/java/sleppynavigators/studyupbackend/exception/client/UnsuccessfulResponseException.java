@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.exception.client;
 
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 
-public class UnsuccessfulResponseException extends ClientExceptionBase {
+public class UnsuccessfulResponseException extends ClientBaseException {
 
     protected UnsuccessfulResponseException(int status, String code, String message) {
         super(status, code, message);

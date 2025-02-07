@@ -6,17 +6,17 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class ExceptionBase extends RuntimeException {
+public abstract class BaseException extends RuntimeException {
 
     protected final int status;
     protected final String code;
     protected final String message;
 
-    protected ExceptionBase(ErrorCode errorCode) {
+    protected BaseException(ErrorCode errorCode) {
         this(errorCode.getStatus(), errorCode.getCode(), errorCode.getDefaultMessage());
     }
 
-    protected ExceptionBase(ErrorCode errorCode, String message) {
+    protected BaseException(ErrorCode errorCode, String message) {
         this(errorCode.getStatus(), errorCode.getCode(), message);
     }
 }

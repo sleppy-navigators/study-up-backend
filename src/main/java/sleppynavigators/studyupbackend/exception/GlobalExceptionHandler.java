@@ -11,12 +11,12 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import sleppynavigators.studyupbackend.exception.business.BusinessExceptionBase;
+import sleppynavigators.studyupbackend.exception.business.BusinessBaseException;
 import sleppynavigators.studyupbackend.exception.business.UnknownException;
-import sleppynavigators.studyupbackend.exception.client.ClientExceptionBase;
-import sleppynavigators.studyupbackend.exception.database.DatabaseExceptionBase;
+import sleppynavigators.studyupbackend.exception.client.ClientBaseException;
+import sleppynavigators.studyupbackend.exception.database.DatabaseBaseException;
 import sleppynavigators.studyupbackend.exception.request.InvalidApiException;
-import sleppynavigators.studyupbackend.exception.request.RequestExceptionBase;
+import sleppynavigators.studyupbackend.exception.request.RequestBaseException;
 
 @Slf4j
 @RestControllerAdvice
@@ -34,29 +34,29 @@ public class GlobalExceptionHandler {
         return ErrorResponse.toResponseEntity(new InvalidApiException(), request.getRequestURI());
     }
 
-    @ExceptionHandler(RequestExceptionBase.class)
+    @ExceptionHandler(RequestBaseException.class)
     public ResponseEntity<ErrorResponse> handleRequestException(
-            HttpServletRequest request, RequestExceptionBase exception) {
+            HttpServletRequest request, RequestBaseException exception) {
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
     }
 
-    @ExceptionHandler(BusinessExceptionBase.class)
+    @ExceptionHandler(BusinessBaseException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(
-            HttpServletRequest request, BusinessExceptionBase exception) {
+            HttpServletRequest request, BusinessBaseException exception) {
         log.error("Business exception : {}", exception.getMessage());
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
     }
 
-    @ExceptionHandler(ClientExceptionBase.class)
+    @ExceptionHandler(ClientBaseException.class)
     public ResponseEntity<ErrorResponse> handleClientException(
-            HttpServletRequest request, ClientExceptionBase exception) {
+            HttpServletRequest request, ClientBaseException exception) {
         log.error("Client exception : {}", exception.getMessage());
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
     }
 
-    @ExceptionHandler(DatabaseExceptionBase.class)
+    @ExceptionHandler(DatabaseBaseException.class)
     public ResponseEntity<ErrorResponse> handleDatabaseException(
-            HttpServletRequest request, DatabaseExceptionBase exception) {
+            HttpServletRequest request, DatabaseBaseException exception) {
         log.error("Database exception : {}", exception.getMessage());
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
     }

@@ -14,7 +14,7 @@ public class ErrorResponse {
     private final String requestUrl;
     private final LocalDateTime timestamp = LocalDateTime.now();
 
-    public static ResponseEntity<ErrorResponse> toResponseEntity(ExceptionBase exception, String requestUrl) {
+    public static ResponseEntity<ErrorResponse> toResponseEntity(BaseException exception, String requestUrl) {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(new ErrorResponse(exception.code, exception.message, requestUrl));

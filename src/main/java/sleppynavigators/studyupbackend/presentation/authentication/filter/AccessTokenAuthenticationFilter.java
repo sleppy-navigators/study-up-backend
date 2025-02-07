@@ -17,7 +17,7 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
-import sleppynavigators.studyupbackend.exception.ExceptionBase;
+import sleppynavigators.studyupbackend.exception.BaseException;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 
 @Component
@@ -37,7 +37,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
             if (accessToken.isExpired()) {
                 response.setContentType("application/json");
-                ExceptionBase exception = new SessionExpiredException();
+                BaseException exception = new SessionExpiredException();
                 response.setStatus(exception.getStatus());
                 objectMapper.writeValue(response.getWriter(),
                         new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));

@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.exception.database;
 
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 
-public class EntityNotFoundException extends DatabaseExceptionBase {
+public class EntityNotFoundException extends DatabaseBaseException {
 
     protected EntityNotFoundException(int status, String code, String message) {
         super(status, code, message);
