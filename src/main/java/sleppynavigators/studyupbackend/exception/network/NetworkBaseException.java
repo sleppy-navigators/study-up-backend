@@ -1,19 +1,19 @@
-package sleppynavigators.studyupbackend.exception.request;
+package sleppynavigators.studyupbackend.exception.network;
 
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.BaseException;
 
-public class RequestBaseException extends BaseException {
+public class NetworkBaseException extends BaseException {
 
-    protected RequestBaseException(int status, String code, String message) {
+    protected NetworkBaseException(int status, String code, String message) {
         super(status, code, message);
     }
 
-    protected RequestBaseException(ErrorCode errorCode) {
+    protected NetworkBaseException(ErrorCode errorCode) {
         this(errorCode.getStatus(), errorCode.getCode(), errorCode.getDefaultMessage());
     }
 
-    protected RequestBaseException(ErrorCode errorCode, String message) {
+    protected NetworkBaseException(ErrorCode errorCode, String message) {
         this(errorCode.getStatus(), errorCode.getCode(), message);
     }
 }

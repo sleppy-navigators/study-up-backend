@@ -34,7 +34,7 @@ import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.TokenResponse;
-import sleppynavigators.studyupbackend.exception.request.InvalidCredentialException;
+import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

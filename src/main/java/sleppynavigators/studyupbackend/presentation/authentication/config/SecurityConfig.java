@@ -16,8 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfigurationSource;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.exception.BaseException;
-import sleppynavigators.studyupbackend.exception.request.ForbiddenException;
-import sleppynavigators.studyupbackend.exception.request.UnAuthorizedException;
+import sleppynavigators.studyupbackend.exception.network.ForbiddenException;
+import sleppynavigators.studyupbackend.exception.network.UnAuthorizedException;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.AccessTokenAuthenticationFilter;
 
 @Configuration

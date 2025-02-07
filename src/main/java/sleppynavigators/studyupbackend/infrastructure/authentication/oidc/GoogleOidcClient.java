@@ -23,7 +23,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.exception.client.UnsuccessfulResponseException;
-import sleppynavigators.studyupbackend.exception.request.InvalidCredentialException;
+import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 
 @Slf4j
 @Component

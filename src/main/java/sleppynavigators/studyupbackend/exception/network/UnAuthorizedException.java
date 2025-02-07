@@ -1,8 +1,8 @@
-package sleppynavigators.studyupbackend.exception.request;
+package sleppynavigators.studyupbackend.exception.network;
 
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 
-public class UnAuthorizedException extends RequestBaseException {
+public class UnAuthorizedException extends NetworkBaseException {
 
     protected UnAuthorizedException(int status, String code, String message) {
         super(status, code, message);

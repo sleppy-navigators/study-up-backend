@@ -10,7 +10,7 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshTokenProperties;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.exception.request.InvalidCredentialException;
+import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 
 @Service

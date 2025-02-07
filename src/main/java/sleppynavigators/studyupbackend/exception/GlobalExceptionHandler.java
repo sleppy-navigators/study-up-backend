@@ -14,8 +14,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import sleppynavigators.studyupbackend.exception.business.BusinessBaseException;
 import sleppynavigators.studyupbackend.exception.client.ClientBaseException;
 import sleppynavigators.studyupbackend.exception.database.DatabaseBaseException;
-import sleppynavigators.studyupbackend.exception.request.InvalidApiException;
-import sleppynavigators.studyupbackend.exception.request.RequestBaseException;
+import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
+import sleppynavigators.studyupbackend.exception.network.NetworkBaseException;
 
 @Slf4j
 @RestControllerAdvice
@@ -33,9 +33,9 @@ public class GlobalExceptionHandler {
         return ErrorResponse.toResponseEntity(new InvalidApiException(), request.getRequestURI());
     }
 
-    @ExceptionHandler(RequestBaseException.class)
+    @ExceptionHandler(NetworkBaseException.class)
     public ResponseEntity<ErrorResponse> handleRequestException(
-            HttpServletRequest request, RequestBaseException exception) {
+            HttpServletRequest request, NetworkBaseException exception) {
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
     }
 
