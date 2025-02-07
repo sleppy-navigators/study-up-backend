@@ -1,11 +1,11 @@
 package sleppynavigators.studyupbackend.presentation.common;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 
 @Getter
-@RequiredArgsConstructor
 public class SuccessResponse<T> {
 
     private static final int DEFAULT_SUCCESS_CODE = 200;
@@ -13,6 +13,15 @@ public class SuccessResponse<T> {
 
     private final String message;
     private final T data;
+
+    @JsonCreator
+    public SuccessResponse(
+            @JsonProperty("message") String message,
+            @JsonProperty("data") T data
+    ) {
+        this.message = message;
+        this.data = data;
+    }
 
     public SuccessResponse(T data) {
         this(DEFAULT_SUCCESS_MESSAGE, data);
