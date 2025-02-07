@@ -1,8 +1,6 @@
-package sleppynavigators.studyupbackend.exception.business;
+package sleppynavigators.studyupbackend.exception;
 
-import sleppynavigators.studyupbackend.exception.ErrorCode;
-
-public class UnknownException extends BusinessBaseException {
+public class UnknownException extends BaseException {
 
     protected UnknownException(int status, String code, String message) {
         super(status, code, message);

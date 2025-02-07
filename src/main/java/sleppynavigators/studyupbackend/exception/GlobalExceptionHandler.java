@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import sleppynavigators.studyupbackend.exception.business.BusinessBaseException;
-import sleppynavigators.studyupbackend.exception.business.UnknownException;
 import sleppynavigators.studyupbackend.exception.client.ClientBaseException;
 import sleppynavigators.studyupbackend.exception.database.DatabaseBaseException;
 import sleppynavigators.studyupbackend.exception.request.InvalidApiException;
