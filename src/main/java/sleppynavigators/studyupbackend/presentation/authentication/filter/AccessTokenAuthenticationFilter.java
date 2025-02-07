@@ -16,8 +16,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
-import sleppynavigators.studyupbackend.presentation.common.APIResponse;
-import sleppynavigators.studyupbackend.presentation.common.APIResult;
+import sleppynavigators.studyupbackend.exception.ErrorResponse;
+import sleppynavigators.studyupbackend.exception.BaseException;
+import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,20 +28,19 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private final AccessTokenProperties accessTokenProperties;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
             String bearerToken = getBearerToken(request);
             AccessToken accessToken = AccessToken.deserialize(bearerToken, accessTokenProperties);
 
             if (accessToken.isExpired()) {
-                // TODO: redesign the exception handling system, changing it to throw custom exceptions right here
-                //       utilizing the `@ResponseStatus` annotation
                 response.setContentType("application/json");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                objectMapper.writeValue(response.getWriter(), new APIResponse<>(APIResult.EXPIRED_TOKEN));
+                BaseException exception = new SessionExpiredException();
+                response.setStatus(exception.getStatus());
+                objectMapper.writeValue(response.getWriter(),
+                        new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));
                 return;
             }
 

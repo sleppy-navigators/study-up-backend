@@ -7,9 +7,9 @@ import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.presentation.chat.exception.ChatMessageException;
-import sleppynavigators.studyupbackend.presentation.common.APIResponse;
-import sleppynavigators.studyupbackend.presentation.common.APIResult;
+import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import java.security.Principal;
 
@@ -25,24 +25,24 @@ public class WebSocketExceptionHandler {
 
     @MessageExceptionHandler(MethodArgumentNotValidException.class)
     public void handleValidationException(MethodArgumentNotValidException ignored, Principal principal) {
-        sendError(principal, new APIResponse<>(APIResult.BAD_REQUEST));
+        sendError(principal, null); // new SuccessResponse<>(ErrorCode.BAD_REQUEST));
     }
 
     @MessageExceptionHandler(ChatMessageException.class)
     public void handleChatMessageException(ChatMessageException exception, Principal principal) {
-        if (APIResult.INTERNAL_SERVER_ERROR.equals(exception.getResult())) {
+        if (ErrorCode.INTERNAL_SERVER_ERROR.equals(exception.getResult())) {
             log.error("Chat message error", exception);
         }
-        sendError(principal, new APIResponse<>(exception.getResult()));
+        sendError(principal, null); // new SuccessResponse<>(exception.getResult()));
     }
 
     @MessageExceptionHandler(Exception.class)
     public void handleException(Exception exception, Principal principal) {
         log.error("Unexpected WebSocket error", exception);
-        sendError(principal, new APIResponse<>(APIResult.INTERNAL_SERVER_ERROR));
+        sendError(principal, null); // new SuccessResponse<>(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 
-    private void sendError(Principal principal, APIResponse<?> response) {
+    private void sendError(Principal principal, SuccessResponse<?> response) {
         if (principal != null) {
             messagingTemplate.convertAndSendToUser(
                     principal.getName(),

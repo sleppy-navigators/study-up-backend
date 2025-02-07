@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +16,8 @@ import sleppynavigators.studyupbackend.application.authentication.AuthService;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.TokenResponse;
-import sleppynavigators.studyupbackend.presentation.authentication.exception.InvalidCredentialException;
-import sleppynavigators.studyupbackend.presentation.common.APIResponse;
-import sleppynavigators.studyupbackend.presentation.common.APIResult;
+import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
+import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @Tag(name = "Auth", description = "인증 관련 API")
 @RestController
@@ -30,22 +30,22 @@ public class AuthController {
     @Valid
     @PostMapping("/sign-in")
     @Operation(summary = "로그인", description = "사용자 로그인합니다.")
-    public APIResponse<TokenResponse> login(@RequestParam AuthProvider provider,
-                                            @RequestBody @Valid SignInRequest signInRequest) {
+    public ResponseEntity<SuccessResponse<TokenResponse>> login(@RequestParam AuthProvider provider,
+                                                                @RequestBody @Valid SignInRequest signInRequest) {
         switch (provider) {
             case GOOGLE:
                 TokenResponse response = authService.googleSignIn(signInRequest);
-                return new APIResponse<>(APIResult.QUERY_OK, response);
+                return SuccessResponse.toResponseEntity(response);
             default:
-                throw new InvalidCredentialException();
+                throw new InvalidCredentialException("Invalid provider");
         }
     }
 
     @Valid
     @PostMapping("/refresh")
     @Operation(summary = "토큰 갱신", description = "사용자 토큰을 갱신합니다.")
-    public APIResponse<TokenResponse> refresh(@RequestBody @Valid RefreshRequest refreshRequest) {
+    public ResponseEntity<SuccessResponse<TokenResponse>> refresh(@RequestBody @Valid RefreshRequest refreshRequest) {
         TokenResponse response = authService.refresh(refreshRequest);
-        return new APIResponse<>(APIResult.QUERY_OK, response);
+        return SuccessResponse.toResponseEntity(response);
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
-import sleppynavigators.studyupbackend.presentation.common.APIResponse;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
+import sleppynavigators.studyupbackend.exception.ErrorResponse;
+import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.Map;
 
 import static org.awaitility.Awaitility.await;
 
@@ -77,19 +76,20 @@ public class WebSocketTestSupport {
     }
 
     // TODO: 나중에 OATUH2 인증을 추가할 때 해당 테스트 코드 제거
-    public CompletableFuture<APIResponse<?>> subscribeToErrors() {
+    public CompletableFuture<ErrorResponse> subscribeToErrors() {
         return subscribeAndReceive(PUBLIC_ERROR_DESTINATION, new ParameterizedTypeReference<>() {
         });
     }
 
     // TODO: 나중에 OATUH2 인증을 추가할 때 해당 테스트 코드 추가
-    public CompletableFuture<APIResponse<?>> subscribeToUserErrors(String username) {
+    public CompletableFuture<SuccessResponse<?>> subscribeToUserErrors(String username) {
         String destination = USER_ERROR_DESTINATION.replace("user", username);
         return subscribeAndReceive(destination, new ParameterizedTypeReference<>() {
         });
     }
 
-    public <T> CompletableFuture<T> subscribeAndReceive(String destination, ParameterizedTypeReference<T> responseType) {
+    public <T> CompletableFuture<T> subscribeAndReceive(String destination,
+                                                        ParameterizedTypeReference<T> responseType) {
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
 
         stompSession.subscribe(destination, new StompFrameHandler() {

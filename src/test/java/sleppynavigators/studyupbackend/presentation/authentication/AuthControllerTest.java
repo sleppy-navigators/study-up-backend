@@ -33,15 +33,16 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
+import sleppynavigators.studyupbackend.exception.ErrorCode;
+import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInRequest;
-import sleppynavigators.studyupbackend.presentation.authentication.exception.InvalidCredentialException;
-import sleppynavigators.studyupbackend.presentation.common.APIResponse;
-import sleppynavigators.studyupbackend.presentation.common.APIResult;
+import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
+import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -116,7 +117,7 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(APIResponse.class).data()).isNotNull();
+        assertThat(response.body().as(SuccessResponse.class).getData()).isNotNull();
     }
 
     @Test
@@ -143,7 +144,7 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(APIResponse.class).data()).isNotNull();
+        assertThat(response.body().as(SuccessResponse.class).getData()).isNotNull();
         assertThat(userCredentialRepository.findBySubject("test-subject")).isNotEmpty();
     }
 
@@ -164,7 +165,8 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-        assertThat(response.body().as(APIResponse.class).apiResult()).isEqualTo(APIResult.BAD_REQUEST);
+        assertThat(response.body().as(ErrorResponse.class).getCode())
+                .isEqualTo(ErrorCode.INVALID_API.getCode());
     }
 
     @Test
@@ -193,7 +195,7 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(APIResponse.class).data()).isNotNull();
+        assertThat(response.body().as(SuccessResponse.class).getData()).isNotNull();
     }
 
     @Test
@@ -222,7 +224,8 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-        assertThat(response.body().as(APIResponse.class).apiResult()).isEqualTo(APIResult.BAD_REQUEST);
+        assertThat(response.body().as(ErrorResponse.class).getCode())
+                .isEqualTo(ErrorCode.SESSION_EXPIRED.getCode());
     }
 
     @Test
@@ -250,6 +253,7 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-        assertThat(response.body().as(APIResponse.class).apiResult()).isEqualTo(APIResult.BAD_REQUEST);
+        assertThat(response.body().as(ErrorResponse.class).getCode())
+                .isEqualTo(ErrorCode.INVALID_API.getCode());
     }
 }
