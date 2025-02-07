@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 
 @Getter
-@RequiredArgsConstructor()
+@RequiredArgsConstructor
 public class ErrorResponse {
 
     protected final String code;
