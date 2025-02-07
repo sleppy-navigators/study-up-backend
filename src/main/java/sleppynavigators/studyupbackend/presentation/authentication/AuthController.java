@@ -18,7 +18,6 @@ import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInReq
 import sleppynavigators.studyupbackend.presentation.authentication.dto.TokenResponse;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-import sleppynavigators.studyupbackend.presentation.common.SuccessCode;
 
 @Tag(name = "Auth", description = "인증 관련 API")
 @RestController
@@ -36,7 +35,7 @@ public class AuthController {
         switch (provider) {
             case GOOGLE:
                 TokenResponse response = authService.googleSignIn(signInRequest);
-                return SuccessResponse.toResponseEntity(SuccessCode.QUERY_OK, response);
+                return SuccessResponse.toResponseEntity(response);
             default:
                 throw new InvalidCredentialException("Invalid provider");
         }
@@ -47,6 +46,6 @@ public class AuthController {
     @Operation(summary = "토큰 갱신", description = "사용자 토큰을 갱신합니다.")
     public ResponseEntity<SuccessResponse<TokenResponse>> refresh(@RequestBody @Valid RefreshRequest refreshRequest) {
         TokenResponse response = authService.refresh(refreshRequest);
-        return SuccessResponse.toResponseEntity(SuccessCode.QUERY_OK, response);
+        return SuccessResponse.toResponseEntity(response);
     }
 }

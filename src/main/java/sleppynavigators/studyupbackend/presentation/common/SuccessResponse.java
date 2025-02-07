@@ -8,18 +8,27 @@ import org.springframework.http.ResponseEntity;
 @RequiredArgsConstructor
 public class SuccessResponse<T> {
 
-    private final String code;
+    private static final int DEFAULT_SUCCESS_CODE = 200;
+    private static final String DEFAULT_SUCCESS_MESSAGE = "Query Success";
+
     private final String message;
     private final T data;
 
-    public static <T> ResponseEntity<SuccessResponse<T>> toResponseEntity(
-            SuccessCode successCode, String message, T data) {
-        return ResponseEntity
-                .status(successCode.getStatus())
-                .body(new SuccessResponse<>(successCode.getCode(), message, data));
+    public SuccessResponse(T data) {
+        this(DEFAULT_SUCCESS_MESSAGE, data);
     }
 
-    public static <T> ResponseEntity<SuccessResponse<T>> toResponseEntity(SuccessCode successCode, T data) {
-        return SuccessResponse.toResponseEntity(successCode, successCode.getDefaultMessage(), data);
+    public static <T> ResponseEntity<SuccessResponse<T>> toResponseEntity(int code, String message, T data) {
+        return ResponseEntity
+                .status(code)
+                .body(new SuccessResponse<>(message, data));
+    }
+
+    public static <T> ResponseEntity<SuccessResponse<T>> toResponseEntity(int code, T data) {
+        return SuccessResponse.toResponseEntity(code, DEFAULT_SUCCESS_MESSAGE, data);
+    }
+
+    public static <T> ResponseEntity<SuccessResponse<T>> toResponseEntity(T data) {
+        return SuccessResponse.toResponseEntity(DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MESSAGE, data);
     }
 }

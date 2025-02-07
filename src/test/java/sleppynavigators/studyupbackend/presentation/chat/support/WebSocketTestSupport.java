@@ -9,6 +9,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
+import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import java.lang.reflect.Type;
@@ -75,7 +76,7 @@ public class WebSocketTestSupport {
     }
 
     // TODO: 나중에 OATUH2 인증을 추가할 때 해당 테스트 코드 제거
-    public CompletableFuture<SuccessResponse<?>> subscribeToErrors() {
+    public CompletableFuture<ErrorResponse> subscribeToErrors() {
         return subscribeAndReceive(PUBLIC_ERROR_DESTINATION, new ParameterizedTypeReference<>() {
         });
     }

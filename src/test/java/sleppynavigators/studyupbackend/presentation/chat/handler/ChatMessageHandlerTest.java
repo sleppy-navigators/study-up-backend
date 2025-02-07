@@ -12,6 +12,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.test.context.ActiveProfiles;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
+import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.support.WebSocketTestSupport;
@@ -84,7 +85,7 @@ class ChatMessageHandlerTest {
     @DisplayName("메시지 내용이 없는 경우 예외가 발생한다")
     void whenEmptyContent_thenThrowsException() throws Exception {
         // given
-        CompletableFuture<SuccessResponse<?>> errorFuture = webSocketTestSupport.subscribeToErrors();
+        CompletableFuture<ErrorResponse> errorFuture = webSocketTestSupport.subscribeToErrors();
 
         ChatMessageRequest request = ChatMessageRequest.builder()
                 .groupId(1L)
@@ -96,7 +97,7 @@ class ChatMessageHandlerTest {
         stompSession.send(webSocketTestSupport.getSendEndpoint(), request);
 
         // then
-        SuccessResponse<?> error = errorFuture.get(5, TimeUnit.SECONDS);
+        ErrorResponse error = errorFuture.get(5, TimeUnit.SECONDS);
         assertThat(error.getCode()).isEqualTo(ErrorCode.INVALID_API.getCode());
     }
 
@@ -104,7 +105,7 @@ class ChatMessageHandlerTest {
     @DisplayName("메시지 길이가 제한을 초과하면 예외가 발생한다")
     void whenContentTooLong_thenThrowsException() throws Exception {
         // given
-        CompletableFuture<SuccessResponse<?>> errorFuture = webSocketTestSupport.subscribeToErrors();
+        CompletableFuture<ErrorResponse> errorFuture = webSocketTestSupport.subscribeToErrors();
 
         String longContent = "a".repeat(1001); // 1000자 제한
         ChatMessageRequest request = ChatMessageRequest.builder()
@@ -117,7 +118,7 @@ class ChatMessageHandlerTest {
         stompSession.send(webSocketTestSupport.getSendEndpoint(), request);
 
         // then
-        SuccessResponse<?> error = errorFuture.get(5, TimeUnit.SECONDS);
+        ErrorResponse error = errorFuture.get(5, TimeUnit.SECONDS);
         assertThat(error.getCode()).isEqualTo(ErrorCode.INVALID_API.getCode());
     }
 }

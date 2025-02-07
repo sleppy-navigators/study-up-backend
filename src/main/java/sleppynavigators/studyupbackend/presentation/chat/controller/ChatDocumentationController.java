@@ -10,7 +10,6 @@ import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
-import sleppynavigators.studyupbackend.presentation.common.SuccessCode;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @Tag(name = "Chat WebSocket", description = "채팅 웹소켓 통신 명세")
@@ -35,7 +34,7 @@ public class ChatDocumentationController {
     )
     @GetMapping("/connection")
     public ResponseEntity<SuccessResponse<Void>> connection() {
-        return SuccessResponse.toResponseEntity(SuccessCode.QUERY_OK, null);
+        return SuccessResponse.toResponseEntity(null);
     }
 
     @Operation(
@@ -44,7 +43,7 @@ public class ChatDocumentationController {
     )
     @GetMapping("/send")
     public ResponseEntity<SuccessResponse<Void>> messageSend(ChatMessageRequest request) {
-        return SuccessResponse.toResponseEntity(SuccessCode.QUERY_OK, null);
+        return SuccessResponse.toResponseEntity(null);
     }
 
     @Operation(
@@ -53,7 +52,7 @@ public class ChatDocumentationController {
     )
     @GetMapping("/subscribe")
     public ResponseEntity<SuccessResponse<ChatMessageResponse>> messageSubscribe() {
-        return SuccessResponse.toResponseEntity(SuccessCode.QUERY_OK, null);
+        return SuccessResponse.toResponseEntity(null);
     }
 
     @Operation(
