@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseException extends RuntimeException {
 
-    protected final int status;
-    protected final String code;
-    protected final String message;
+    private final int status;
+    private final String code;
+    private final String message;
 
     protected BaseException(ErrorCode errorCode) {
         this(errorCode.getStatus(), errorCode.getCode(), errorCode.getDefaultMessage());
