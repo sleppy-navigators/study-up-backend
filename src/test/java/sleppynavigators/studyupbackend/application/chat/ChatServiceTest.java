@@ -27,6 +27,8 @@ import static org.mockito.BDDMockito.willThrow;
 @DisplayName("ChatService 테스트")
 class ChatServiceTest {
 
+    private static final Long AUTHENTICATED_USER_ID = 1L;
+
     @Autowired
     private ChatService chatService;
 
@@ -35,7 +37,6 @@ class ChatServiceTest {
 
     @TestConfiguration
     static class TestConfig {
-
         @Primary
         @Bean
         public SimpMessageSendingOperations messagingTemplate() {
@@ -48,18 +49,16 @@ class ChatServiceTest {
     void sendMessage_Success() {
         // given
         Long groupId = 1L;
-        Long senderId = 1L;
         String content = "test message";
         String destination = "/topic/group/" + groupId;
 
         ChatMessageRequest request = ChatMessageRequest.builder()
                 .groupId(groupId)
-                .senderId(senderId)
                 .content(content)
                 .build();
 
         // when
-        chatService.sendMessage(request, destination);
+        chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID);
 
         // then
         then(messagingTemplate)
@@ -74,7 +73,6 @@ class ChatServiceTest {
         String destination = "/topic/group/test";
         ChatMessageRequest request = ChatMessageRequest.builder()
                 .groupId(1L)
-                .senderId(1L)
                 .content("test message")
                 .build();
 
@@ -83,7 +81,7 @@ class ChatServiceTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatService.sendMessage(request, destination))
+        assertThatThrownBy(() -> chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
     }
 
@@ -94,7 +92,6 @@ class ChatServiceTest {
         String destination = "/topic/group/test";
         ChatMessageRequest request = ChatMessageRequest.builder()
                 .groupId(1L)
-                .senderId(1L)
                 .content("test message")
                 .build();
 
@@ -103,7 +100,7 @@ class ChatServiceTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatService.sendMessage(request, destination))
+        assertThatThrownBy(() -> chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
     }
 }
