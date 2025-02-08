@@ -1,6 +1,8 @@
 package sleppynavigators.studyupbackend.exception;
 
 import java.time.LocalDateTime;
+
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,5 +20,9 @@ public class ErrorResponse {
         return ResponseEntity
                 .status(exception.getStatus())
                 .body(new ErrorResponse(exception.getCode(), exception.getMessage(), requestUrl));
+    }
+
+    public static ErrorResponse ofWebSocketError(BaseException exception, @Nullable String requestUrl) {
+        return new ErrorResponse(exception.getCode(), exception.getMessage(), requestUrl);
     }
 }
