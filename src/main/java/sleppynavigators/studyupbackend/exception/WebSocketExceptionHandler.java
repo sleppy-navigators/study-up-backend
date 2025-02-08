@@ -23,7 +23,7 @@ import java.security.Principal;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class WebSocketExceptionHandler {
 
-    private static final String USER_ERROR_DESTINATION = "/user/queue/errors";
+    private static final String USER_ERROR_DESTINATION = "/queue/errors";
     private static final String PUBLIC_ERROR_DESTINATION = "/topic/errors";
 
     private final SimpMessageSendingOperations messagingTemplate;

@@ -82,9 +82,8 @@ public class WebSocketTestSupport {
     }
 
     // TODO: 나중에 OATUH2 인증을 추가할 때 해당 테스트 코드 추가
-    public CompletableFuture<SuccessResponse<?>> subscribeToUserErrors(String username) {
-        String destination = USER_ERROR_DESTINATION.replace("user", username);
-        return subscribeAndReceive(destination, new ParameterizedTypeReference<>() {
+    public CompletableFuture<SuccessResponse<?>> subscribeToUserErrors() {
+        return subscribeAndReceive(USER_ERROR_DESTINATION, new ParameterizedTypeReference<>() {
         });
     }
 
