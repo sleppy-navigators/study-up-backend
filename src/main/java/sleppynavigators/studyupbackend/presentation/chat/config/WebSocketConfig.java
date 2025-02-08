@@ -51,22 +51,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                    .setSendBufferSizeLimit(SEND_BUFFER_SIZE_LIMIT);
     }
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
-                    message, StompHeaderAccessor.class);
-                
-                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    // TODO: JWT 토큰 검증 로직 추가 예정
-                }
-                return message;
-            }
-        });
-    }
-
     private TaskScheduler webSocketHeartbeatScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(1);
