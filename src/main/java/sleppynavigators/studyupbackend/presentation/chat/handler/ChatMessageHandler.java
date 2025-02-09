@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import sleppynavigators.studyupbackend.application.chat.ChatService;
@@ -20,9 +21,10 @@ public class ChatMessageHandler {
     @MessageMapping("/chat/message")
     public void handle(
         @Valid ChatMessageRequest message,
-        @AuthenticationPrincipal UserPrincipal principal
+        @AuthenticationPrincipal Authentication principal
     ) {
+        UserPrincipal userPrincipal = (UserPrincipal) principal.getPrincipal();
         String destination = String.format(GROUP_DESTINATION, message.groupId());
-        chatService.sendMessage(message, destination, principal.userId());
+        chatService.sendMessage(message, destination, userPrincipal.userId());
     }
 }

@@ -2,8 +2,10 @@ package sleppynavigators.studyupbackend.presentation.chat.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
+import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
@@ -31,12 +33,14 @@ public class WebSocketTestSupport {
 
     private final WebSocketStompClient stompClient;
     private final String url;
+    private final String accessToken;
     private StompSession stompSession;
     private final ObjectMapper objectMapper;
 
-    public WebSocketTestSupport(String url, ObjectMapper objectMapper) {
+    public WebSocketTestSupport(String url, ObjectMapper objectMapper, String accessToken) {
         this.url = url;
         this.objectMapper = objectMapper;
+        this.accessToken = accessToken;
         this.stompClient = createStompClient(objectMapper);
     }
 
@@ -55,8 +59,11 @@ public class WebSocketTestSupport {
     }
 
     public void connect() throws ExecutionException, InterruptedException, TimeoutException {
+        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        
         this.stompSession = stompClient
-                .connectAsync(url, new DefaultStompSessionHandler())
+                .connectAsync(url, headers, new DefaultStompSessionHandler())
                 .get(DEFAULT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         await().atMost(5, TimeUnit.SECONDS)
@@ -75,15 +82,12 @@ public class WebSocketTestSupport {
         return SEND_ENDPOINT;
     }
 
-    // TODO: 나중에 OATUH2 인증을 추가할 때 해당 테스트 코드 제거
     public CompletableFuture<ErrorResponse> subscribeToErrors() {
+        if (accessToken != null) {
+            return subscribeAndReceive(USER_ERROR_DESTINATION, new ParameterizedTypeReference<>() {
+            });
+        }
         return subscribeAndReceive(PUBLIC_ERROR_DESTINATION, new ParameterizedTypeReference<>() {
-        });
-    }
-
-    // TODO: 나중에 OATUH2 인증을 추가할 때 해당 테스트 코드 추가
-    public CompletableFuture<SuccessResponse<?>> subscribeToUserErrors() {
-        return subscribeAndReceive(USER_ERROR_DESTINATION, new ParameterizedTypeReference<>() {
         });
     }
 
