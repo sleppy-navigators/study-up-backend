@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import sleppynavigators.studyupbackend.application.chat.ChatService;
+import sleppynavigators.studyupbackend.presentation.authentication.filter.UserAuthentication;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 
@@ -21,10 +22,9 @@ public class ChatMessageHandler {
     @MessageMapping("/chat/message")
     public void handle(
         @Valid ChatMessageRequest message,
-        @AuthenticationPrincipal Authentication principal
+        @AuthenticationPrincipal UserAuthentication userAuthentication
     ) {
-        UserPrincipal userPrincipal = (UserPrincipal) principal.getPrincipal();
         String destination = String.format(GROUP_DESTINATION, message.groupId());
-        chatService.sendMessage(message, destination, userPrincipal.userId());
+        chatService.sendMessage(message, destination, userAuthentication.getPrincipal().userId());
     }
 }
