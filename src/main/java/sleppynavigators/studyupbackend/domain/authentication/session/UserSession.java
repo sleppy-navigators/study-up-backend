@@ -35,6 +35,7 @@ public class UserSession {
     @Column
     private LocalDateTime expiration;
 
+    // TODO: change to use `@Builder` when constructor parameter exceeds 3
     public UserSession(User user, String refreshToken, String accessToken, LocalDateTime expiration) {
         this.user = user;
         this.refreshToken = refreshToken;
