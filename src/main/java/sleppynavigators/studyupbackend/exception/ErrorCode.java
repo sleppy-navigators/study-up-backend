@@ -13,7 +13,7 @@ public enum ErrorCode {
     FORBIDDEN(403, "R43", "Forbidden"),
 
     // database exceptions
-    ENTITY_NOT_FOUND(404, "D44", "Not found"),
+    ENTITY_NOT_FOUND(400, "D44", "Not found"),
 
     // client exceptions
     UNSUCCESSFUL_RESPONSE(500, "C52", "Internal server error"),
