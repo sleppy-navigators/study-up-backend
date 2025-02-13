@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.domain.group;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +27,7 @@ public class Group {
     @Embedded
     private GroupInfo groupInfo;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupMember> members;
 
     // We'll add challenges to the field later, but we won't add system messages to the field

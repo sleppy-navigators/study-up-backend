@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.GroupCreationRequest;
@@ -24,6 +25,8 @@ import sleppynavigators.studyupbackend.presentation.group.dto.SimpleGroupRespons
 @RequestMapping("/groups")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupController {
+
+    private final GroupService groupService;
 
     @Valid
     @GetMapping
@@ -40,7 +43,9 @@ public class GroupController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid GroupCreationRequest groupCreationRequest
     ) {
-        return null;
+        Long userId = userPrincipal.userId();
+        SimpleGroupResponse response = groupService.createGroup(userId, groupCreationRequest);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @Valid
