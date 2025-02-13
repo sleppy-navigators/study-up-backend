@@ -71,7 +71,7 @@ public class AuthService {
                 });
 
         User user = userCredential.getUser();
-        UserSession userSession = userSessionRepository.findById(user.getId())
+        UserSession userSession = userSessionRepository.findByUserId(user.getId())
                 .orElseGet(() -> userSessionRepository.save(new UserSession(user, null, null, null)));
         sessionManager.startSession(userSession);
         return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
