@@ -79,6 +79,7 @@ public class GoogleOidcClient implements OidcClient {
                 .url(googleProperties.certificateUrl())
                 .build();
 
+        // TODO: need to log all communications with external services.
         Call call = okHttpClient.newCall(request);
         try (Response response = call.execute()) {
             if (!response.isSuccessful()) {
