@@ -47,7 +47,7 @@ import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@DisplayName("AuthController 테스트")
+@DisplayName("AuthController API 테스트")
 class AuthControllerTest {
 
     @Autowired
