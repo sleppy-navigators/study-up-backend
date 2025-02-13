@@ -14,6 +14,7 @@ import io.restassured.response.ExtractableResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,14 +70,17 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        userSessionRepository.deleteAll();
-        userCredentialRepository.deleteAll();
-        userRepository.deleteAll();
-
         RestAssured.port = port;
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        userSessionRepository.deleteAll();
+        userCredentialRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @TestConfiguration

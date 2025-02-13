@@ -9,6 +9,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,15 +42,18 @@ public class GroupControllerTest {
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
-        groupRepository.deleteAll();
-
         userRepository.save(new User(new UserProfile("guest", "example@guest.com")));
 
         RestAssured.port = port;
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
