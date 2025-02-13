@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.common;
+package sleppynavigators.studyupbackend.application.common;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
