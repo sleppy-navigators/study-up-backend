@@ -43,4 +43,16 @@ public class Group {
             this.members.add(new GroupMember(this, creator));
         }
     }
+
+    public void addMember(User member) {
+        members.add(new GroupMember(this, member));
+    }
+
+    public void removeMember(GroupMember member) {
+        members.remove(member);
+    }
+
+    public boolean hasAnyMember() {
+        return !members.isEmpty();
+    }
 }

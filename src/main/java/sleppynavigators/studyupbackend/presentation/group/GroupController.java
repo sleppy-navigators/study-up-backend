@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,11 +50,13 @@ public class GroupController {
     }
 
     @Valid
-    @PostMapping("/:groupId/withdraw")
+    @PostMapping("/{groupId}/withdraw")
     @Operation(summary = "그룹 탈퇴", description = "그룹에서 탈퇴합니다.")
     public ResponseEntity<SuccessResponse<Void>> withdrawGroup(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return null;
+            @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId) {
+        Long userId = userPrincipal.userId();
+        groupService.withdrawGroup(userId, groupId);
+        return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 
     @Valid

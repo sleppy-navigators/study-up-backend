@@ -20,6 +20,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
+import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
@@ -86,5 +87,63 @@ public class GroupControllerTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
         assertThat(response.body().as(SuccessResponse.class).getData()).isNotNull();
         assertThat(groupRepository.findAll()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("사용자가 그룹에서 탈퇴에 성공한다")
+    void memberLeaveGroup_Success() {        // given
+        User creator = userRepository.findByUserProfileEmail("example@guest.com").orElseThrow();
+        User anotherMember = userRepository.save(new User(new UserProfile("another", "example2@guest.com")));
+
+        Group group = new Group("test group", "test description", "https://test.com", creator);
+        group.addMember(anotherMember);
+        Group savedGroup = groupRepository.saveAndFlush(group);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/groups/{groupId}/withdraw", savedGroup.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.body().as(SuccessResponse.class).getData()).isNull();
+        assertThat(groupRepository.findAll()).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("유일한 사용자가 그룹에서 탈퇴한다 (그룹이 삭제된다)")
+    void uniqueMemberLeaveGroup_Success() {
+        // given
+        User creator = userRepository.findByUserProfileEmail("example@guest.com").orElseThrow();
+        Group group = new Group("test group", "test description", "https://test.com", creator);
+        Group savedGroup = groupRepository.saveAndFlush(group);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/groups/{groupId}/withdraw", savedGroup.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.body().as(SuccessResponse.class).getData()).isNull();
+        assertThat(groupRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 그룹에 탈퇴를 요청하면 오류로 응답한다")
+    void leaveGroup_NotFound() {
+        // given
+        assert groupRepository.findAll().isEmpty();
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/groups/{groupId}/withdraw", 1L)
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
     }
 }
