@@ -48,7 +48,7 @@ public class GroupControllerTest {
     @BeforeEach
     void setUp() {
         UserProfile userProfile = new UserProfile("guest", "example@guest.com");
-        User savedUser = userRepository.saveAndFlush(new User(userProfile));
+        User savedUser = userRepository.save(new User(userProfile));
 
         AccessToken accessToken =
                 new AccessToken(savedUser.getId(), userProfile, List.of("profile"), accessTokenProperties);
@@ -65,6 +65,28 @@ public class GroupControllerTest {
     void tearDown() {
         groupRepository.deleteAll();
         userRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("사용자가 그룹 목록 조회에 성공한다")
+    void getGroups_Success() {
+        // given
+        User user = userRepository.findByUserProfileEmail("example@guest.com").orElseThrow();
+        groupRepository.saveAll(
+                List.of(new Group("test group1", "test description", "https://test.com", user),
+                        new Group("test group2", "test description", "https://test.com", user),
+                        new Group("test group3", "test description", "https://test.com", user),
+                        new Group("test group4", "test description", "https://test.com", user)));
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().get("/groups")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.body().as(SuccessResponse.class).getData()).isNotNull();
     }
 
     @Test
@@ -97,7 +119,7 @@ public class GroupControllerTest {
 
         Group group = new Group("test group", "test description", "https://test.com", creator);
         group.addMember(anotherMember);
-        Group savedGroup = groupRepository.saveAndFlush(group);
+        Group savedGroup = groupRepository.save(group);
 
         // when
         ExtractableResponse<?> response = with()
@@ -117,7 +139,7 @@ public class GroupControllerTest {
         // given
         User creator = userRepository.findByUserProfileEmail("example@guest.com").orElseThrow();
         Group group = new Group("test group", "test description", "https://test.com", creator);
-        Group savedGroup = groupRepository.saveAndFlush(group);
+        Group savedGroup = groupRepository.save(group);
 
         // when
         ExtractableResponse<?> response = with()

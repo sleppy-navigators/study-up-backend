@@ -40,7 +40,7 @@ public class Group {
         this.members = new ArrayList<>();
 
         if (creator != null) {
-            this.members.add(new GroupMember(this, creator));
+            addMember(creator);
         }
     }
 

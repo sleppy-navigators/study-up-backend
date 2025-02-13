@@ -34,7 +34,9 @@ public class GroupController {
     @Operation(summary = "그룹 목록 조회", description = "사용자의 그룹 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<GroupListResponse>> getGroups(
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return null;
+        Long userId = userPrincipal.userId();
+        GroupListResponse response = groupService.getGroups(userId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @Valid

@@ -12,6 +12,8 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupMemberRepositor
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.group.dto.GroupCreationRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.GroupListResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.GroupListResponse.GroupListItem;
 import sleppynavigators.studyupbackend.presentation.group.dto.SimpleGroupResponse;
 
 @Service
@@ -22,6 +24,11 @@ public class GroupService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+
+    public GroupListResponse getGroups(Long userId) {
+        return new GroupListResponse(
+                groupRepository.findByUserId(userId).stream().map(GroupListItem::fromEntity).toList());
+    }
 
     @Transactional
     public SimpleGroupResponse createGroup(Long creatorId, GroupCreationRequest request) {
