@@ -24,6 +24,7 @@ public class UserCredential {
     @Column(nullable = false)
     private String subject;
 
+    // should consider changing the type from `String` to `Enum`.
     @Column(nullable = false)
     private String provider;
 
