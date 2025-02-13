@@ -28,6 +28,7 @@ public class UserCredential {
     @Column(nullable = false)
     private String provider;
 
+    // TODO: make cascade type to `PERSIST` and refactor
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
