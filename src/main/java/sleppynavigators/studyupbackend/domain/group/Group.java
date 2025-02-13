@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.group.vo.GroupInfo;
 import sleppynavigators.studyupbackend.domain.user.User;
 
-@Entity(name = "groups")
+@Entity(name = "user_groups")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Group {
