@@ -9,10 +9,10 @@ public class InvalidCredentialException extends NetworkBaseException {
     }
 
     public InvalidCredentialException(String message) {
-        super(ErrorCode.INVALID_API, message);
+        super(ErrorCode.INVALID_CREDENTIALS, message);
     }
 
     public InvalidCredentialException() {
-        super(ErrorCode.INVALID_API);
+        super(ErrorCode.INVALID_CREDENTIALS);
     }
 }

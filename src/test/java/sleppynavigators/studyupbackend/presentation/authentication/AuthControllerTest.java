@@ -170,7 +170,7 @@ class AuthControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.body().as(ErrorResponse.class).getCode())
-                .isEqualTo(ErrorCode.INVALID_API.getCode());
+                .isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
     }
 
     @Test
@@ -258,6 +258,6 @@ class AuthControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.body().as(ErrorResponse.class).getCode())
-                .isEqualTo(ErrorCode.INVALID_API.getCode());
+                .isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
     }
 }

@@ -11,6 +11,7 @@ public enum ErrorCode {
     INVALID_API(400, "R40", "Bad request"),
     UNAUTHORIZED(401, "R41", "Unauthorized"),
     FORBIDDEN(403, "R43", "Forbidden"),
+    INVALID_CREDENTIALS(400, "R44", "Invalid credentials"),
 
     // database exceptions
     ENTITY_NOT_FOUND(400, "D44", "Not found"),
