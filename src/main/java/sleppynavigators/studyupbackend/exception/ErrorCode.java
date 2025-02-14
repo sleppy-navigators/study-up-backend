@@ -14,7 +14,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS(400, "R44", "Invalid credentials"),
 
     // database exceptions
-    ENTITY_NOT_FOUND(400, "D44", "Not found"),
+    ENTITY_NOT_FOUND(404, "D44", "Not found"),
 
     // client exceptions
     UNSUCCESSFUL_RESPONSE(500, "C52", "Internal server error"),
