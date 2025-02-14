@@ -6,7 +6,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -15,10 +14,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.exception.BaseException;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
+import sleppynavigators.studyupbackend.presentation.util.AuthenticationConverter;
+import sleppynavigators.studyupbackend.presentation.util.BearerTokenExtractor;
 
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,7 +32,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String bearerToken = getBearerToken(request);
+            String bearerToken = BearerTokenExtractor.extractFromRequest(request);
             AccessToken accessToken = AccessToken.deserialize(bearerToken, accessTokenProperties);
 
             if (accessToken.isExpired()) {
@@ -44,28 +44,11 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            Authentication authentication = converToAuthentication(accessToken);
+            Authentication authentication = AuthenticationConverter.convertToAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (RuntimeException ignored) {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String getBearerToken(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            return null;
-        }
-
-        return authorization.substring(7 /* = "Bearer ".length */);
-    }
-
-    private Authentication converToAuthentication(AccessToken accessToken) {
-        Long userId = accessToken.getUserId();
-        UserProfile userProfile = accessToken.getUserProfile();
-        UserPrincipal userPrincipal = new UserPrincipal(userId, userProfile);
-        List<String> authorities = accessToken.getAuthorities();
-        return new UserAuthentication(userPrincipal, authorities);
     }
 }

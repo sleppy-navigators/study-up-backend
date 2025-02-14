@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.chat.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -16,17 +17,21 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
+import sleppynavigators.studyupbackend.presentation.chat.interceptor.StompAuthenticationInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private static final int HEARTBEAT_INTERVAL = (int) TimeUnit.SECONDS.toMillis(10);
     private static final int MESSAGE_SIZE_LIMIT = (int) DataSize.ofKilobytes(64).toBytes();
     private static final int SEND_TIME_LIMIT = (int) TimeUnit.SECONDS.toMillis(20);
     private static final int SEND_BUFFER_SIZE_LIMIT = (int) DataSize.ofKilobytes(512).toBytes();
+
+    private final StompAuthenticationInterceptor stompAuthenticationInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -49,6 +54,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.setMessageSizeLimit(MESSAGE_SIZE_LIMIT)
                    .setSendTimeLimit(SEND_TIME_LIMIT)
                    .setSendBufferSizeLimit(SEND_BUFFER_SIZE_LIMIT);
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(stompAuthenticationInterceptor);
     }
 
     private TaskScheduler webSocketHeartbeatScheduler() {

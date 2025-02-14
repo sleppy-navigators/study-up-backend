@@ -22,9 +22,9 @@ public class ChatMessageHandler {
     @MessageMapping("/chat/message")
     public void handle(
         @Valid ChatMessageRequest message,
-        @AuthenticationPrincipal UserAuthentication userAuthentication
+        @AuthenticationPrincipal UserPrincipal principal
     ) {
         String destination = String.format(GROUP_DESTINATION, message.groupId());
-        chatService.sendMessage(message, destination, userAuthentication.getPrincipal().userId());
+        chatService.sendMessage(message, destination, principal.userId());
     }
 }
