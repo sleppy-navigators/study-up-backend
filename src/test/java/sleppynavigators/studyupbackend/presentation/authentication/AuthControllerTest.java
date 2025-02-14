@@ -109,8 +109,6 @@ class AuthControllerTest {
 
         User user = new User("test-user", "test-email");
         UserCredential userCredential = new UserCredential("test-subject", "google", user);
-
-        userRepository.save(user);
         userCredentialRepository.save(userCredential);
 
         // when
