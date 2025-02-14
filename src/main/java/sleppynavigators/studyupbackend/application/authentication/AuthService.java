@@ -36,7 +36,7 @@ public class AuthService {
     @Transactional
     public TokenResponse googleSignIn(SignInRequest request) {
         Claims idTokenClaims = googleOidcClient.deserialize(request.idToken());
-        
+
         String subject = idTokenClaims.getSubject();
         String username = idTokenClaims.get("name", String.class);
         String email = idTokenClaims.get("email", String.class);
@@ -78,6 +78,7 @@ public class AuthService {
     }
 
     private UserSession createSession(User user) {
-        return userSessionRepository.save(new UserSession(user, null, null, null));
+        UserSession userSession = UserSession.builder().user(user).build();
+        return userSessionRepository.save(userSession);
     }
 }

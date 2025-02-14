@@ -34,7 +34,7 @@ class SessionManagerTest {
     void whenStartSession_Success() {
         // given
         User user = new User("test-user", "email@test.com");
-        UserSession userSession = new UserSession(user, null, null, null);
+        UserSession userSession = UserSession.builder().user(user).build();
 
         // when
         sessionManager.startSession(userSession);
@@ -56,8 +56,12 @@ class SessionManagerTest {
         AccessToken accessToken = new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
 
-        UserSession userSession = new UserSession(new User("test-user", "email@test.com"),
-                refreshToken.serialize(), accessToken.serialize(accessTokenProperties), notExpiredTime);
+        UserSession userSession = UserSession.builder()
+                .user(new User("test-user", "email@test.com"))
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(notExpiredTime)
+                .build();
 
         // when
         sessionManager.extendSession(userSession, refreshToken, accessToken);
@@ -79,8 +83,12 @@ class SessionManagerTest {
         AccessToken accessToken = new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
 
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
-        UserSession userSession = new UserSession(new User("test-user", "email@test.com"),
-                refreshToken.serialize(), accessToken.serialize(accessTokenProperties), expiredTime);
+        UserSession userSession = UserSession.builder()
+                .user(new User("test-user", "email@test.com"))
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(expiredTime)
+                .build();
 
         // when & then
         assertThatThrownBy(() -> sessionManager.extendSession(userSession, refreshToken, accessToken))
@@ -97,8 +105,13 @@ class SessionManagerTest {
         RefreshToken invalidRefreshToken = new RefreshToken();
         AccessToken invalidAccessToken =
                 new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
-        UserSession userSession = new UserSession(new User("test-user", "email@test.com"),
-                "refresh-token", "access-token", notExpiredTime);
+
+        UserSession userSession = UserSession.builder()
+                .user(new User("test-user", "email@test.com"))
+                .refreshToken("refresh-token")
+                .accessToken("access-token")
+                .expiration(notExpiredTime)
+                .build();
 
         // when & then
         assertThatThrownBy(

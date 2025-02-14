@@ -149,8 +149,12 @@ class AuthServiceTest {
         RefreshToken refreshToken = new RefreshToken();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
 
-        UserSession userSession = new UserSession(user, refreshToken.serialize(),
-                accessToken.serialize(accessTokenProperties), notExpiredTime);
+        UserSession userSession = UserSession.builder()
+                .user(user)
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(notExpiredTime)
+                .build();
         userSessionRepository.save(userSession);
 
         // when
@@ -175,8 +179,12 @@ class AuthServiceTest {
         RefreshToken refreshToken = new RefreshToken();
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
 
-        UserSession userSession = new UserSession(user, refreshToken.serialize(),
-                accessToken.serialize(accessTokenProperties), expiredTime);
+        UserSession userSession = UserSession.builder()
+                .user(user)
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(expiredTime)
+                .build();
         userSessionRepository.save(userSession);
 
         // when & then
@@ -199,8 +207,12 @@ class AuthServiceTest {
         RefreshToken refreshToken = new RefreshToken();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
 
-        UserSession userSession = new UserSession(user, refreshToken.serialize(),
-                accessToken.serialize(accessTokenProperties), notExpiredTime);
+        UserSession userSession = UserSession.builder()
+                .user(user)
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(notExpiredTime)
+                .build();
         userSessionRepository.save(userSession);
 
         // when & then

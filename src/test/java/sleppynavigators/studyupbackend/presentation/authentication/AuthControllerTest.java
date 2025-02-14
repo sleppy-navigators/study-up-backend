@@ -186,8 +186,12 @@ class AuthControllerTest {
         RefreshRequest request = new RefreshRequest(accessToken.serialize(accessTokenProperties),
                 refreshToken.serialize());
 
-        UserSession userSession = new UserSession(user, refreshToken.serialize(),
-                accessToken.serialize(accessTokenProperties), notExpiredTime);
+        UserSession userSession = UserSession.builder()
+                .user(user)
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(notExpiredTime)
+                .build();
         userSessionRepository.save(userSession);
 
         // when
@@ -215,8 +219,12 @@ class AuthControllerTest {
         RefreshRequest request = new RefreshRequest(accessToken.serialize(accessTokenProperties),
                 refreshToken.serialize());
 
-        UserSession userSession = new UserSession(user, refreshToken.serialize(),
-                accessToken.serialize(accessTokenProperties), expiredTime);
+        UserSession userSession = UserSession.builder()
+                .user(user)
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(expiredTime)
+                .build();
         userSessionRepository.save(userSession);
 
         // when
@@ -244,8 +252,12 @@ class AuthControllerTest {
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
         RefreshRequest request = new RefreshRequest("invalid-access-token", "invalid-refresh-token");
 
-        UserSession userSession = new UserSession(user, refreshToken.serialize(),
-                accessToken.serialize(accessTokenProperties), notExpiredTime);
+        UserSession userSession = UserSession.builder()
+                .user(user)
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(notExpiredTime)
+                .build();
         userSessionRepository.save(userSession);
 
         // when
