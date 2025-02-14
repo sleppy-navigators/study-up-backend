@@ -123,7 +123,7 @@ public class GroupControllerTest {
 
         // when
         ExtractableResponse<?> response = with()
-                .when().request(POST, "/groups/{groupId}/withdraw", savedGroup.getId())
+                .when().request(POST, "/groups/{groupId}/leave", savedGroup.getId())
                 .then()
                 .log().all().extract();
 
@@ -143,7 +143,7 @@ public class GroupControllerTest {
 
         // when
         ExtractableResponse<?> response = with()
-                .when().request(POST, "/groups/{groupId}/withdraw", savedGroup.getId())
+                .when().request(POST, "/groups/{groupId}/leave", savedGroup.getId())
                 .then()
                 .log().all().extract();
 
@@ -161,7 +161,7 @@ public class GroupControllerTest {
 
         // when
         ExtractableResponse<?> response = with()
-                .when().request(POST, "/groups/{groupId}/withdraw", 1L)
+                .when().request(POST, "/groups/{groupId}/leave", 1L)
                 .then()
                 .log().all().extract();
 

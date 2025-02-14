@@ -52,12 +52,12 @@ public class GroupController {
     }
 
     @Valid
-    @PostMapping("/{groupId}/withdraw")
+    @PostMapping("/{groupId}/leave")
     @Operation(summary = "그룹 탈퇴", description = "그룹에서 탈퇴합니다.")
-    public ResponseEntity<SuccessResponse<Void>> withdrawGroup(
+    public ResponseEntity<SuccessResponse<Void>> leaveGroup(
             @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId) {
         Long userId = userPrincipal.userId();
-        groupService.withdrawGroup(userId, groupId);
+        groupService.leaveGroup(userId, groupId);
         return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 

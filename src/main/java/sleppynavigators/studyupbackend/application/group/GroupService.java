@@ -38,7 +38,7 @@ public class GroupService {
     }
 
     @Transactional
-    public void withdrawGroup(Long userId, Long groupId) {
+    public void leaveGroup(Long userId, Long groupId) {
         Group group = groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
         GroupMember targetMember = groupMemberRepository.findByGroupIdAndUserId(groupId, userId)
                 .orElseThrow(EntityNotFoundException::new);
