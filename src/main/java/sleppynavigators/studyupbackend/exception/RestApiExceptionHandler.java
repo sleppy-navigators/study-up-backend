@@ -19,7 +19,7 @@ import sleppynavigators.studyupbackend.exception.network.NetworkBaseException;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class RestApiExceptionHandler {
 
     @ExceptionHandler(exception = {
             HttpMediaTypeNotSupportedException.class,

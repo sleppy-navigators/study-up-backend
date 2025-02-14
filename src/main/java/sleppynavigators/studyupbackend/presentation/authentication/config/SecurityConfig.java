@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .addFilterBefore(accessTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/docs/**", "/auth/**").permitAll()
+                                .requestMatchers("/docs/**", "/auth/**", "/chat/**", "/ws/**").permitAll()
                                 .anyRequest().authenticated())
 
                 // handle exceptions

@@ -81,18 +81,18 @@
 <body>
     <div class="chat-container">
         <h2>Study Up 채팅 테스트</h2>
-        
+
         <div class="connection-form">
             <div class="input-group">
                 <label for="groupId">그룹 ID</label>
                 <input type="number" id="groupId" placeholder="그룹 ID 입력" value="1" min="1">
             </div>
             <div class="input-group">
-                <label for="userId">사용자 ID</label>
-                <input type="number" id="userId" placeholder="사용자 ID 입력" value="1" min="1">
+                <label for="accessToken">액세스 토큰</label>
+                <input type="text" id="accessToken" placeholder="액세스 토큰을 입력하세요">
             </div>
-            <button onclick="connect()">연결</button>
-            <button onclick="disconnect()" class="disconnect">연결 해제</button>
+            <button onclick="connect()" id="connectBtn">연결</button>
+            <button onclick="disconnect()" class="disconnect" id="disconnectBtn">연결 해제</button>
         </div>
 
         <div id="messageArea"></div>
@@ -106,15 +106,27 @@
     <script th:inline="javascript">
         let stompClient = null;
         let groupId = null;
-        let userId = null;
+        let accessToken = null;
 
         function connect() {
+            const accessTokenInput = document.getElementById('accessToken');
+            accessToken = accessTokenInput.value.trim();
+
+            if (!accessToken) {
+                showErrorMessage({apiResult: '액세스 토큰을 입력해주세요'});
+                return;
+            }
+
             groupId = document.getElementById('groupId').value;
-            userId = document.getElementById('userId').value;
+
             const socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
-            
-            stompClient.connect({}, function(frame) {
+
+            const stompHeaders = {
+                'Authorization': 'Bearer ' + accessToken
+            };
+
+            stompClient.connect(stompHeaders, function(frame) {
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/group/' + groupId, function(response) {
                     const apiResponse = JSON.parse(response.body);
@@ -137,6 +149,9 @@
                     senderId: 'System',
                     content: '채팅방에 연결되었습니다.'
                 });
+            }, function(error) {
+                console.error('Connection error:', error);
+                showErrorMessage({apiResult: '연결 실패: ' + (error.headers?.message || '알 수 없는 오류')});
             });
         }
 
@@ -158,10 +173,9 @@
             if (content && stompClient) {
                 const chatMessage = {
                     groupId: Number(groupId),
-                    senderId: Number(userId),
                     content: content
                 };
-                
+
                 stompClient.send("/app/chat/message", {}, JSON.stringify(chatMessage));
                 messageInput.value = '';
             }

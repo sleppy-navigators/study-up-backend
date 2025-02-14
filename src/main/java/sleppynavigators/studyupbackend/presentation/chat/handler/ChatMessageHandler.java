@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import sleppynavigators.studyupbackend.application.chat.ChatService;
+import sleppynavigators.studyupbackend.presentation.authentication.filter.UserAuthentication;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 
 @Controller
@@ -16,8 +17,11 @@ public class ChatMessageHandler {
     private final ChatService chatService;
 
     @MessageMapping("/chat/message")
-    public void handle(@Valid ChatMessageRequest message) {
+    public void handle(
+        @Valid ChatMessageRequest message,
+        UserAuthentication userAuthentication // WebSocket은 @AuthenticationPrincipal을 지원하지 않음
+    ) {
         String destination = String.format(GROUP_DESTINATION, message.groupId());
-        chatService.sendMessage(message, destination);
+        chatService.sendMessage(message, destination, userAuthentication.getPrincipal().userId());
     }
 }

@@ -21,6 +21,7 @@ public enum ErrorCode {
 
     // business exceptions
     SESSION_EXPIRED(400, "B40", "Session expired"),
+    CHAT_MESSAGE(400, "B41", "Chat message error"),
 
     // global exceptions
     INTERNAL_SERVER_ERROR(500, "G50", "Internal server error"),
