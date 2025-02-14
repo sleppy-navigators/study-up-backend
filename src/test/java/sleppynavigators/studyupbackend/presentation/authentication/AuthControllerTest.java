@@ -43,6 +43,7 @@ import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
+import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -65,6 +66,9 @@ class AuthControllerTest {
     @MockitoBean
     private GoogleOidcClient googleOidcClient;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @LocalServerPort
     private int port;
 
@@ -78,9 +82,7 @@ class AuthControllerTest {
 
     @AfterEach
     void tearDown() {
-        userSessionRepository.deleteAll();
-        userCredentialRepository.deleteAll();
-        userRepository.deleteAll();
+        databaseCleaner.execute();
     }
 
     @TestConfiguration

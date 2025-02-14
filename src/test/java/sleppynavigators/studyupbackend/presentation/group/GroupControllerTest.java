@@ -10,6 +10,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import java.util.List;
 import org.apache.http.HttpStatus;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +26,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
+import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 
@@ -42,16 +44,21 @@ public class GroupControllerTest {
     @Autowired
     private AccessTokenProperties accessTokenProperties;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @LocalServerPort
     private int port;
+
+    private User currentUser;
 
     @BeforeEach
     void setUp() {
         UserProfile userProfile = new UserProfile("guest", "example@guest.com");
-        User savedUser = userRepository.save(new User(userProfile));
+        currentUser = userRepository.save(new User(userProfile));
 
         AccessToken accessToken =
-                new AccessToken(savedUser.getId(), userProfile, List.of("profile"), accessTokenProperties);
+                new AccessToken(currentUser.getId(), userProfile, List.of("profile"), accessTokenProperties);
         String bearerToken = "Bearer " + accessToken.serialize(accessTokenProperties);
 
         RestAssured.port = port;
@@ -63,20 +70,18 @@ public class GroupControllerTest {
 
     @AfterEach
     void tearDown() {
-        groupRepository.deleteAll();
-        userRepository.deleteAll();
+        databaseCleaner.execute();
     }
 
     @Test
     @DisplayName("사용자가 그룹 목록 조회에 성공한다")
     void getGroups_Success() {
         // given
-        User user = userRepository.findByUserProfileEmail("example@guest.com").orElseThrow();
         groupRepository.saveAll(
-                List.of(new Group("test group1", "test description", "https://test.com", user),
-                        new Group("test group2", "test description", "https://test.com", user),
-                        new Group("test group3", "test description", "https://test.com", user),
-                        new Group("test group4", "test description", "https://test.com", user)));
+                List.of(new Group("test group1", "test description", "https://test.com", currentUser),
+                        new Group("test group2", "test description", "https://test.com", currentUser),
+                        new Group("test group3", "test description", "https://test.com", currentUser),
+                        new Group("test group4", "test description", "https://test.com", currentUser)));
 
         // when
         ExtractableResponse<?> response = with()
@@ -86,7 +91,9 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(SuccessResponse.class).getData()).isNotNull();
+        assertThat(response.body().as(SuccessResponse.class).getData())
+                .asInstanceOf(InstanceOfAssertFactories.LIST)
+                .hasSize(4);
     }
 
     @Test
@@ -113,11 +120,11 @@ public class GroupControllerTest {
 
     @Test
     @DisplayName("사용자가 그룹에서 탈퇴에 성공한다")
-    void memberLeaveGroup_Success() {        // given
-        User creator = userRepository.findByUserProfileEmail("example@guest.com").orElseThrow();
+    void memberLeaveGroup_Success() {
+        // given
         User anotherMember = userRepository.save(new User(new UserProfile("another", "example2@guest.com")));
 
-        Group group = new Group("test group", "test description", "https://test.com", creator);
+        Group group = new Group("test group", "test description", "https://test.com", currentUser);
         group.addMember(anotherMember);
         Group savedGroup = groupRepository.save(group);
 
@@ -137,8 +144,7 @@ public class GroupControllerTest {
     @DisplayName("유일한 사용자가 그룹에서 탈퇴한다 (그룹이 삭제된다)")
     void uniqueMemberLeaveGroup_Success() {
         // given
-        User creator = userRepository.findByUserProfileEmail("example@guest.com").orElseThrow();
-        Group group = new Group("test group", "test description", "https://test.com", creator);
+        Group group = new Group("test group", "test description", "https://test.com", currentUser);
         Group savedGroup = groupRepository.save(group);
 
         // when
@@ -166,6 +172,6 @@ public class GroupControllerTest {
                 .log().all().extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
     }
 }
