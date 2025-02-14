@@ -26,7 +26,7 @@ import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.GroupCreationRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")

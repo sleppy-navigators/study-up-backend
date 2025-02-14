@@ -19,9 +19,9 @@ import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredent
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInRequest;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.TokenResponse;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 
 @Service

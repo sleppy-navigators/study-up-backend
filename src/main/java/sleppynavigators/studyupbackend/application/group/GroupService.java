@@ -11,10 +11,10 @@ import sleppynavigators.studyupbackend.exception.database.EntityNotFoundExceptio
 import sleppynavigators.studyupbackend.infrastructure.group.GroupMemberRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.presentation.group.dto.GroupCreationRequest;
-import sleppynavigators.studyupbackend.presentation.group.dto.GroupListResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.GroupListResponse.GroupListItem;
-import sleppynavigators.studyupbackend.presentation.group.dto.SimpleGroupResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.SimpleGroupResponse;
 
 @Service
 @Transactional(readOnly = true)

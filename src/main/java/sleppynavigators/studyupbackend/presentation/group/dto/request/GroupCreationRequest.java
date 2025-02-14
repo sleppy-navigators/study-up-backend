@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.group.dto;
+package sleppynavigators.studyupbackend.presentation.group.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import sleppynavigators.studyupbackend.domain.group.Group;

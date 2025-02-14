@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.GroupCreationRequest;
-import sleppynavigators.studyupbackend.presentation.group.dto.GroupInvitationResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.GroupListResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.SimpleGroupResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.SimpleGroupResponse;
 
 @Tag(name = "Group", description = "그룹 관련 API")
 @RestController
@@ -29,7 +29,6 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @Valid
     @GetMapping
     @Operation(summary = "그룹 목록 조회", description = "사용자의 그룹 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<GroupListResponse>> getGroups(
@@ -39,7 +38,6 @@ public class GroupController {
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    @Valid
     @PostMapping
     @Operation(summary = "그룹 생성", description = "그룹을 생성합니다.")
     public ResponseEntity<SuccessResponse<SimpleGroupResponse>> createGroup(
@@ -51,7 +49,6 @@ public class GroupController {
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    @Valid
     @PostMapping("/{groupId}/leave")
     @Operation(summary = "그룹 탈퇴", description = "그룹에서 탈퇴합니다.")
     public ResponseEntity<SuccessResponse<Void>> leaveGroup(
@@ -61,7 +58,6 @@ public class GroupController {
         return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 
-    @Valid
     @PostMapping("/:groupId/invitations")
     @Operation(summary = "그룹 초대", description = "그룹에 사용자를 초대합니다.")
     public ResponseEntity<SuccessResponse<GroupInvitationResponse>> inviteUser(
@@ -69,14 +65,12 @@ public class GroupController {
         return null;
     }
 
-    @Valid
     @GetMapping("/:groupId/invitations/:invitationId")
     @Operation(summary = "그룹 초대 조회", description = "그룹 초대를 조회합니다.")
     public ResponseEntity<SuccessResponse<SimpleGroupResponse>> getInvitation() {
         return null;
     }
 
-    @Valid
     @PostMapping("/:groupId/invitations/:invitationId/accept")
     @Operation(summary = "그룹 초대 수락", description = "그룹 초대를 수락합니다.")
     public ResponseEntity<SuccessResponse<SimpleGroupResponse>> acceptInvitation(
