@@ -26,7 +26,6 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
@@ -84,7 +83,7 @@ class AuthServiceTest {
                 .build();
         given(googleOidcClient.deserialize(idToken)).willReturn(idTokenClaims);
 
-        User user = new User(new UserProfile("test-user", "test-email"));
+        User user = new User("test-user", "test-email");
         UserCredential userCredential = new UserCredential("test-subject", "google", user);
 
         userRepository.save(user);
@@ -142,7 +141,7 @@ class AuthServiceTest {
     @DisplayName("토큰 갱신 요청이 성공적으로 수행된다")
     void refresh_Success() {
         // given
-        User user = new User(new UserProfile("test-user", "test-email"));
+        User user = new User("test-user", "test-email");
         userRepository.saveAndFlush(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
@@ -168,7 +167,7 @@ class AuthServiceTest {
     @DisplayName("만료된 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenExpiredSession_ThrowsInvalidCredentialException() {
         // given
-        User user = new User(new UserProfile("test-user", "test-email"));
+        User user = new User("test-user", "test-email");
         userRepository.saveAndFlush(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
@@ -192,7 +191,7 @@ class AuthServiceTest {
     @DisplayName("유효하지 않은 토큰으로 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenInvalidToken_ThrowsInvalidCredentialException() {
         // given
-        User user = new User(new UserProfile("test-user", "test-email"));
+        User user = new User("test-user", "test-email");
         userRepository.saveAndFlush(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),

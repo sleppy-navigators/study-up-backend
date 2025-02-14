@@ -13,7 +13,6 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
@@ -42,7 +41,8 @@ public class AuthService {
         String subject = idTokenClaims.getSubject();
         String username = idTokenClaims.get("name", String.class);
         String email = idTokenClaims.get("email", String.class);
-        return signIn(subject, new UserProfile(username, email), "google");
+
+        return signIn(subject, username, email, "google");
     }
 
     @Transactional
@@ -62,11 +62,11 @@ public class AuthService {
         }
     }
 
-    private TokenResponse signIn(String subject, UserProfile userProfile, String provider) {
+    private TokenResponse signIn(String subject, String username, String email, String provider) {
         UserCredential userCredential = userCredentialRepository
                 .findBySubject(subject)
                 .orElseGet(() -> { // sign up
-                    User user = userRepository.save(new User(userProfile));
+                    User user = userRepository.save(new User(username, email));
                     return userCredentialRepository.save(new UserCredential(subject, provider, user));
                 });
 

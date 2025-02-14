@@ -33,7 +33,7 @@ class SessionManagerTest {
     @DisplayName("세션을 시작한다")
     void whenStartSession_Success() {
         // given
-        User user = new User(new UserProfile("test-user", "email@test.com"));
+        User user = new User("test-user", "email@test.com");
         UserSession userSession = new UserSession(user, null, null, null);
 
         // when
@@ -56,7 +56,7 @@ class SessionManagerTest {
         AccessToken accessToken = new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
 
-        UserSession userSession = new UserSession(new User(userProfile),
+        UserSession userSession = new UserSession(new User("test-user", "email@test.com"),
                 refreshToken.serialize(), accessToken.serialize(accessTokenProperties), notExpiredTime);
 
         // when
@@ -79,7 +79,7 @@ class SessionManagerTest {
         AccessToken accessToken = new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
 
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
-        UserSession userSession = new UserSession(new User(userProfile),
+        UserSession userSession = new UserSession(new User("test-user", "email@test.com"),
                 refreshToken.serialize(), accessToken.serialize(accessTokenProperties), expiredTime);
 
         // when & then
@@ -97,7 +97,7 @@ class SessionManagerTest {
         RefreshToken invalidRefreshToken = new RefreshToken();
         AccessToken invalidAccessToken =
                 new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
-        UserSession userSession = new UserSession(new User(userProfile),
+        UserSession userSession = new UserSession(new User("test-user", "email@test.com"),
                 "refresh-token", "access-token", notExpiredTime);
 
         // when & then

@@ -33,7 +33,6 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
@@ -108,7 +107,7 @@ class AuthControllerTest {
                 .build();
         given(googleOidcClient.deserialize(idToken)).willReturn(idTokenClaims);
 
-        User user = new User(new UserProfile("test-user", "test-email"));
+        User user = new User("test-user", "test-email");
         UserCredential userCredential = new UserCredential("test-subject", "google", user);
 
         userRepository.save(user);
@@ -179,7 +178,7 @@ class AuthControllerTest {
     @DisplayName("토큰 갱신 요청이 성공적으로 수행된다")
     void refresh_Success() {
         // given
-        User user = new User(new UserProfile("test-user", "test-email"));
+        User user = new User("test-user", "test-email");
         userRepository.saveAndFlush(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
@@ -208,7 +207,7 @@ class AuthControllerTest {
     @DisplayName("만료된 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenExpiredSession_ThrowsInvalidCredentialException() {
         // given
-        User user = new User(new UserProfile("test-user", "test-email"));
+        User user = new User("test-user", "test-email");
         userRepository.saveAndFlush(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
@@ -238,7 +237,7 @@ class AuthControllerTest {
     @DisplayName("유효하지 않은 토큰으로 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenInvalidToken_ThrowsInvalidCredentialException() {
         // given
-        User user = new User(new UserProfile("test-user", "test-email"));
+        User user = new User("test-user", "test-email");
         userRepository.saveAndFlush(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),

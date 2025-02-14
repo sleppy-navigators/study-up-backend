@@ -55,7 +55,7 @@ public class GroupControllerTest {
     @BeforeEach
     void setUp() {
         UserProfile userProfile = new UserProfile("guest", "example@guest.com");
-        currentUser = userRepository.save(new User(userProfile));
+        currentUser = userRepository.save(new User("guest", "example@guest.com"));
 
         AccessToken accessToken =
                 new AccessToken(currentUser.getId(), userProfile, List.of("profile"), accessTokenProperties);
@@ -122,7 +122,7 @@ public class GroupControllerTest {
     @DisplayName("사용자가 그룹에서 탈퇴에 성공한다")
     void memberLeaveGroup_Success() {
         // given
-        User anotherMember = userRepository.save(new User(new UserProfile("another", "example2@guest.com")));
+        User anotherMember = userRepository.save(new User("another", "example2@guest.com"));
 
         Group group = new Group("test group", "test description", "https://test.com", currentUser);
         group.addMember(anotherMember);
