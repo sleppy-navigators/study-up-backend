@@ -7,6 +7,7 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
+    // TODO: migrate to QueryDSL
     @Query("SELECT g FROM user_groups g JOIN g.members m WHERE m.user.id = :userId")
     List<Group> findByUserId(Long userId);
 }
