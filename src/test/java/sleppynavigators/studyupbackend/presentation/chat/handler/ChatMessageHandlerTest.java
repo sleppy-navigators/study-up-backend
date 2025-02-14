@@ -16,7 +16,6 @@ import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
 import sleppynavigators.studyupbackend.domain.authentication.session.SessionManager;
 import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
@@ -69,14 +68,13 @@ class ChatMessageHandlerTest {
 
     @BeforeEach
     void setup() throws Exception {
-        UserProfile userProfile = new UserProfile(TEST_USERNAME, TEST_EMAIL);
-        testUser = userRepository.save(new User(userProfile));
-        
+        testUser = userRepository.save(new User(TEST_USERNAME, TEST_EMAIL));
+
         userCredentialRepository.save(new UserCredential(TEST_SUBJECT, TEST_PROVIDER, testUser));
-        
+
         userSession = userSessionRepository.save(new UserSession(testUser, null, null, null));
         sessionManager.startSession(userSession);
-        
+
         String wsUrl = String.format("ws://localhost:%d/ws", port);
         webSocketTestSupport = new WebSocketTestSupport(wsUrl, objectMapper, userSession.getAccessToken());
         webSocketTestSupport.connect();
@@ -101,7 +99,8 @@ class ChatMessageHandlerTest {
         String destination = webSocketTestSupport.getGroupDestination(groupId);
         CompletableFuture<SuccessResponse<ChatMessageResponse>> future = webSocketTestSupport.subscribeAndReceive(
                 destination,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         ChatMessageRequest request = ChatMessageRequest.builder()
