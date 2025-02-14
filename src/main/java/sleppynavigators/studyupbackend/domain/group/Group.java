@@ -13,7 +13,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sleppynavigators.studyupbackend.domain.group.vo.GroupInfo;
+import sleppynavigators.studyupbackend.domain.group.vo.GroupDetail;
 import sleppynavigators.studyupbackend.domain.user.User;
 
 @Entity(name = "user_groups")
@@ -26,7 +26,7 @@ public class Group {
     private Long id;
 
     @Embedded
-    private GroupInfo groupInfo;
+    private GroupDetail groupDetail;
 
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupMember> members;
@@ -37,7 +37,7 @@ public class Group {
 
     @Builder
     public Group(String name, String description, String thumbnailUrl, User creator) {
-        this.groupInfo = new GroupInfo(name, description, thumbnailUrl);
+        this.groupDetail = new GroupDetail(name, description, thumbnailUrl);
         this.members = new ArrayList<>();
 
         if (creator != null) {

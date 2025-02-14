@@ -16,8 +16,8 @@ public record GroupListResponse(@NotNull List<GroupListItem> groups) {
         public static GroupListItem fromEntity(Group group) {
             return new GroupListItem(
                     group.getId(),
-                    group.getGroupInfo().name(),
-                    group.getGroupInfo().thumbnailUrl(),
+                    group.getGroupDetail().name(),
+                    group.getGroupDetail().thumbnailUrl(),
                     "누구누구님이 이런저런일을 했다고 하시네요. 1h"
             );
         }

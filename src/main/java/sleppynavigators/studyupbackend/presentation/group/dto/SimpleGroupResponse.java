@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.domain.group.vo.GroupInfo;
+import sleppynavigators.studyupbackend.domain.group.vo.GroupDetail;
 
 public record SimpleGroupResponse(@NotNull Long id,
                                   @NotBlank String name,
@@ -12,8 +12,8 @@ public record SimpleGroupResponse(@NotNull Long id,
                                   @Email String thumbnailUrl) {
 
     public static SimpleGroupResponse fromEntity(Group group) {
-        GroupInfo groupInfo = group.getGroupInfo();
+        GroupDetail groupDetail = group.getGroupDetail();
         return new SimpleGroupResponse(
-                group.getId(), groupInfo.name(), groupInfo.description(), groupInfo.thumbnailUrl());
+                group.getId(), groupDetail.name(), groupDetail.description(), groupDetail.thumbnailUrl());
     }
 }
