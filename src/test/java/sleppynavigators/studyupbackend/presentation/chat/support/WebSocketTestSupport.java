@@ -34,6 +34,7 @@ public class WebSocketTestSupport {
     private final WebSocketStompClient stompClient;
     private final String url;
     private final String accessToken;
+
     private StompSession stompSession;
     private final ObjectMapper objectMapper;
 
@@ -58,20 +59,22 @@ public class WebSocketTestSupport {
         return stompClient;
     }
 
+    public StompSession getStompSession() {
+        return stompSession;
+    }
+
     public void connect() throws ExecutionException, InterruptedException, TimeoutException {
-        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        StompHeaders connectHeaders = new StompHeaders();
+        if (accessToken != null) {
+            connectHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        }
         
         this.stompSession = stompClient
-                .connectAsync(url, headers, new DefaultStompSessionHandler())
+                .connectAsync(url, new WebSocketHttpHeaders(), connectHeaders, new DefaultStompSessionHandler())
                 .get(DEFAULT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         await().atMost(5, TimeUnit.SECONDS)
                 .until(() -> stompSession.isConnected());
-    }
-
-    public StompSession getStompSession() {
-        return stompSession;
     }
 
     public String getGroupDestination(Long groupId) {
@@ -113,10 +116,6 @@ public class WebSocketTestSupport {
         });
 
         return completableFuture;
-    }
-
-    public <T> CompletableFuture<T> subscribeAndReceive(String destination, Class<T> responseType) {
-        return subscribeAndReceive(destination, ParameterizedTypeReference.forType(responseType));
     }
 
     public void disconnect() {

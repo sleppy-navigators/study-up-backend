@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.messaging.simp.stomp.ConnectionLostException;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.test.context.ActiveProfiles;
 import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
@@ -76,18 +77,17 @@ class ChatMessageHandlerTest {
         userSession = userSessionRepository.save(new UserSession(testUser, null, null, null));
         sessionManager.startSession(userSession);
         
-        webSocketTestSupport = new WebSocketTestSupport(
-                String.format("ws://localhost:%d/ws", port),
-                objectMapper,
-                userSession.getAccessToken()
-        );
+        String wsUrl = String.format("ws://localhost:%d/ws", port);
+        webSocketTestSupport = new WebSocketTestSupport(wsUrl, objectMapper, userSession.getAccessToken());
         webSocketTestSupport.connect();
         this.stompSession = webSocketTestSupport.getStompSession();
     }
 
     @AfterEach
     void cleanup() {
-        webSocketTestSupport.disconnect();
+        if (webSocketTestSupport != null) {
+            webSocketTestSupport.disconnect();
+        }
         userSessionRepository.deleteAll();
         userCredentialRepository.deleteAll();
         userRepository.deleteAll();
@@ -171,7 +171,8 @@ class ChatMessageHandlerTest {
 
         // when & then
         assertThatThrownBy(invalidWebSocketSupport::connect)
-                .isInstanceOf(ExecutionException.class);
+                .isInstanceOf(ExecutionException.class)
+                .hasRootCauseInstanceOf(ConnectionLostException.class);
     }
 
     @Test
@@ -186,6 +187,7 @@ class ChatMessageHandlerTest {
 
         // when & then
         assertThatThrownBy(invalidWebSocketSupport::connect)
-                .isInstanceOf(ExecutionException.class);
+                .isInstanceOf(ExecutionException.class)
+                .hasRootCauseInstanceOf(ConnectionLostException.class);
     }
 }

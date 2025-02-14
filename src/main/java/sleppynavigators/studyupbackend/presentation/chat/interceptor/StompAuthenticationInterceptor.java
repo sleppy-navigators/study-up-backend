@@ -48,4 +48,4 @@ public class StompAuthenticationInterceptor implements ChannelInterceptor {
         }
         return message;
     }
-} 
+}
