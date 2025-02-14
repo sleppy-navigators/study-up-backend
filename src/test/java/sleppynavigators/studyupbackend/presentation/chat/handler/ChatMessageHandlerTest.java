@@ -20,10 +20,10 @@ import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
-import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.support.WebSocketTestSupport;
+import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import java.util.concurrent.CompletableFuture;
@@ -50,9 +50,6 @@ class ChatMessageHandlerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private UserCredentialRepository userCredentialRepository;
 
     @Autowired
@@ -61,6 +58,9 @@ class ChatMessageHandlerTest {
     @Autowired
     private SessionManager sessionManager;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     private WebSocketTestSupport webSocketTestSupport;
     private StompSession stompSession;
     private User testUser;
@@ -68,11 +68,10 @@ class ChatMessageHandlerTest {
 
     @BeforeEach
     void setup() throws Exception {
-        testUser = userRepository.save(new User(TEST_USERNAME, TEST_EMAIL));
-
+        testUser = new User(TEST_USERNAME, TEST_EMAIL);
         userCredentialRepository.save(new UserCredential(TEST_SUBJECT, TEST_PROVIDER, testUser));
 
-        userSession = userSessionRepository.save(new UserSession(testUser, null, null, null));
+        userSession = userSessionRepository.save(UserSession.builder().user(testUser).build());
         sessionManager.startSession(userSession);
 
         String wsUrl = String.format("ws://localhost:%d/ws", port);
@@ -86,9 +85,8 @@ class ChatMessageHandlerTest {
         if (webSocketTestSupport != null) {
             webSocketTestSupport.disconnect();
         }
-        userSessionRepository.deleteAll();
-        userCredentialRepository.deleteAll();
-        userRepository.deleteAll();
+
+        databaseCleaner.execute();
     }
 
     @Test
