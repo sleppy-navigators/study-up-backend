@@ -87,7 +87,11 @@ public class GoogleOidcClient implements OidcClient {
             }
 
             String responseBody = response.body().string();
-            log.info("Request Google public key - {} {}", response.code(), responseBody);
+            if (response.cacheResponse() != null) {
+                log.info("Use cached Google public key");
+            } else {
+                log.info("Google public key response - {} {}", response.code(), responseBody);
+            }
 
             Map<?, ?> certs = objectMapper.readValue(responseBody, Map.class);
             return (String) certs.get(kid);
