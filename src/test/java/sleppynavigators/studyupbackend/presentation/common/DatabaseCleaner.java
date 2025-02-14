@@ -1,6 +1,5 @@
 package sleppynavigators.studyupbackend.presentation.common;
 
-import com.google.common.base.CaseFormat;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
@@ -27,6 +26,7 @@ public class DatabaseCleaner {
     @Transactional
     public void execute() {
         entityManager.flush();
+        entityManager.clear();
 
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
         for (String tableName : tableNames) {
@@ -39,15 +39,11 @@ public class DatabaseCleaner {
         Metamodel metamodel = entityManager.getMetamodel();
         return metamodel.getEntities().stream()
                 .filter(this::isManagedTable)
-                .map(this::toTableName)
+                .map(EntityType::getName)
                 .toList();
     }
 
     private boolean isManagedTable(EntityType<?> type) {
         return type.getJavaType().getAnnotation(Entity.class) != null;
-    }
-
-    private String toTableName(EntityType<?> type) {
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, type.getName());
     }
 }

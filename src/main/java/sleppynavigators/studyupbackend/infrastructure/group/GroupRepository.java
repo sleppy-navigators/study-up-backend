@@ -9,7 +9,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     // TODO: migrate to QueryDSL
     @Query(nativeQuery = true, value = """
-            SELECT `groups`.* FROM `groups` JOIN group_members WHERE group_members.id = :userId
+            SELECT "groups".* FROM "groups" JOIN group_members WHERE group_members.id = :userId
             """)
     List<Group> findByUserId(Long userId);
 }
