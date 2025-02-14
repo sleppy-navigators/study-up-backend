@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.authentication.dto;
+package sleppynavigators.studyupbackend.presentation.authentication.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

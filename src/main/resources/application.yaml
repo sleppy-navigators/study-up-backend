@@ -7,8 +7,10 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
+    show-sql: true # TODO: change to false
     hibernate:
       ddl-auto: update # TODO: change to validate
+    open-in-view: false
 
 authentication:
   refresh-token:

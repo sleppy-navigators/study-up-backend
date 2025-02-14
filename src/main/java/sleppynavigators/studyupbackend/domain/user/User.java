@@ -21,6 +21,7 @@ public class User {
     @Embedded
     private UserProfile userProfile;
 
+    // TODO: make a `UserProfile` invisible to the outside world
     public User(UserProfile userProfile) {
         this.userProfile = userProfile;
     }

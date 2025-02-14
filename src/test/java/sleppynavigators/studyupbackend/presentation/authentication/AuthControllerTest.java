@@ -14,6 +14,7 @@ import io.restassured.response.ExtractableResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,14 +40,15 @@ import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredent
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInRequest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
+import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@DisplayName("AuthController 테스트")
+@DisplayName("AuthController API 테스트")
 class AuthControllerTest {
 
     @Autowired
@@ -64,19 +66,23 @@ class AuthControllerTest {
     @MockitoBean
     private GoogleOidcClient googleOidcClient;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @LocalServerPort
     private int port;
 
     @BeforeEach
     void setUp() {
-        userSessionRepository.deleteAll();
-        userCredentialRepository.deleteAll();
-        userRepository.deleteAll();
-
         RestAssured.port = port;
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        databaseCleaner.execute();
     }
 
     @TestConfiguration
@@ -166,7 +172,7 @@ class AuthControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.body().as(ErrorResponse.class).getCode())
-                .isEqualTo(ErrorCode.INVALID_API.getCode());
+                .isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
     }
 
     @Test
@@ -254,6 +260,6 @@ class AuthControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.body().as(ErrorResponse.class).getCode())
-                .isEqualTo(ErrorCode.INVALID_API.getCode());
+                .isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
     }
 }

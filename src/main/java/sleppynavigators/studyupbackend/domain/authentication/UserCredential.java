@@ -24,9 +24,11 @@ public class UserCredential {
     @Column(nullable = false)
     private String subject;
 
+    // should consider changing the type from `String` to `Enum`.
     @Column(nullable = false)
     private String provider;
 
+    // TODO: make cascade type to `PERSIST` and refactor
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

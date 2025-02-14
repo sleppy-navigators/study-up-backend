@@ -19,9 +19,9 @@ import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredent
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInRequest;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.TokenResponse;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 
 @Service
@@ -71,7 +71,7 @@ public class AuthService {
                 });
 
         User user = userCredential.getUser();
-        UserSession userSession = userSessionRepository.findById(user.getId())
+        UserSession userSession = userSessionRepository.findByUserId(user.getId())
                 .orElseGet(() -> userSessionRepository.save(new UserSession(user, null, null, null)));
         sessionManager.startSession(userSession);
         return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());

@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
             NoResourceFoundException.class,
             HttpMessageNotReadableException.class,
             MethodArgumentNotValidException.class})
-    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
-            HttpServletRequest request, NoResourceFoundException ignored) {
+    public ResponseEntity<ErrorResponse> handleDefault4xxExceptions(
+            HttpServletRequest request, Exception ignored) {
         return ErrorResponse.toResponseEntity(new InvalidApiException(), request.getRequestURI());
     }
 

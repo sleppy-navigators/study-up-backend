@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.authentication.AuthProvider;
 import sleppynavigators.studyupbackend.application.authentication.AuthService;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.RefreshRequest;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.SignInRequest;
-import sleppynavigators.studyupbackend.presentation.authentication.dto.TokenResponse;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
@@ -27,11 +27,10 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Valid
     @PostMapping("/sign-in")
     @Operation(summary = "로그인", description = "사용자 로그인합니다.")
-    public ResponseEntity<SuccessResponse<TokenResponse>> login(@RequestParam AuthProvider provider,
-                                                                @RequestBody @Valid SignInRequest signInRequest) {
+    public ResponseEntity<SuccessResponse<TokenResponse>> login(
+            @RequestParam AuthProvider provider, @RequestBody @Valid SignInRequest signInRequest) {
         switch (provider) {
             case GOOGLE:
                 TokenResponse response = authService.googleSignIn(signInRequest);
@@ -41,10 +40,10 @@ public class AuthController {
         }
     }
 
-    @Valid
     @PostMapping("/refresh")
     @Operation(summary = "토큰 갱신", description = "사용자 토큰을 갱신합니다.")
-    public ResponseEntity<SuccessResponse<TokenResponse>> refresh(@RequestBody @Valid RefreshRequest refreshRequest) {
+    public ResponseEntity<SuccessResponse<TokenResponse>> refresh(
+            @RequestBody @Valid RefreshRequest refreshRequest) {
         TokenResponse response = authService.refresh(refreshRequest);
         return SuccessResponse.toResponseEntity(response);
     }
