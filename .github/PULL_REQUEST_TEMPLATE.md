@@ -26,10 +26,7 @@
 
 ## 체크리스트
 
-- [ ] PR 제목을 명령형으로 작성했습니다
-- [ ] 연관되는 issue를 commit
-  메시지로 [auto-link](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)
-  했습니다
+- [ ] PR 제목을 간결하게 작성했습니다
 - [ ] 리뷰 리퀘스트 전에 셀프 리뷰를 진행했습니다
 - [ ] 변경사항에 대한 테스트코드를 추가했습니다. 또는, 테스트코드가 필요없는 이유가 있습니다
 - [ ] Bug fix, New feature, Breaking Change, Refactoring 등의 Label을 달았습니다
