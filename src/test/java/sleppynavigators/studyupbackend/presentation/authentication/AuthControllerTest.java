@@ -25,12 +25,10 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
-import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
-import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -63,6 +61,7 @@ class AuthControllerTest {
     @AfterEach
     void tearDown() {
         databaseCleaner.execute();
+        RestAssured.reset();
     }
 
     @Test
@@ -95,7 +94,8 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(SuccessResponse.class).getData()).isNotNull();
+        assertThat(response.jsonPath().getString("data.accessToken")).isNotBlank();
+        assertThat(response.jsonPath().getString("data.refreshToken")).isNotBlank();
     }
 
     @Test
@@ -128,8 +128,8 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-        assertThat(response.body().as(ErrorResponse.class).getCode())
-                .isEqualTo(ErrorCode.SESSION_EXPIRED.getCode());
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.SESSION_EXPIRED.getCode());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.SESSION_EXPIRED.getDefaultMessage());
     }
 
     @Test
@@ -161,7 +161,8 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-        assertThat(response.body().as(ErrorResponse.class).getCode())
-                .isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(
+                ErrorCode.INVALID_CREDENTIALS.getDefaultMessage());
     }
 }
