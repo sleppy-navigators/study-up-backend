@@ -9,6 +9,9 @@ import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPr
 
 public class AuthenticationConverter {
 
+    private AuthenticationConverter() {
+    }
+
     public static Authentication convertToAuthentication(AccessToken accessToken) {
         Long userId = accessToken.getUserId();
         UserProfile userProfile = accessToken.getUserProfile();

@@ -5,9 +5,13 @@ import java.util.Optional;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
 public class BearerTokenExtractor {
+
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
     private static final int BEARER_PREFIX_LENGTH = BEARER_PREFIX.length();
+
+    private BearerTokenExtractor() {
+    }
 
     public static String extractFromRequest(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(AUTHORIZATION_HEADER))
