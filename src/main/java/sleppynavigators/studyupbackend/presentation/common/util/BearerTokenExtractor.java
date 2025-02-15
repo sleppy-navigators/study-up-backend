@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.util;
+package sleppynavigators.studyupbackend.presentation.common.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;

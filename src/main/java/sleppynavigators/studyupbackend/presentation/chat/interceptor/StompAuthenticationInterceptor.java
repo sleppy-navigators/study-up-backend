@@ -15,8 +15,8 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.exception.network.UnAuthorizedException;
-import sleppynavigators.studyupbackend.presentation.util.AuthenticationConverter;
-import sleppynavigators.studyupbackend.presentation.util.BearerTokenExtractor;
+import sleppynavigators.studyupbackend.presentation.common.util.AuthenticationConverter;
+import sleppynavigators.studyupbackend.presentation.common.util.BearerTokenExtractor;
 
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)

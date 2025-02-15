@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.util;
+package sleppynavigators.studyupbackend.presentation.common.util;
 
 import java.util.List;
 import org.springframework.security.core.Authentication;
