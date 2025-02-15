@@ -16,7 +16,7 @@ public class BearerTokenExtractor {
     }
 
     public static String extractFromStompHeaders(StompHeaderAccessor accessor) {
-        return Optional.of(accessor.getNativeHeader(AUTHORIZATION_HEADER))
+        return Optional.ofNullable(accessor.getNativeHeader(AUTHORIZATION_HEADER))
                 .filter(headers -> !headers.isEmpty())
                 .map(headers -> headers.get(0))
                 .map(BearerTokenExtractor::extractFromHeader)
