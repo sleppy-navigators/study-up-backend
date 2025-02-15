@@ -1,8 +1,7 @@
 package sleppynavigators.studyupbackend.exception;
 
-import java.time.LocalDateTime;
-
 import jakarta.annotation.Nullable;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

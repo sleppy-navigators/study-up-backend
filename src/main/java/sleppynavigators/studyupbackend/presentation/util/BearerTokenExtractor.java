@@ -1,9 +1,8 @@
 package sleppynavigators.studyupbackend.presentation.util;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-
 import java.util.Optional;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
 public class BearerTokenExtractor {
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -17,7 +16,7 @@ public class BearerTokenExtractor {
     }
 
     public static String extractFromStompHeaders(StompHeaderAccessor accessor) {
-        return Optional.of(accessor.getNativeHeader(AUTHORIZATION_HEADER))
+        return Optional.ofNullable(accessor.getNativeHeader(AUTHORIZATION_HEADER))
                 .filter(headers -> !headers.isEmpty())
                 .map(headers -> headers.get(0))
                 .map(BearerTokenExtractor::extractFromHeader)

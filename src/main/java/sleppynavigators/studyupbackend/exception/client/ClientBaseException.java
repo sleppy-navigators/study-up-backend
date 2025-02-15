@@ -1,7 +1,7 @@
 package sleppynavigators.studyupbackend.exception.client;
 
-import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.BaseException;
+import sleppynavigators.studyupbackend.exception.ErrorCode;
 
 public class ClientBaseException extends BaseException {
 

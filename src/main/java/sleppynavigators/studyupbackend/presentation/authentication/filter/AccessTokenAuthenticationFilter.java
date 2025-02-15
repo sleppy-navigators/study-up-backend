@@ -8,14 +8,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
-import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.exception.BaseException;
+import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 import sleppynavigators.studyupbackend.presentation.util.AuthenticationConverter;
 import sleppynavigators.studyupbackend.presentation.util.BearerTokenExtractor;
@@ -29,7 +30,9 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            @NotNull HttpServletRequest request,
+            @NotNull HttpServletResponse response,
+            @NotNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
             String bearerToken = BearerTokenExtractor.extractFromRequest(request);

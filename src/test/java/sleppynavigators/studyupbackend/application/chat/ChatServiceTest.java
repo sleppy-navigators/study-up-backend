@@ -1,5 +1,11 @@
 package sleppynavigators.studyupbackend.application.chat;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,15 +18,9 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
+import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willThrow;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")

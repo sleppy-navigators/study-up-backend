@@ -18,8 +18,8 @@ public class ChatMessageHandler {
 
     @MessageMapping("/chat/message")
     public void handle(
-        @Valid ChatMessageRequest message,
-        UserAuthentication userAuthentication // WebSocket은 @AuthenticationPrincipal을 지원하지 않음
+            @Valid ChatMessageRequest message,
+            UserAuthentication userAuthentication // WebSocket은 @AuthenticationPrincipal을 지원하지 않음
     ) {
         String destination = String.format(GROUP_DESTINATION, message.groupId());
         chatService.sendMessage(message, destination, userAuthentication.getPrincipal().userId());
