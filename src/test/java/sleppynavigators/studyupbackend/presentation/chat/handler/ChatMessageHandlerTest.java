@@ -16,15 +16,14 @@ import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
 import sleppynavigators.studyupbackend.domain.authentication.session.SessionManager;
 import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
-import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.support.WebSocketTestSupport;
+import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import java.util.concurrent.CompletableFuture;
@@ -51,9 +50,6 @@ class ChatMessageHandlerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private UserCredentialRepository userCredentialRepository;
 
     @Autowired
@@ -62,6 +58,9 @@ class ChatMessageHandlerTest {
     @Autowired
     private SessionManager sessionManager;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     private WebSocketTestSupport webSocketTestSupport;
     private StompSession stompSession;
     private User testUser;
@@ -69,14 +68,12 @@ class ChatMessageHandlerTest {
 
     @BeforeEach
     void setup() throws Exception {
-        UserProfile userProfile = new UserProfile(TEST_USERNAME, TEST_EMAIL);
-        testUser = userRepository.save(new User(userProfile));
-        
+        testUser = new User(TEST_USERNAME, TEST_EMAIL);
         userCredentialRepository.save(new UserCredential(TEST_SUBJECT, TEST_PROVIDER, testUser));
-        
-        userSession = userSessionRepository.save(new UserSession(testUser, null, null, null));
+
+        userSession = userSessionRepository.save(UserSession.builder().user(testUser).build());
         sessionManager.startSession(userSession);
-        
+
         String wsUrl = String.format("ws://localhost:%d/ws", port);
         webSocketTestSupport = new WebSocketTestSupport(wsUrl, objectMapper, userSession.getAccessToken());
         webSocketTestSupport.connect();
@@ -88,9 +85,8 @@ class ChatMessageHandlerTest {
         if (webSocketTestSupport != null) {
             webSocketTestSupport.disconnect();
         }
-        userSessionRepository.deleteAll();
-        userCredentialRepository.deleteAll();
-        userRepository.deleteAll();
+
+        databaseCleaner.execute();
     }
 
     @Test
@@ -101,7 +97,8 @@ class ChatMessageHandlerTest {
         String destination = webSocketTestSupport.getGroupDestination(groupId);
         CompletableFuture<SuccessResponse<ChatMessageResponse>> future = webSocketTestSupport.subscribeAndReceive(
                 destination,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         ChatMessageRequest request = ChatMessageRequest.builder()

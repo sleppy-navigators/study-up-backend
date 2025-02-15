@@ -9,8 +9,8 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import java.util.List;
+import java.util.Optional;
 import org.apache.http.HttpStatus;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,10 +24,10 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
+import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
-import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -55,7 +55,7 @@ public class GroupControllerTest {
     @BeforeEach
     void setUp() {
         UserProfile userProfile = new UserProfile("guest", "example@guest.com");
-        currentUser = userRepository.save(new User(userProfile));
+        currentUser = userRepository.save(new User("guest", "example@guest.com"));
 
         AccessToken accessToken =
                 new AccessToken(currentUser.getId(), userProfile, List.of("profile"), accessTokenProperties);
@@ -71,6 +71,7 @@ public class GroupControllerTest {
     @AfterEach
     void tearDown() {
         databaseCleaner.execute();
+        RestAssured.reset();
     }
 
     @Test
@@ -91,9 +92,11 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(SuccessResponse.class).getData())
-                .asInstanceOf(InstanceOfAssertFactories.LIST)
-                .hasSize(4);
+        assertThat(response.jsonPath().getList("data.groups")).hasSize(4);
+        assertThat(response.jsonPath().getString("data.groups[].id")).isNotBlank();
+        assertThat(response.jsonPath().getString("data.groups[].name")).isNotBlank();
+        assertThat(response.jsonPath().getString("data.groups[].description")).isNotBlank();
+        assertThat(response.jsonPath().getString("data.groups[].thumbnailUrl")).isNotBlank();
     }
 
     @Test
@@ -114,7 +117,10 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(SuccessResponse.class).getData()).isNotNull();
+        assertThat(response.jsonPath().getString("data.id")).isNotBlank();
+        assertThat(response.jsonPath().getString("data.name")).isNotBlank();
+        assertThat(response.jsonPath().getString("data.description")).isNotBlank();
+        assertThat(response.jsonPath().getString("data.thumbnailUrl")).isNotBlank();
         assertThat(groupRepository.findAll()).hasSize(1);
     }
 
@@ -122,7 +128,7 @@ public class GroupControllerTest {
     @DisplayName("사용자가 그룹에서 탈퇴에 성공한다")
     void memberLeaveGroup_Success() {
         // given
-        User anotherMember = userRepository.save(new User(new UserProfile("another", "example2@guest.com")));
+        User anotherMember = userRepository.save(new User("another", "example2@guest.com"));
 
         Group group = new Group("test group", "test description", "https://test.com", currentUser);
         group.addMember(anotherMember);
@@ -136,7 +142,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(SuccessResponse.class).getData()).isNull();
+        assertThat(Optional.ofNullable(response.jsonPath().get("data"))).isEmpty();
         assertThat(groupRepository.findAll()).isNotEmpty();
     }
 
@@ -155,7 +161,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.body().as(SuccessResponse.class).getData()).isNull();
+        assertThat(Optional.ofNullable(response.jsonPath().get("data"))).isEmpty();
         assertThat(groupRepository.findAll()).isEmpty();
     }
 
@@ -173,5 +179,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
     }
 }

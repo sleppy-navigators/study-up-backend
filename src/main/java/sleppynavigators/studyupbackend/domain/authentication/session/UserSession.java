@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -35,7 +36,7 @@ public class UserSession {
     @Column
     private LocalDateTime expiration;
 
-    // TODO: change to use `@Builder` when constructor parameter exceeds 3
+    @Builder
     public UserSession(User user, String refreshToken, String accessToken, LocalDateTime expiration) {
         this.user = user;
         this.refreshToken = refreshToken;

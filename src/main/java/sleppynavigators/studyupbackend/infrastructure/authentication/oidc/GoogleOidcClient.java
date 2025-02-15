@@ -79,14 +79,20 @@ public class GoogleOidcClient implements OidcClient {
                 .url(googleProperties.certificateUrl())
                 .build();
 
-        // TODO: need to log all communications with external services.
         Call call = okHttpClient.newCall(request);
         try (Response response = call.execute()) {
             if (!response.isSuccessful()) {
+                log.warn("Failed to get public key from Google - {}", response.code());
                 throw new IOException();
             }
 
             String responseBody = response.body().string();
+            if (response.cacheResponse() != null) {
+                log.info("Use cached Google public key");
+            } else {
+                log.info("Google public key response - {} {}", response.code(), responseBody);
+            }
+
             Map<?, ?> certs = objectMapper.readValue(responseBody, Map.class);
             return (String) certs.get(kid);
         } catch (IOException e) {

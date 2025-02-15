@@ -13,12 +13,10 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
-import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
@@ -30,7 +28,6 @@ import sleppynavigators.studyupbackend.exception.network.InvalidCredentialExcept
 public class AuthService {
 
     private final UserCredentialRepository userCredentialRepository;
-    private final UserRepository userRepository;
     private final UserSessionRepository userSessionRepository;
     private final SessionManager sessionManager;
     private final AccessTokenProperties accessTokenProperties;
@@ -39,10 +36,12 @@ public class AuthService {
     @Transactional
     public TokenResponse googleSignIn(SignInRequest request) {
         Claims idTokenClaims = googleOidcClient.deserialize(request.idToken());
+
         String subject = idTokenClaims.getSubject();
         String username = idTokenClaims.get("name", String.class);
         String email = idTokenClaims.get("email", String.class);
-        return signIn(subject, new UserProfile(username, email), "google");
+
+        return signIn(subject, username, email, "google");
     }
 
     @Transactional
@@ -62,18 +61,24 @@ public class AuthService {
         }
     }
 
-    private TokenResponse signIn(String subject, UserProfile userProfile, String provider) {
-        UserCredential userCredential = userCredentialRepository
-                .findBySubject(subject)
-                .orElseGet(() -> { // sign up
-                    User user = userRepository.save(new User(userProfile));
-                    return userCredentialRepository.save(new UserCredential(subject, provider, user));
-                });
+    private TokenResponse signIn(String subject, String username, String email, String provider) {
+        UserCredential userCredential = userCredentialRepository.findBySubject(subject)
+                .orElseGet(() -> signUp(subject, username, email, provider));
 
         User user = userCredential.getUser();
         UserSession userSession = userSessionRepository.findByUserId(user.getId())
-                .orElseGet(() -> userSessionRepository.save(new UserSession(user, null, null, null)));
+                .orElseGet(() -> createSession(user));
+
         sessionManager.startSession(userSession);
         return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
+    }
+
+    private UserCredential signUp(String subject, String username, String email, String provider) {
+        return userCredentialRepository.save(new UserCredential(subject, provider, new User(username, email)));
+    }
+
+    private UserSession createSession(User user) {
+        UserSession userSession = UserSession.builder().user(user).build();
+        return userSessionRepository.save(userSession);
     }
 }
