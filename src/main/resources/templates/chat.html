@@ -9,6 +9,7 @@
             width: 600px;
             margin: 50px auto;
         }
+
         #messageArea {
             height: 400px;
             border: 1px solid #ddd;
@@ -16,44 +17,53 @@
             overflow-y: auto;
             margin-bottom: 15px;
         }
+
         .message-form {
             display: flex;
             gap: 10px;
         }
+
         .message-form input[type="text"] {
             flex: 1;
             padding: 8px;
         }
+
         .message-form button {
             padding: 8px 15px;
         }
+
         .connection-form {
             margin-bottom: 20px;
             display: flex;
             gap: 10px;
             align-items: flex-end;
         }
+
         .input-group {
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
+
         .input-group label {
             font-weight: bold;
             font-size: 14px;
             color: #333;
         }
+
         .input-group input {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
         .message {
             margin-bottom: 10px;
             padding: 8px;
             border-radius: 5px;
             background-color: #f0f0f0;
         }
+
         button {
             background-color: #4CAF50;
             color: white;
@@ -62,15 +72,19 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         button:hover {
             background-color: #45a049;
         }
+
         button.disconnect {
             background-color: #f44336;
         }
+
         button.disconnect:hover {
             background-color: #da190b;
         }
+
         .message.error {
             background-color: #ffebee;
             color: #c62828;
@@ -79,134 +93,134 @@
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <h2>Study Up 채팅 테스트</h2>
+<div class="chat-container">
+    <h2>Study Up 채팅 테스트</h2>
 
-        <div class="connection-form">
-            <div class="input-group">
-                <label for="groupId">그룹 ID</label>
-                <input type="number" id="groupId" placeholder="그룹 ID 입력" value="1" min="1">
-            </div>
-            <div class="input-group">
-                <label for="accessToken">액세스 토큰</label>
-                <input type="text" id="accessToken" placeholder="액세스 토큰을 입력하세요">
-            </div>
-            <button onclick="connect()" id="connectBtn">연결</button>
-            <button onclick="disconnect()" class="disconnect" id="disconnectBtn">연결 해제</button>
+    <div class="connection-form">
+        <div class="input-group">
+            <label for="groupId">그룹 ID</label>
+            <input type="number" id="groupId" placeholder="그룹 ID 입력" value="1" min="1">
         </div>
-
-        <div id="messageArea"></div>
-
-        <div class="message-form">
-            <input type="text" id="message" placeholder="메시지를 입력하세요">
-            <button onclick="sendMessage()">전송</button>
+        <div class="input-group">
+            <label for="accessToken">액세스 토큰</label>
+            <input type="text" id="accessToken" placeholder="액세스 토큰을 입력하세요">
         </div>
+        <button onclick="connect()" id="connectBtn">연결</button>
+        <button onclick="disconnect()" class="disconnect" id="disconnectBtn">연결 해제</button>
     </div>
 
-    <script th:inline="javascript">
-        let stompClient = null;
-        let groupId = null;
-        let accessToken = null;
+    <div id="messageArea"></div>
 
-        function connect() {
-            const accessTokenInput = document.getElementById('accessToken');
-            accessToken = accessTokenInput.value.trim();
+    <div class="message-form">
+        <input type="text" id="message" placeholder="메시지를 입력하세요">
+        <button onclick="sendMessage()">전송</button>
+    </div>
+</div>
 
-            if (!accessToken) {
-                showErrorMessage({apiResult: '액세스 토큰을 입력해주세요'});
-                return;
-            }
+<script th:inline="javascript">
+    let stompClient = null;
+    let groupId = null;
+    let accessToken = null;
 
-            groupId = document.getElementById('groupId').value;
+    function connect() {
+        const accessTokenInput = document.getElementById('accessToken');
+        accessToken = accessTokenInput.value.trim();
 
-            const socket = new SockJS('/ws');
-            stompClient = Stomp.over(socket);
+        if (!accessToken) {
+            showErrorMessage({apiResult: '액세스 토큰을 입력해주세요'});
+            return;
+        }
 
-            const stompHeaders = {
-                'Authorization': 'Bearer ' + accessToken
-            };
+        groupId = document.getElementById('groupId').value;
 
-            stompClient.connect(stompHeaders, function(frame) {
-                console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/group/' + groupId, function(response) {
-                    const apiResponse = JSON.parse(response.body);
-                    showMessage(apiResponse.data);
-                });
-                
-                stompClient.subscribe('/user/queue/errors', function(response) {
-                    const apiResponse = JSON.parse(response.body);
-                    console.log('Error response:', apiResponse);
-                    showErrorMessage(apiResponse);
-                });
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
 
-                stompClient.subscribe('/topic/errors', function(response) {
-                    const apiResponse = JSON.parse(response.body);
-                    console.log('Error response:', apiResponse);
-                    showErrorMessage(apiResponse);
-                });
-                
-                showMessage({
-                    senderId: 'System',
-                    content: '채팅방에 연결되었습니다.'
-                });
-            }, function(error) {
-                console.error('Connection error:', error);
-                showErrorMessage({apiResult: '연결 실패: ' + (error.headers?.message || '알 수 없는 오류')});
+        const stompHeaders = {
+            'Authorization': 'Bearer ' + accessToken
+        };
+
+        stompClient.connect(stompHeaders, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/group/' + groupId, function (response) {
+                const apiResponse = JSON.parse(response.body);
+                showMessage(apiResponse.data);
+            });
+
+            stompClient.subscribe('/user/queue/errors', function (response) {
+                const apiResponse = JSON.parse(response.body);
+                console.log('Error response:', apiResponse);
+                showErrorMessage(apiResponse);
+            });
+
+            stompClient.subscribe('/topic/errors', function (response) {
+                const apiResponse = JSON.parse(response.body);
+                console.log('Error response:', apiResponse);
+                showErrorMessage(apiResponse);
+            });
+
+            showMessage({
+                senderId: 'System',
+                content: '채팅방에 연결되었습니다.'
+            });
+        }, function (error) {
+            console.error('Connection error:', error);
+            showErrorMessage({apiResult: '연결 실패: ' + (error.headers?.message || '알 수 없는 오류')});
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+            showMessage({
+                senderId: 'System',
+                content: '연결이 종료되었습니다.'
             });
         }
+        stompClient = null;
+    }
 
-        function disconnect() {
-            if (stompClient !== null) {
-                stompClient.disconnect();
-                showMessage({
-                    senderId: 'System',
-                    content: '연결이 종료되었습니다.'
-                });
-            }
-            stompClient = null;
+    function sendMessage() {
+        const messageInput = document.getElementById('message');
+        const content = messageInput.value;
+
+        if (content && stompClient) {
+            const chatMessage = {
+                groupId: Number(groupId),
+                content: content
+            };
+
+            stompClient.send("/app/chat/message", {}, JSON.stringify(chatMessage));
+            messageInput.value = '';
         }
+    }
 
-        function sendMessage() {
-            const messageInput = document.getElementById('message');
-            const content = messageInput.value;
-            
-            if (content && stompClient) {
-                const chatMessage = {
-                    groupId: Number(groupId),
-                    content: content
-                };
+    function showMessage(message) {
+        const messageArea = document.getElementById('messageArea');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        const sender = message.senderId === 'System' ? 'System' : `User-${message.senderId}`;
+        const timestamp = message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : '';
+        messageElement.textContent = `${sender} ${timestamp}: ${message.content}`;
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
 
-                stompClient.send("/app/chat/message", {}, JSON.stringify(chatMessage));
-                messageInput.value = '';
-            }
+    function showErrorMessage(apiResponse) {
+        const messageArea = document.getElementById('messageArea');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', 'error');
+        messageElement.textContent = `Error: ${apiResponse.apiResult}`;
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+
+    // Enter 키로 메시지 전송
+    document.getElementById('message').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
         }
-
-        function showMessage(message) {
-            const messageArea = document.getElementById('messageArea');
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-            const sender = message.senderId === 'System' ? 'System' : `User-${message.senderId}`;
-            const timestamp = message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : '';
-            messageElement.textContent = `${sender} ${timestamp}: ${message.content}`;
-            messageArea.appendChild(messageElement);
-            messageArea.scrollTop = messageArea.scrollHeight;
-        }
-
-        function showErrorMessage(apiResponse) {
-            const messageArea = document.getElementById('messageArea');
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message', 'error');
-            messageElement.textContent = `Error: ${apiResponse.apiResult}`;
-            messageArea.appendChild(messageElement);
-            messageArea.scrollTop = messageArea.scrollHeight;
-        }
-
-        // Enter 키로 메시지 전송
-        document.getElementById('message').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-    </script>
+    });
+</script>
 </body>
 </html>

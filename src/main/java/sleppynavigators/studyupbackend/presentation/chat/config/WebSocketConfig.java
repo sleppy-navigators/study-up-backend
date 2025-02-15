@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.chat.config;
 
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -12,8 +13,6 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 import sleppynavigators.studyupbackend.presentation.chat.interceptor.StompAuthenticationInterceptor;
-
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -46,8 +45,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
         registration.setMessageSizeLimit(MESSAGE_SIZE_LIMIT)
-                   .setSendTimeLimit(SEND_TIME_LIMIT)
-                   .setSendBufferSizeLimit(SEND_BUFFER_SIZE_LIMIT);
+                .setSendTimeLimit(SEND_TIME_LIMIT)
+                .setSendBufferSizeLimit(SEND_BUFFER_SIZE_LIMIT);
     }
 
     @Override

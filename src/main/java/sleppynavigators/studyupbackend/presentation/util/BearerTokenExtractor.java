@@ -1,9 +1,8 @@
 package sleppynavigators.studyupbackend.presentation.util;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-
 import java.util.Optional;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
 public class BearerTokenExtractor {
     private static final String AUTHORIZATION_HEADER = "Authorization";

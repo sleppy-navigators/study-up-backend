@@ -2,7 +2,6 @@ package sleppynavigators.studyupbackend.presentation.authentication.filter;
 
 import java.util.Collection;
 import java.util.List;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -12,7 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @RequiredArgsConstructor
 public class UserAuthentication implements Authentication {
 
-    @Getter private final UserPrincipal principal;
+    @Getter
+    private final UserPrincipal principal;
     private final List<String> authorities;
     private boolean authenticated = true;
 

@@ -1,10 +1,22 @@
 package sleppynavigators.studyupbackend.presentation.chat.support;
 
+import static org.awaitility.Awaitility.await;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.*;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -12,16 +24,6 @@ import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
-import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static org.awaitility.Awaitility.await;
 
 public class WebSocketTestSupport {
 
@@ -68,7 +70,7 @@ public class WebSocketTestSupport {
         if (accessToken != null) {
             connectHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         }
-        
+
         this.stompSession = stompClient
                 .connectAsync(url, new WebSocketHttpHeaders(), connectHeaders, new DefaultStompSessionHandler())
                 .get(DEFAULT_TIMEOUT_SECONDS, TimeUnit.SECONDS);

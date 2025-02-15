@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.exception;
 
+import java.security.Principal;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import sleppynavigators.studyupbackend.exception.business.BusinessBaseException;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
-
-import java.security.Principal;
 
 /**
  * 현재 실시간 메시지 처리 기준으로만 예외 처리를 수행하는 핸들러입니다.
