@@ -6,7 +6,7 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 
 @Builder
 public record ChatMessageResponse(
-        String messageId,
+        String id,
         Long groupId,
         Long senderId,
         String content,
@@ -14,7 +14,7 @@ public record ChatMessageResponse(
 ) {
     public static ChatMessageResponse from(ChatMessage chatMessage) {
         return ChatMessageResponse.builder()
-                .messageId(chatMessage.getId().toString())
+                .id(chatMessage.getId().toString())
                 .groupId(chatMessage.getGroupId())
                 .senderId(chatMessage.getSenderId())
                 .content(chatMessage.getContent())

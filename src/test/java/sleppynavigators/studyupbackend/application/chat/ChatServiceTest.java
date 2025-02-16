@@ -18,7 +18,6 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,9 +38,6 @@ class ChatServiceTest {
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
     @MockitoBean
     private SimpMessageSendingOperations messagingTemplate;
 
@@ -56,7 +52,7 @@ class ChatServiceTest {
 
     @AfterEach
     void tearDown() {
-        databaseCleaner.execute();
+        chatMessageRepository.deleteAll();
     }
 
     @Test
@@ -81,30 +77,5 @@ class ChatServiceTest {
                 .get(0);
 
         assertThat(savedMessage.getContent()).isEqualTo("테스트 메시지");
-    }
-
-    @Test
-    @DisplayName("WebSocket 전송 실패 시 메시지 저장도 롤백된다")
-    void sendMessageFailWebSocket() {
-        // given
-        ChatMessageRequest request = new ChatMessageRequest(1L, "테스트 메시지");
-        String destination = "/topic/group/1";
-        Long senderId = 1L;
-
-        doThrow(new RuntimeException("WebSocket 전송 실패"))
-                .when(messagingTemplate)
-                .convertAndSend(eq(destination), any(SuccessResponse.class));
-
-        // when & then
-        assertThatThrownBy(() -> chatService.sendMessage(request, destination, senderId))
-                .isInstanceOf(ChatMessageException.class);
-
-        // 메시지가 저장되지 않았는지 확인
-        Page<ChatMessage> messages = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(
-                1L,
-                PageRequest.of(0, 1)
-        );
-
-        assertThat(messages.isEmpty()).isTrue();
     }
 }

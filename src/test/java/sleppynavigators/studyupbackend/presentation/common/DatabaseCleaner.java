@@ -23,18 +23,15 @@ public class DatabaseCleaner {
     private MongoTemplate mongoTemplate;
 
     private List<String> tableNames;
-    private List<String> collectionNames;
 
     @PostConstruct
     public void init() {
         tableNames = getManagedTables();
-        collectionNames = mongoTemplate.getCollectionNames().stream().toList();
     }
 
     @Transactional
     public void execute() {
         cleanRelationalDatabase();
-        cleanMongoDatabase();
     }
 
     private void cleanRelationalDatabase() {
@@ -46,12 +43,6 @@ public class DatabaseCleaner {
             entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
         }
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
-    }
-
-    private void cleanMongoDatabase() {
-        for (String collectionName : collectionNames) {
-            mongoTemplate.dropCollection(collectionName);
-        }
     }
 
     private List<String> getManagedTables() {
