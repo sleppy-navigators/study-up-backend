@@ -8,6 +8,9 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.transaction.Transactional;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,15 +19,25 @@ public class DatabaseCleaner {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     private List<String> tableNames;
+    private List<String> collectionNames;
 
     @PostConstruct
     public void init() {
         tableNames = getManagedTables();
+        collectionNames = mongoTemplate.getCollectionNames().stream().toList();
     }
 
     @Transactional
     public void execute() {
+        cleanRelationalDatabase();
+        cleanMongoDatabase();
+    }
+
+    private void cleanRelationalDatabase() {
         entityManager.flush();
         entityManager.clear();
 
@@ -33,6 +46,12 @@ public class DatabaseCleaner {
             entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
         }
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
+    }
+
+    private void cleanMongoDatabase() {
+        for (String collectionName : collectionNames) {
+            mongoTemplate.dropCollection(collectionName);
+        }
     }
 
     private List<String> getManagedTables() {

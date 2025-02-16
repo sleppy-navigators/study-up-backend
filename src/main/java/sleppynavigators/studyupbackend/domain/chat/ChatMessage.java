@@ -36,5 +36,6 @@ public class ChatMessage {
         this.senderId = senderId;
         this.groupId = groupId;
         this.content = content;
+        this.createdAt = LocalDateTime.now();
     }
 } 
