@@ -19,9 +19,6 @@ public class DatabaseCleaner {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
     private List<String> tableNames;
 
     @PostConstruct
@@ -32,6 +29,7 @@ public class DatabaseCleaner {
     @Transactional
     public void execute() {
         cleanRelationalDatabase();
+        // TODO(@Jayon): MongoDB 데이터 삭제 로직 추가
     }
 
     private void cleanRelationalDatabase() {
