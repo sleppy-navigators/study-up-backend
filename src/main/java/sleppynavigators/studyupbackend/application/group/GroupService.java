@@ -19,7 +19,7 @@ import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvit
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.SimpleGroupResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,10 +37,10 @@ public class GroupService {
     }
 
     @Transactional
-    public SimpleGroupResponse createGroup(Long creatorId, GroupCreationRequest request) {
+    public GroupResponse createGroup(Long creatorId, GroupCreationRequest request) {
         User creator = userRepository.findById(creatorId).orElseThrow(EntityNotFoundException::new);
         Group savedGroup = groupRepository.save(request.toEntity(creator));
-        return SimpleGroupResponse.fromEntity(savedGroup);
+        return GroupResponse.fromEntity(savedGroup);
     }
 
     @Transactional
@@ -55,7 +55,7 @@ public class GroupService {
         }
     }
 
-    public SimpleGroupResponse getInvitedGroup(Long groupId, Long invitationId) {
+    public GroupResponse getInvitedGroup(Long groupId, Long invitationId) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
                 .orElseThrow(EntityNotFoundException::new);
         Group invitedGroup = invitation.getGroup();
@@ -64,7 +64,7 @@ public class GroupService {
             throw new InvalidPayloadException();
         }
 
-        return SimpleGroupResponse.fromEntity(invitation.getGroup());
+        return GroupResponse.fromEntity(invitation.getGroup());
     }
 
     @Transactional
@@ -76,7 +76,7 @@ public class GroupService {
     }
 
     @Transactional
-    public SimpleGroupResponse acceptInvitation(
+    public GroupResponse acceptInvitation(
             Long userId, Long groupId, Long invitationId, GroupInvitationAcceptRequest request) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
                 .orElseThrow(EntityNotFoundException::new);
@@ -88,10 +88,10 @@ public class GroupService {
 
         User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         if (groupMemberRepository.findByGroupIdAndUserId(groupId, userId).isPresent()) {
-            return SimpleGroupResponse.fromEntity(group);
+            return GroupResponse.fromEntity(group);
         }
 
         group.addMember(user);
-        return SimpleGroupResponse.fromEntity(group);
+        return GroupResponse.fromEntity(group);
     }
 }
