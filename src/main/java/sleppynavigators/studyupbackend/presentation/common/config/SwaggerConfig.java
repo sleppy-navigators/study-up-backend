@@ -5,6 +5,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +21,8 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(apiInfo())
                 .components(securitySchemeComponents())
-                .addSecurityItem(securityRequirement());
+                .addSecurityItem(securityRequirement())
+                .servers(servers());
     }
 
     private Info apiInfo() {
@@ -40,5 +43,14 @@ public class SwaggerConfig {
                 .scheme("bearer")
                 .bearerFormat("JWT");
         return new Components().addSecuritySchemes("bearer-key", securityScheme);
+    }
+
+    private List<Server> servers() {
+        Server localServer = new Server().url("http://localhost:8080").description("Local server");
+
+        // TODO: change the URL of the staging server to the actual URL of the staging server.
+        Server stagingServer = new Server().url("https://whitepiano-codeserver.pe.kr").description("Staging server");
+
+        return List.of(localServer, stagingServer);
     }
 }

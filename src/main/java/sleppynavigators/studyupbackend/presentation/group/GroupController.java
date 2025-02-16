@@ -17,9 +17,10 @@ import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.SimpleGroupResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 
 @Tag(name = "Group", description = "그룹 관련 API")
 @RestController
@@ -40,12 +41,12 @@ public class GroupController {
 
     @PostMapping
     @Operation(summary = "그룹 생성", description = "그룹을 생성합니다.")
-    public ResponseEntity<SuccessResponse<SimpleGroupResponse>> createGroup(
+    public ResponseEntity<SuccessResponse<GroupResponse>> createGroup(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid GroupCreationRequest groupCreationRequest
     ) {
         Long userId = userPrincipal.userId();
-        SimpleGroupResponse response = groupService.createGroup(userId, groupCreationRequest);
+        GroupResponse response = groupService.createGroup(userId, groupCreationRequest);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
@@ -58,23 +59,32 @@ public class GroupController {
         return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 
-    @PostMapping("/:groupId/invitations")
+    @PostMapping("/{groupId}/invitations")
     @Operation(summary = "그룹 초대", description = "그룹에 사용자를 초대합니다.")
     public ResponseEntity<SuccessResponse<GroupInvitationResponse>> inviteUser(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return null;
+            @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId) {
+        GroupInvitationResponse response = groupService.makeInvitation(groupId, userPrincipal.userId());
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    @GetMapping("/:groupId/invitations/:invitationId")
+    @GetMapping("/{groupId}/invitations/{invitationId}")
     @Operation(summary = "그룹 초대 조회", description = "그룹 초대를 조회합니다.")
-    public ResponseEntity<SuccessResponse<SimpleGroupResponse>> getInvitation() {
-        return null;
+    public ResponseEntity<SuccessResponse<GroupResponse>> getInvitation(
+            @PathVariable Long groupId, @PathVariable Long invitationId
+    ) {
+        GroupResponse response = groupService.getInvitedGroup(groupId, invitationId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    @PostMapping("/:groupId/invitations/:invitationId/accept")
+    @PostMapping("/{groupId}/invitations/{invitationId}/accept")
     @Operation(summary = "그룹 초대 수락", description = "그룹 초대를 수락합니다.")
-    public ResponseEntity<SuccessResponse<SimpleGroupResponse>> acceptInvitation(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return null;
+    public ResponseEntity<SuccessResponse<GroupResponse>> acceptInvitation(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long groupId, @PathVariable Long invitationId,
+            @RequestBody @Valid GroupInvitationAcceptRequest groupInvitationAcceptRequest) {
+        Long userId = userPrincipal.userId();
+        GroupResponse response =
+                groupService.acceptInvitation(userId, groupId, invitationId, groupInvitationAcceptRequest);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }

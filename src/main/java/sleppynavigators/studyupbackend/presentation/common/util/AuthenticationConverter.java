@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.util;
+package sleppynavigators.studyupbackend.presentation.common.util;
 
 import java.util.List;
 import org.springframework.security.core.Authentication;
@@ -8,6 +8,9 @@ import sleppynavigators.studyupbackend.presentation.authentication.filter.UserAu
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 
 public class AuthenticationConverter {
+
+    private AuthenticationConverter() {
+    }
 
     public static Authentication convertToAuthentication(AccessToken accessToken) {
         Long userId = accessToken.getUserId();
