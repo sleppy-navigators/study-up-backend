@@ -28,7 +28,7 @@ public class GroupInvitation {
     @JoinColumn(name = "group_id")
     private Group group;
 
-    @Column
+    @Column(nullable = false)
     private String invitationKey;
 
     // We might add expiration date to the field later, but we won't add it now.
