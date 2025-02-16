@@ -22,8 +22,8 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
 
     // TODO(@Jayon): 향후 카프카 도입하여 메시지 전송 로직 변경
-    @Transactional
     public void sendMessage(ChatMessageRequest request, String destination, Long senderId) {
+        ChatMessage savedMessage = null;
         try {
             ChatMessage chatMessage = ChatMessage.builder()
                     .senderId(senderId)
@@ -31,11 +31,15 @@ public class ChatService {
                     .content(request.content())
                     .build();
             
-            ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
-            
+            savedMessage = chatMessageRepository.save(chatMessage);
+
             ChatMessageResponse response = ChatMessageResponse.from(savedMessage);
             messagingTemplate.convertAndSend(destination, new SuccessResponse<>(response));
         } catch (Exception e) {
+            // TODO(@Jayon): MongoDB 트랜잭션은 다음 스텝으로 진행
+            if (savedMessage != null) {
+                chatMessageRepository.delete(savedMessage);
+            }
             throw new ChatMessageException("메시지 처리 중 오류가 발생했습니다: " + e);
         }
     }
