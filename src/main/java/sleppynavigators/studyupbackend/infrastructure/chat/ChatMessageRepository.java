@@ -9,4 +9,4 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, ObjectId> {
     
     Page<ChatMessage> findByGroupIdOrderByCreatedAtDesc(Long groupId, Pageable pageable);
-} 
+}

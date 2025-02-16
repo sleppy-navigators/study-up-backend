@@ -38,4 +38,4 @@ public class ChatMessage {
         this.content = content;
         this.createdAt = LocalDateTime.now();
     }
-} 
+}
