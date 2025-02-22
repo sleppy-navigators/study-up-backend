@@ -1,21 +1,27 @@
 package sleppynavigators.studyupbackend.exception;
 
 import jakarta.annotation.Nullable;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 import lombok.*;
 import org.springframework.http.ResponseEntity;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ErrorResponse {
 
-    private String code;
-    private String message;
-    private String requestUrl;
+    private final String code;
+    private final String message;
+    private final String requestUrl;
     private final LocalDateTime timestamp = LocalDateTime.now();
 
-    public ErrorResponse(String code, String message, String requestUrl) {
+    @JsonCreator
+    public ErrorResponse(
+            @JsonProperty("code") String code,
+            @JsonProperty("message") String message,
+            @JsonProperty("requestUrl") String requestUrl
+    ) {
         this.code = code;
         this.message = message;
         this.requestUrl = requestUrl;

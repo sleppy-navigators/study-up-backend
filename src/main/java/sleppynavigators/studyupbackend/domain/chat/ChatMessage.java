@@ -32,10 +32,14 @@ public class ChatMessage {
 
     @Builder
     public ChatMessage(Long senderId, Long groupId, String content) {
+        this(senderId, groupId, content, LocalDateTime.now());
+    }
+
+    public ChatMessage(Long senderId, Long groupId, String content, LocalDateTime createdAt) {
         this.id = new ObjectId();
         this.senderId = senderId;
         this.groupId = groupId;
         this.content = content;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 }

@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.infrastructure.chat;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,12 +52,15 @@ class ChatMessageRepositoryTest {
     void findByGroupIdOrderByCreatedAtDesc() {
         // given
         Long groupId = 1L;
+        LocalDateTime now = LocalDateTime.now();
         for (int i = 1; i <= 5; i++) {
-            chatMessageRepository.save(ChatMessage.builder()
-                    .senderId(1L)
-                    .groupId(groupId)
-                    .content("테스트 메시지 " + i)
-                    .build());
+            chatMessageRepository.save(new ChatMessage(
+                            1L,
+                            groupId,
+                            "테스트 메시지 " + i,
+                            now.plusSeconds(i)
+                    )
+            );
         }
 
         // when

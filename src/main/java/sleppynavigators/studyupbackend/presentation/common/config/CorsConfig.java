@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -25,6 +26,7 @@ public class CorsConfig {
             "Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "Location", "Range",
             "Cache-Control", "User-Agent", "DNT");
 
+    //@Primary
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
