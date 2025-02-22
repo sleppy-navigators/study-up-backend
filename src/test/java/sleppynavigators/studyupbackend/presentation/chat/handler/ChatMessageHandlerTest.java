@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,7 @@ import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
+import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.support.WebSocketTestSupport;
@@ -60,6 +62,9 @@ class ChatMessageHandlerTest {
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
+
     private WebSocketTestSupport webSocketTestSupport;
     private StompSession stompSession;
     private User testUser;
@@ -89,8 +94,8 @@ class ChatMessageHandlerTest {
     }
 
     @Test
-    @DisplayName("채팅 메시지를 성공적으로 전송하고 수신한다")
-    void whenValidMessage_thenMessageIsDelivered() throws Exception {
+    @DisplayName("채팅 메시지를 성공적으로 전송하고 수신하며 저장한다")
+    void whenValidMessage_thenMessageIsDeliveredAndStored() throws Exception {
         // given
         Long groupId = 1L;
         String destination = webSocketTestSupport.getGroupDestination(groupId);
@@ -114,6 +119,15 @@ class ChatMessageHandlerTest {
         assertThat(response.senderId()).isEqualTo(testUser.getId());
         assertThat(response.groupId()).isEqualTo(groupId);
         assertThat(response.timestamp()).isNotNull();
+
+        // MongoDB에 저장된 메시지 검증
+        assertThat(chatMessageRepository.findById(new ObjectId(response.id()))).isPresent()
+                .hasValueSatisfying(message -> {
+                    assertThat(message.getContent()).isEqualTo("테스트 메시지");
+                    assertThat(message.getSenderId()).isEqualTo(testUser.getId());
+                    assertThat(message.getGroupId()).isEqualTo(groupId);
+                    assertThat(message.getId().toString()).isEqualTo(response.id());
+                });
     }
 
     @Test

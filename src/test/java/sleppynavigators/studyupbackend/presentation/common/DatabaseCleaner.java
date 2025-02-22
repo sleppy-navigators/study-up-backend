@@ -8,6 +8,9 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.transaction.Transactional;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,6 +28,11 @@ public class DatabaseCleaner {
 
     @Transactional
     public void execute() {
+        cleanRelationalDatabase();
+        // TODO(@Jayon): MongoDB 데이터 삭제 로직 추가
+    }
+
+    private void cleanRelationalDatabase() {
         entityManager.flush();
         entityManager.clear();
 
