@@ -100,6 +100,8 @@ class ChatServiceTest {
         // when & then
         assertThatThrownBy(() -> chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
+
+        assertThat(chatMessageRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -119,5 +121,7 @@ class ChatServiceTest {
         // when & then
         assertThatThrownBy(() -> chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
+
+        assertThat(chatMessageRepository.findAll()).isEmpty();
     }
 }
