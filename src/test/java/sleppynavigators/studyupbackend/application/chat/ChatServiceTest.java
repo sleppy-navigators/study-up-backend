@@ -3,7 +3,6 @@ package sleppynavigators.studyupbackend.application.chat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 
 import org.junit.jupiter.api.AfterEach;
@@ -24,6 +23,7 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
+import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +42,9 @@ class ChatServiceTest {
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @MockitoBean
     private SimpMessageSendingOperations messagingTemplate;
 
@@ -56,7 +59,7 @@ class ChatServiceTest {
 
     @AfterEach
     void tearDown() {
-        chatMessageRepository.deleteAll();
+        databaseCleaner.execute();
     }
 
     @Test

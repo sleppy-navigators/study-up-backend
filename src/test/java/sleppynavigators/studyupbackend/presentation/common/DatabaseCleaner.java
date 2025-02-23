@@ -19,6 +19,9 @@ public class DatabaseCleaner {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     private List<String> tableNames;
 
     @PostConstruct
@@ -29,7 +32,7 @@ public class DatabaseCleaner {
     @Transactional
     public void execute() {
         cleanRelationalDatabase();
-        // TODO(@Jayon): MongoDB 데이터 삭제 로직 추가
+        cleanMongoDatabase();
     }
 
     private void cleanRelationalDatabase() {
@@ -41,6 +44,13 @@ public class DatabaseCleaner {
             entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
         }
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
+    }
+
+    private void cleanMongoDatabase() {
+        for (String collectionName : mongoTemplate.getCollectionNames()) {
+            mongoTemplate.dropCollection(collectionName);
+        }
+        mongoTemplate.getDb().drop();
     }
 
     private List<String> getManagedTables() {

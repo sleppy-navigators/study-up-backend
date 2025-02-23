@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sleppynavigators.studyupbackend.application.chat.ChatService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
@@ -29,6 +33,7 @@ import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResp
 public class GroupController {
 
     private final GroupService groupService;
+    private final ChatService chatService;
 
     @GetMapping
     @Operation(summary = "그룹 목록 조회", description = "사용자의 그룹 목록을 조회합니다.")
@@ -85,6 +90,17 @@ public class GroupController {
         Long userId = userPrincipal.userId();
         GroupResponse response =
                 groupService.acceptInvitation(userId, groupId, invitationId, groupInvitationAcceptRequest);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
+    @GetMapping("/{groupId}/messages")
+    @Operation(summary = "그룹 채팅 메시지 조회", description = "그룹의 채팅 메시지를 페이지네이션하여 조회합니다.")
+    public ResponseEntity<SuccessResponse<ChatMessageListResponse>> getMessages(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long groupId,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+        ChatMessageListResponse response = chatService.getMessages(groupId, pageable);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }
