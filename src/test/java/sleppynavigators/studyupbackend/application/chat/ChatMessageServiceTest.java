@@ -32,12 +32,12 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest
 @ActiveProfiles("test")
 @DisplayName("ChatService 통합 테스트")
-class ChatServiceTest {
+class ChatMessageServiceTest {
 
     private static final Long AUTHENTICATED_USER_ID = 1L;
 
     @Autowired
-    private ChatService chatService;
+    private ChatMessageService chatMessageService;
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
@@ -71,7 +71,7 @@ class ChatServiceTest {
         Long senderId = 1L;
 
         // when
-        chatService.sendMessage(request, destination, senderId);
+        chatMessageService.sendMessage(request, destination, senderId);
 
         // then
         verify(messagingTemplate).convertAndSend(eq(destination), any(SuccessResponse.class));
@@ -101,7 +101,7 @@ class ChatServiceTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
+        assertThatThrownBy(() -> chatMessageService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
 
         assertThat(chatMessageRepository.findAll()).isEmpty();
@@ -122,7 +122,7 @@ class ChatServiceTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
+        assertThatThrownBy(() -> chatMessageService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
 
         assertThat(chatMessageRepository.findAll()).isEmpty();

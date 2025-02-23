@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sleppynavigators.studyupbackend.application.chat.ChatService;
+import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
@@ -33,7 +33,7 @@ import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResp
 public class GroupController {
 
     private final GroupService groupService;
-    private final ChatService chatService;
+    private final ChatMessageService chatMessageService;
 
     @GetMapping
     @Operation(summary = "그룹 목록 조회", description = "사용자의 그룹 목록을 조회합니다.")
@@ -100,7 +100,7 @@ public class GroupController {
             @PathVariable Long groupId,
             @PageableDefault(size = 20) Pageable pageable
     ) {
-        ChatMessageListResponse response = chatService.getMessages(groupId, pageable);
+        ChatMessageListResponse response = chatMessageService.getMessages(groupId, pageable);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }

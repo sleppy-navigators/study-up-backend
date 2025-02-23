@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import sleppynavigators.studyupbackend.application.chat.ChatService;
+import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserAuthentication;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 
@@ -14,7 +14,7 @@ import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 public class ChatMessageHandler {
 
     private static final String GROUP_DESTINATION = "/topic/group/%s";
-    private final ChatService chatService;
+    private final ChatMessageService chatMessageService;
 
     @MessageMapping("/chat/message")
     public void handle(
@@ -22,6 +22,6 @@ public class ChatMessageHandler {
             UserAuthentication userAuthentication // WebSocket은 @AuthenticationPrincipal을 지원하지 않음
     ) {
         String destination = String.format(GROUP_DESTINATION, message.groupId());
-        chatService.sendMessage(message, destination, userAuthentication.getPrincipal().userId());
+        chatMessageService.sendMessage(message, destination, userAuthentication.getPrincipal().userId());
     }
 }

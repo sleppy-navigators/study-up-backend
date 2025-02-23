@@ -19,7 +19,7 @@ import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 @Slf4j
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatService {
+public class ChatMessageService {
 
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageRepository chatMessageRepository;
