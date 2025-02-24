@@ -1,18 +1,18 @@
-name: SonarCloud
+name: Continuous Integration
 on: pull_request
 
 jobs:
-  integration_test:
+  analyze:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Setup sources
+      - name: Set up sources
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_TOKEN }}
           submodules: true
 
-      - name: Setup JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: corretto
@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Grant permission to Gradle
+      - name: Grant permission to `gradlew`
         run: chmod +x gradlew
 
       - name: Build and analyze
