@@ -51,6 +51,6 @@ public class SwaggerConfig {
         // TODO: change the URL of the staging server to the actual URL of the staging server.
         Server stagingServer = new Server().url("https://whitepiano-codeserver.pe.kr").description("Staging server");
 
-        return List.of(localServer, stagingServer);
+        return List.of(stagingServer, localServer);
     }
 }
