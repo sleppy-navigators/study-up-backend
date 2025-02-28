@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import sleppynavigators.studyupbackend.exception.business.BusinessBaseException;
 import sleppynavigators.studyupbackend.exception.client.ClientBaseException;
@@ -27,7 +28,8 @@ public class RestApiExceptionHandler {
             MissingServletRequestParameterException.class,
             NoResourceFoundException.class,
             HttpMessageNotReadableException.class,
-            MethodArgumentNotValidException.class})
+            MethodArgumentNotValidException.class,
+            HandlerMethodValidationException.class})
     public ResponseEntity<ErrorResponse> handleDefault4xxExceptions(
             HttpServletRequest request, Exception ignored) {
         return ErrorResponse.toResponseEntity(new InvalidApiException(), request.getRequestURI());
