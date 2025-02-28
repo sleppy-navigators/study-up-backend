@@ -45,6 +45,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'org.apache.commons:commons-lang3:3.14.0'
 
+    // AWS
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.0")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter'
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+
     // Http Client
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.12'
 
