@@ -1,15 +1,16 @@
 package sleppynavigators.studyupbackend.domain.challenge.vo;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
+import sleppynavigators.studyupbackend.infrastructure.common.attribute.converter.StringConverter;
 
 @Embeddable
-public record TaskCertification(@ElementCollection List<URL> externalLinks,
-                                @ElementCollection List<URL> imageUrls,
+public record TaskCertification(@Convert(converter = StringConverter.class) @Column List<URL> externalLinks,
+                                @Convert(converter = StringConverter.class) @Column List<URL> imageUrls,
                                 @Column LocalDateTime certificateAt) {
 
     public TaskCertification {
