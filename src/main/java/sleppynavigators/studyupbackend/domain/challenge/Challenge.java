@@ -11,9 +11,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.challenge.vo.Deadline;
@@ -44,18 +45,19 @@ public class Challenge {
     private Deadline deadline;
 
     @OneToMany(mappedBy = "challenge", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<Task> tasks;
+    private List<Task> tasks;
 
+    @Builder
     public Challenge(GroupMember owner, String title, String description, LocalDateTime deadline) {
-        this(owner, title, description, deadline, new HashSet<>());
-    }
-
-    public Challenge(GroupMember owner, String title, String description, LocalDateTime deadline, Set<Task> tasks) {
         this.owner = owner;
         this.title = new Title(title);
         this.description = description != null ? new ChallengeDescription(description) : null;
         this.deadline = new Deadline(deadline);
-        this.tasks = tasks;
+        this.tasks = new ArrayList<>();
+    }
+
+    public void addTask(String title, LocalDateTime deadline) {
+        tasks.add(new Task(title, deadline, this));
     }
 
     public boolean isDone() {

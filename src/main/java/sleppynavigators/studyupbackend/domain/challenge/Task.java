@@ -43,6 +43,7 @@ public class Task {
         this.title = new Title(title);
         this.deadline = new Deadline(deadline);
         this.challenge = challenge;
+        this.certification = null;
     }
 
     public void certify(List<URL> externalLinks, List<URL> imageUrls) {
