@@ -23,7 +23,6 @@ import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 
 @Tag(name = "Group", description = "그룹 관련 API")
@@ -34,15 +33,6 @@ public class GroupController {
 
     private final GroupService groupService;
     private final ChatMessageService chatMessageService;
-
-    @GetMapping
-    @Operation(summary = "그룹 목록 조회", description = "사용자의 그룹 목록을 조회합니다.")
-    public ResponseEntity<SuccessResponse<GroupListResponse>> getGroups(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        Long userId = userPrincipal.userId();
-        GroupListResponse response = groupService.getGroups(userId);
-        return ResponseEntity.ok(new SuccessResponse<>(response));
-    }
 
     @PostMapping
     @Operation(summary = "그룹 생성", description = "그룹을 생성합니다.")
