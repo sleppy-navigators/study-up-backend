@@ -1,10 +1,11 @@
 package sleppynavigators.studyupbackend.presentation.group.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskCertificationDTO;
 
-public record GroupTaskListResponse() {
+public record GroupTaskListResponse(List<GroupTaskListItem> tasks) {
 
     public record GroupTaskListItem(Long id, String title, LocalDateTime deadline,
                                     TaskCertificationDTO certification, GroupTaskChallengeDetail challenge) {
@@ -26,5 +27,11 @@ public record GroupTaskListResponse() {
                     task.getChallenge().getId(),
                     task.getChallenge().getTitle().title());
         }
+    }
+
+    public static GroupTaskListResponse fromEntities(List<Task> tasks) {
+        return new GroupTaskListResponse(tasks.stream()
+                .map(GroupTaskListItem::fromEntity)
+                .toList());
     }
 }

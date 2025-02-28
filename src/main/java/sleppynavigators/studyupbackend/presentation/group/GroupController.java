@@ -25,7 +25,7 @@ import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreat
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskListItem;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
 
 @Tag(name = "Group", description = "그룹 관련 API")
 @RestController
@@ -97,7 +97,7 @@ public class GroupController {
 
     @GetMapping("/{groupId}/tasks")
     @Operation(summary = "그룹 과제 목록 조회", description = "그룹의 과제 목록을 조회합니다.")
-    public ResponseEntity<SuccessResponse<GroupTaskListItem>> getTasks(
+    public ResponseEntity<SuccessResponse<GroupTaskListResponse>> getTasks(
             // TODO: filter by deadline utilizing `RSQL` or `QueryDSL Web Support`
             // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
             @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId) {
