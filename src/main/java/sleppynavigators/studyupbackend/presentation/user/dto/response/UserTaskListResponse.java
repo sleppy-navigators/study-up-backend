@@ -14,8 +14,8 @@ public record UserTaskListResponse(List<UserTaskListItem> tasks) {
         public static UserTaskListItem fromEntity(Task task) {
             return new UserTaskListItem(
                     task.getId(),
-                    task.getTitle().value(),
-                    task.getDeadline().value(),
+                    task.getTitle().title(),
+                    task.getDeadline().deadline(),
                     TaskCertificationDTO.fromEntity(task.getCertification()),
                     UserTaskChallengeDetail.fromEntity(task),
                     UserTaskGroupDetail.fromEntity(task)
@@ -28,7 +28,7 @@ public record UserTaskListResponse(List<UserTaskListItem> tasks) {
         public static UserTaskChallengeDetail fromEntity(Task task) {
             return new UserTaskChallengeDetail(
                     task.getChallenge().getId(),
-                    task.getChallenge().getTitle().value());
+                    task.getChallenge().getTitle().title());
         }
     }
 

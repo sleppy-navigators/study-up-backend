@@ -8,8 +8,8 @@ public record TaskResponse(Long id, String title, LocalDateTime deadline) {
     public static TaskResponse fromEntity(Task task) {
         return new TaskResponse(
                 task.getId(),
-                task.getTitle().value(),
-                task.getDeadline().value()
+                task.getTitle().title(),
+                task.getDeadline().deadline()
         );
     }
 }

@@ -5,14 +5,15 @@ import jakarta.persistence.Embeddable;
 import java.time.LocalDateTime;
 
 @Embeddable
-public record Deadline(@Column(nullable = false) LocalDateTime value) {
+public record Deadline(@Column(nullable = false) LocalDateTime deadline) {
+
     public Deadline {
-        if (value.isBefore(LocalDateTime.now())) {
+        if (deadline.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Deadline must not be in the past");
         }
     }
 
     public boolean isPast() {
-        return value.isBefore(LocalDateTime.now());
+        return deadline.isBefore(LocalDateTime.now());
     }
 }

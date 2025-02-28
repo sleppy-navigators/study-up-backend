@@ -11,8 +11,8 @@ public record TaskListResponse(List<TaskListItem> tasks) {
         public static TaskListItem fromEntity(Task task) {
             return new TaskListItem(
                     task.getId(),
-                    task.getTitle().value(),
-                    task.getDeadline().value(),
+                    task.getTitle().title(),
+                    task.getDeadline().deadline(),
                     TaskCertificationDTO.fromEntity(task.getCertification())
             );
         }

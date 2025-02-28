@@ -12,8 +12,8 @@ public record GroupTaskListResponse() {
         public static GroupTaskListItem fromEntity(Task task) {
             return new GroupTaskListItem(
                     task.getId(),
-                    task.getTitle().value(),
-                    task.getDeadline().value(),
+                    task.getTitle().title(),
+                    task.getDeadline().deadline(),
                     TaskCertificationDTO.fromEntity(task.getCertification()),
                     GroupTaskChallengeDetail.fromEntity(task));
         }
@@ -24,7 +24,7 @@ public record GroupTaskListResponse() {
         public static GroupTaskChallengeDetail fromEntity(Task task) {
             return new GroupTaskChallengeDetail(
                     task.getChallenge().getId(),
-                    task.getChallenge().getTitle().value());
+                    task.getChallenge().getTitle().title());
         }
     }
 }
