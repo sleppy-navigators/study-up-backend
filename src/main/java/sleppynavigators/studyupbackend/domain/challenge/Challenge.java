@@ -51,7 +51,7 @@ public class Challenge {
     public Challenge(GroupMember owner, String title, String description, LocalDateTime deadline) {
         this.owner = owner;
         this.title = new Title(title);
-        this.description = description != null ? new ChallengeDescription(description) : null;
+        this.description = new ChallengeDescription(description);
         this.deadline = new Deadline(deadline);
         this.tasks = new ArrayList<>();
     }
