@@ -9,6 +9,7 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.apache.http.HttpStatus;
@@ -22,11 +23,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
+import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
+import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
@@ -47,6 +50,9 @@ public class GroupControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
 
     @Autowired
     private AccessTokenProperties accessTokenProperties;
@@ -356,5 +362,76 @@ public class GroupControllerTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getCode());
         assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getDefaultMessage());
+    }
+
+    @Test
+    @DisplayName("그룹의 채팅 메시지를 페이지네이션하여 조회한다")
+    void getMessages_Success() {
+        // given
+        Group group = groupRepository.save(
+                new Group("test group", "test description", "https://test.com", currentUser));
+
+        LocalDateTime now = LocalDateTime.now();
+        List<ChatMessage> messages = List.of(
+            new ChatMessage(currentUser.getId(), group.getId(), "첫 번째 메시지", now.plusSeconds(1)),
+            new ChatMessage(currentUser.getId(), group.getId(), "두 번째 메시지", now.plusSeconds(2)),
+            new ChatMessage(currentUser.getId(), group.getId(), "세 번째 메시지", now.plusSeconds(3))
+        );
+        chatMessageRepository.saveAll(messages);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/groups/{groupId}/messages?page=0&size=2", group.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getList("data.messages")).hasSize(2);
+        assertThat(response.jsonPath().getInt("data.currentPage")).isEqualTo(0);
+        assertThat(response.jsonPath().getInt("data.totalPages")).isEqualTo(2);
+        assertThat(response.jsonPath().getLong("data.totalElements")).isEqualTo(3);
+        
+        List<String> contents = response.jsonPath().getList("data.messages.content");
+        assertThat(contents).containsExactly("세 번째 메시지", "두 번째 메시지"); // 최신순 정렬 확인
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 그룹의 채팅 메시지를 조회하면 오류로 응답한다")
+    void getMessages_EmptyGroup() {
+        // given
+        assert groupRepository.findAll().isEmpty();
+        assert chatMessageRepository.findAll().isEmpty();
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/groups/{groupId}/messages", 1L)
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("채팅 메시지가 없는 그룹을 조회하면 빈 목록을 반환한다")
+    void getMessages_EmptyMessages() {
+        // given
+        Group group = groupRepository.save(
+                new Group("test group", "test description", "https://test.com", currentUser));
+        assert chatMessageRepository.findAll().isEmpty();
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/groups/{groupId}/messages", group.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getList("data.messages")).isEmpty();
+        assertThat(response.jsonPath().getInt("data.currentPage")).isEqualTo(0);
+        assertThat(response.jsonPath().getInt("data.totalPages")).isEqualTo(0);
+        assertThat(response.jsonPath().getLong("data.totalElements")).isEqualTo(0);
     }
 }

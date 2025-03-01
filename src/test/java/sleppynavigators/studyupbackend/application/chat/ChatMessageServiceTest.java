@@ -3,7 +3,6 @@ package sleppynavigators.studyupbackend.application.chat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 
 import org.junit.jupiter.api.AfterEach;
@@ -24,6 +23,7 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
+import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,15 +32,18 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest
 @ActiveProfiles("test")
 @DisplayName("ChatService 통합 테스트")
-class ChatServiceTest {
+class ChatMessageServiceTest {
 
     private static final Long AUTHENTICATED_USER_ID = 1L;
 
     @Autowired
-    private ChatService chatService;
+    private ChatMessageService chatMessageService;
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
+
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
 
     @MockitoBean
     private SimpMessageSendingOperations messagingTemplate;
@@ -56,7 +59,7 @@ class ChatServiceTest {
 
     @AfterEach
     void tearDown() {
-        chatMessageRepository.deleteAll();
+        databaseCleaner.execute();
     }
 
     @Test
@@ -68,7 +71,7 @@ class ChatServiceTest {
         Long senderId = 1L;
 
         // when
-        chatService.sendMessage(request, destination, senderId);
+        chatMessageService.sendMessage(request, destination, senderId);
 
         // then
         verify(messagingTemplate).convertAndSend(eq(destination), any(SuccessResponse.class));
@@ -98,8 +101,10 @@ class ChatServiceTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
+        assertThatThrownBy(() -> chatMessageService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
+
+        assertThat(chatMessageRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -117,7 +122,9 @@ class ChatServiceTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
+        assertThatThrownBy(() -> chatMessageService.sendMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
+
+        assertThat(chatMessageRepository.findAll()).isEmpty();
     }
 }
