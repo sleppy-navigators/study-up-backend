@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.domain.challenge;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.challenge.vo.Deadline;
-import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDescription;
 import sleppynavigators.studyupbackend.domain.challenge.vo.Title;
 import sleppynavigators.studyupbackend.domain.group.GroupMember;
 
@@ -26,6 +26,8 @@ import sleppynavigators.studyupbackend.domain.group.GroupMember;
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Challenge {
+
+    private static final int MAX_DESCRIPTION_LENGTH = 200;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,8 +40,8 @@ public class Challenge {
     @Embedded
     private Title title;
 
-    @Embedded
-    private ChallengeDescription description;
+    @Column
+    private String description;
 
     @Embedded
     private Deadline deadline;
@@ -51,7 +53,7 @@ public class Challenge {
     public Challenge(GroupMember owner, String title, String description, LocalDateTime deadline) {
         this.owner = owner;
         this.title = new Title(title);
-        this.description = new ChallengeDescription(description);
+        this.description = validateDescription(description);
         this.deadline = new Deadline(deadline);
         this.tasks = new ArrayList<>();
     }
@@ -70,5 +72,13 @@ public class Challenge {
                 .filter(Task::isSucceed)
                 .max(Comparator.comparing(task -> task.getCertification().certificateAt()))
                 .orElse(null);
+    }
+
+    private String validateDescription(String description) {
+        if (description != null && description.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new IllegalArgumentException(
+                    "Challenge description must not be longer than " + MAX_DESCRIPTION_LENGTH + " characters");
+        }
+        return description;
     }
 }
