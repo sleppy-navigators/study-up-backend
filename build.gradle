@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.springdoc.openapi-gradle-plugin' version '1.9.0'
+    id "org.sonarqube" version "6.0.1.5171"
 }
 
 group = 'sleppy-navigators'
@@ -22,6 +23,14 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "sleppy-navigators_study-up-backend"
+        property "sonar.organization", "sleppy-navigators"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
 
 dependencies {

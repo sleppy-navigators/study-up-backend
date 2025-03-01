@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,7 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
 import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
@@ -35,6 +35,7 @@ import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
+import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -59,6 +60,9 @@ class AuthServiceTest {
     @MockitoBean
     private GoogleOidcClient googleOidcClient;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
     @TestConfiguration
     static class TestConfig {
 
@@ -69,8 +73,12 @@ class AuthServiceTest {
         }
     }
 
+    @AfterEach
+    void tearDown() {
+        databaseCleaner.execute();
+    }
+
     @Test
-    @Transactional
     @DisplayName("기존 회원의 구글 로그인을 성공적으로 수행한다")
     void memberGoogleSignIn_Success() {
         // given
@@ -86,7 +94,6 @@ class AuthServiceTest {
         User user = new User("test-user", "test-email");
         UserCredential userCredential = new UserCredential("test-subject", "google", user);
 
-        userRepository.save(user);
         userCredentialRepository.save(userCredential);
 
         // when
@@ -98,7 +105,6 @@ class AuthServiceTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("신규 회원의 구글 로그인을 성공적으로 수행한다")
     void newMemberGoogleSignIn_Success() {
         // given
@@ -123,7 +129,6 @@ class AuthServiceTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("유효하지 않은 id token으로 구글 로그인을 시도하면 예외가 발생한다")
     void whenInvalidIdToken_ThrowsInvalidCredentialException() {
         // given
@@ -137,7 +142,6 @@ class AuthServiceTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("토큰 갱신 요청이 성공적으로 수행된다")
     void refresh_Success() {
         // given
@@ -167,7 +171,6 @@ class AuthServiceTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("만료된 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenExpiredSession_ThrowsInvalidCredentialException() {
         // given
@@ -195,7 +198,6 @@ class AuthServiceTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("유효하지 않은 토큰으로 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenInvalidToken_ThrowsInvalidCredentialException() {
         // given
