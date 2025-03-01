@@ -19,7 +19,7 @@ public record GroupChallengeListResponse(List<GroupChallengeListItem> challenges
                     challenge.getId(),
                     challenge.getTitle().title(),
                     challenge.getDeadline().deadline(),
-                    challenge.getDescription().description(),
+                    challenge.getDescription(),
                     challenge.getOwner().getUser().getId(),
                     challenge.getOwner().getUser().getUserProfile().username(),
                     (recentCertifiedTask != null) ?

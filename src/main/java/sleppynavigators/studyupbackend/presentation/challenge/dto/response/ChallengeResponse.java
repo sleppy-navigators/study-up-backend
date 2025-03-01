@@ -10,7 +10,7 @@ public record ChallengeResponse(Long id, String title, LocalDateTime deadline, S
                 challenge.getId(),
                 challenge.getTitle().title(),
                 challenge.getDeadline().deadline(),
-                challenge.getDescription().description()
+                challenge.getDescription()
         );
     }
 }
