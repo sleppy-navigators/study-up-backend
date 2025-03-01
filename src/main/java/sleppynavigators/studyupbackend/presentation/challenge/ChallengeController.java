@@ -36,7 +36,7 @@ public class ChallengeController {
     }
 
     @GetMapping("/{challengeId}/tasks")
-    @Operation(summary = "챌린지 과제 목록 조회", description = "챌린지의 과제 목록을 조회합니다.")
+    @Operation(summary = "챌린지 테스크 목록 조회", description = "챌린지의 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<TaskListResponse>> getTasks(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long challengeId

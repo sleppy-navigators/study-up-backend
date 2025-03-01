@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/me/tasks")
-    @Operation(summary = "유저의 과제 목록 조회", description = "유저의 과제 목록을 조회합니다.")
+    @Operation(summary = "유저의 테스크 목록 조회", description = "유저의 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<UserTaskListResponse>> getTasks(
             // TODO: filter by deadline utilizing `RSQL` or `QueryDSL Web Support`
             @AuthenticationPrincipal UserPrincipal userPrincipal

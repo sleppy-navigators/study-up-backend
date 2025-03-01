@@ -96,7 +96,7 @@ public class GroupController {
     }
 
     @GetMapping("/{groupId}/tasks")
-    @Operation(summary = "그룹 과제 목록 조회", description = "그룹의 과제 목록을 조회합니다.")
+    @Operation(summary = "그룹 테스크 목록 조회", description = "그룹의 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<GroupTaskListResponse>> getTasks(
             // TODO: filter by deadline utilizing `RSQL` or `QueryDSL Web Support`
             // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
