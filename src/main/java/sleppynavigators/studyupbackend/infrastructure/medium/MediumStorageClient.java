@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.infrastructure.common.medium;
+package sleppynavigators.studyupbackend.infrastructure.medium;
 
 import io.awspring.cloud.s3.S3Template;
 import java.net.URL;

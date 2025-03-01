@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import sleppynavigators.studyupbackend.infrastructure.common.medium.MediumStorageClient;
+import sleppynavigators.studyupbackend.application.medium.MediumService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.medium.dto.response.UploadUrlResponse;
@@ -23,13 +23,13 @@ import sleppynavigators.studyupbackend.presentation.medium.dto.response.UploadUr
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class MediumController {
 
-    private final MediumStorageClient mediumStorageClient;
+    private final MediumService mediumService;
 
     @PostMapping("/upload-url")
     @Operation(summary = "S3 pre-signed URL 발급", description = "S3 pre-signed URL을 발급합니다.")
     public ResponseEntity<SuccessResponse<UploadUrlResponse>> getPreSignedUploadUrl(
             @AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam @NotBlank String filename) {
-        URL uploadUrl = mediumStorageClient.getUploadUrl(userPrincipal.userId(), filename);
+        URL uploadUrl = mediumService.getUploadUrl(userPrincipal.userId(), filename);
         UploadUrlResponse response = new UploadUrlResponse(uploadUrl);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
