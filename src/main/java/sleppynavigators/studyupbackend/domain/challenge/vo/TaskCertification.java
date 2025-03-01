@@ -6,11 +6,11 @@ import jakarta.persistence.Embeddable;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
-import sleppynavigators.studyupbackend.infrastructure.common.attribute.converter.StringConverter;
+import sleppynavigators.studyupbackend.infrastructure.common.attribute.converter.UrlConverter;
 
 @Embeddable
-public record TaskCertification(@Convert(converter = StringConverter.class) @Column List<URL> externalLinks,
-                                @Convert(converter = StringConverter.class) @Column List<URL> imageUrls,
+public record TaskCertification(@Convert(converter = UrlConverter.class) @Column List<URL> externalLinks,
+                                @Convert(converter = UrlConverter.class) @Column List<URL> imageUrls,
                                 @Column LocalDateTime certificateAt) {
 
     public TaskCertification {
