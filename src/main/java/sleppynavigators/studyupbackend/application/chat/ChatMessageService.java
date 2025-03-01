@@ -9,8 +9,11 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
+import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
+import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
@@ -23,6 +26,7 @@ public class ChatMessageService {
 
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageRepository chatMessageRepository;
+    private final GroupRepository groupRepository;
 
     // TODO(@Jayon): 향후 카프카 도입하여 메시지 전송 로직 변경
     public void sendMessage(ChatMessageRequest request, String destination, Long senderId) {
@@ -48,7 +52,8 @@ public class ChatMessageService {
 
     @Transactional(readOnly = true)
     public ChatMessageListResponse getMessages(Long groupId, Pageable pageable) {
-        Page<ChatMessage> messages = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(groupId, pageable);
+        Group group = groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
+        Page<ChatMessage> messages = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(group.getId(), pageable);
         return ChatMessageListResponse.from(messages);
     }
 }

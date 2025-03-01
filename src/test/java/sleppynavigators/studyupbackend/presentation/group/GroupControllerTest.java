@@ -397,7 +397,7 @@ public class GroupControllerTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 그룹의 채팅 메시지를 조회하면 빈 목록을 반환한다")
+    @DisplayName("존재하지 않는 그룹의 채팅 메시지를 조회하면 오류로 응답한다")
     void getMessages_EmptyGroup() {
         // given
         assert groupRepository.findAll().isEmpty();
@@ -410,11 +410,7 @@ public class GroupControllerTest {
                 .log().all().extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getList("data.messages")).isEmpty();
-        assertThat(response.jsonPath().getInt("data.currentPage")).isEqualTo(0);
-        assertThat(response.jsonPath().getInt("data.totalPages")).isEqualTo(0);
-        assertThat(response.jsonPath().getLong("data.totalElements")).isEqualTo(0);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
     }
 
     @Test
