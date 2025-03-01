@@ -9,17 +9,14 @@ import java.util.List;
 import sleppynavigators.studyupbackend.infrastructure.common.attribute.converter.UrlConverter;
 
 @Embeddable
-public record TaskCertification(@Convert(converter = UrlConverter.class) @Column List<URL> externalLinks,
-                                @Convert(converter = UrlConverter.class) @Column List<URL> imageUrls,
-                                @Column LocalDateTime certificateAt) {
+public record TaskCertification(
+        @Convert(converter = UrlConverter.class) @Column(nullable = false) List<URL> externalLinks,
+        @Convert(converter = UrlConverter.class) @Column(nullable = false) List<URL> imageUrls,
+        @Column(nullable = false) LocalDateTime certificateAt) {
 
     public TaskCertification {
-        if ((externalLinks == null || externalLinks.isEmpty()) &&
-                (imageUrls == null || imageUrls.isEmpty())) {
+        if (externalLinks.isEmpty() && imageUrls.isEmpty()) {
             throw new IllegalArgumentException("At least one external link or image URL must be provided");
-        }
-        if (certificateAt == null) {
-            throw new IllegalArgumentException("Certificate date must not be null");
         }
     }
 }
