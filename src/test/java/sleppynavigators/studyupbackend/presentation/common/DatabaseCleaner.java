@@ -50,7 +50,6 @@ public class DatabaseCleaner {
         for (String collectionName : mongoTemplate.getCollectionNames()) {
             mongoTemplate.dropCollection(collectionName);
         }
-        mongoTemplate.getDb().drop();
     }
 
     private List<String> getManagedTables() {
