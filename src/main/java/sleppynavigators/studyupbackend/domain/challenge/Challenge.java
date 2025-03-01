@@ -60,6 +60,7 @@ public class Challenge {
         tasks.add(new Task(title, deadline, this));
     }
 
+    // TODO: implement business utilizing the following methods
     public boolean isDone() {
         return tasks.stream().allMatch(Task::isDone);
     }

@@ -46,6 +46,7 @@ public class Task {
         this.certification = null;
     }
 
+    // TODO: implement business utilizing the following methods
     public void certify(List<URL> externalLinks, List<URL> imageUrls) {
         this.certification = new TaskCertification(externalLinks, imageUrls, LocalDateTime.now());
     }
