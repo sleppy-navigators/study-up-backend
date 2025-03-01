@@ -88,31 +88,6 @@ public class GroupControllerTest {
     }
 
     @Test
-    @DisplayName("사용자가 그룹 목록 조회에 성공한다")
-    void getGroups_Success() {
-        // given
-        groupRepository.saveAll(
-                List.of(new Group("test group1", "test description", "https://test.com", currentUser),
-                        new Group("test group2", "test description", "https://test.com", currentUser),
-                        new Group("test group3", "test description", "https://test.com", currentUser),
-                        new Group("test group4", "test description", "https://test.com", currentUser)));
-
-        // when
-        ExtractableResponse<?> response = with()
-                .when().request(GET, "/groups")
-                .then()
-                .log().all().extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getList("data.groups")).hasSize(4);
-        assertThat(response.jsonPath().getString("data.groups[].id")).isNotBlank();
-        assertThat(response.jsonPath().getString("data.groups[].name")).isNotBlank();
-        assertThat(response.jsonPath().getString("data.groups[].description")).isNotBlank();
-        assertThat(response.jsonPath().getString("data.groups[].thumbnailUrl")).isNotBlank();
-    }
-
-    @Test
     @DisplayName("사용자가 그룹 생성에 성공한다")
     void memberGroupCreation_Success() {
         // given

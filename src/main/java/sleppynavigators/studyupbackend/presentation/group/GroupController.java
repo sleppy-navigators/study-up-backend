@@ -19,12 +19,13 @@ import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
 
 @Tag(name = "Group", description = "그룹 관련 API")
 @RestController
@@ -34,15 +35,6 @@ public class GroupController {
 
     private final GroupService groupService;
     private final ChatMessageService chatMessageService;
-
-    @GetMapping
-    @Operation(summary = "그룹 목록 조회", description = "사용자의 그룹 목록을 조회합니다.")
-    public ResponseEntity<SuccessResponse<GroupListResponse>> getGroups(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        Long userId = userPrincipal.userId();
-        GroupListResponse response = groupService.getGroups(userId);
-        return ResponseEntity.ok(new SuccessResponse<>(response));
-    }
 
     @PostMapping
     @Operation(summary = "그룹 생성", description = "그룹을 생성합니다.")
@@ -91,6 +83,26 @@ public class GroupController {
         GroupResponse response =
                 groupService.acceptInvitation(userId, groupId, invitationId, groupInvitationAcceptRequest);
         return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
+    @GetMapping("/{groupId}/challenges")
+    @Operation(summary = "그룹 챌린지 목록 조회", description = "그룹의 챌린지 목록을 조회합니다.")
+    public ResponseEntity<SuccessResponse<GroupChallengeListResponse>> getChallenges(
+            // TODO: sort by `Event`(challenge creation and task certification) utilizing `@SortDefault`
+            @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId
+    ) {
+        Long userId = userPrincipal.userId();
+        return ResponseEntity.ok(new SuccessResponse<>(null));
+    }
+
+    @GetMapping("/{groupId}/tasks")
+    @Operation(summary = "그룹 테스크 목록 조회", description = "그룹의 테스크 목록을 조회합니다.")
+    public ResponseEntity<SuccessResponse<GroupTaskListResponse>> getTasks(
+            // TODO: filter by deadline utilizing `RSQL` or `QueryDSL Web Support`
+            // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
+            @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId) {
+        Long userId = userPrincipal.userId();
+        return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 
     @GetMapping("/{groupId}/messages")

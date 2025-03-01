@@ -6,5 +6,5 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public record GroupDetail(@Column(nullable = false) String name,
                           @Column(nullable = false) String description,
-                          String thumbnailUrl) {
+                          @Column String thumbnailUrl) {
 }
