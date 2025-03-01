@@ -7,7 +7,7 @@ import jakarta.persistence.Converter;
 @Converter
 public class StringConverter implements AttributeConverter<List<String>, String> {
 
-    private static final String DELIMITER = ",";
+    private static final String DELIMITER = "\n";
 
     @Override
     public String convertToDatabaseColumn(List<String> attributes) {
