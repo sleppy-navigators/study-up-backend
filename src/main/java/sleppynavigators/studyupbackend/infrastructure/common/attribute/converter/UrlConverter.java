@@ -1,6 +1,8 @@
 package sleppynavigators.studyupbackend.infrastructure.common.attribute.converter;
 
+import ch.qos.logback.core.util.StringUtil;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -18,18 +20,18 @@ public class UrlConverter implements AttributeConverter<List<URL>, String> {
     public String convertToDatabaseColumn(List<URL> attributes) {
         return attributes != null ?
                 String.join(DELIMITER, attributes.stream().map(URL::toString).toList())
-                : null;
+                : "";
     }
 
     @Override
     public List<URL> convertToEntityAttribute(String dbData) {
-        return dbData != null ?
+        return !StringUtil.isNullOrEmpty(dbData) ?
                 Stream.of(dbData.split(DELIMITER))
                         .map(this::convertToURL)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .toList()
-                : null;
+                : new ArrayList<>();
     }
 
     private Optional<URL> convertToURL(String url) {

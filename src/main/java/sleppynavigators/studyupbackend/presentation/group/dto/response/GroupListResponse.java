@@ -16,4 +16,12 @@ public record GroupListResponse(List<GroupListItem> groups) {
             );
         }
     }
+
+    public static GroupListResponse fromEntities(List<Group> groups) {
+        return new GroupListResponse(
+                groups.stream()
+                        .map(GroupListItem::fromEntity)
+                        .toList()
+        );
+    }
 }

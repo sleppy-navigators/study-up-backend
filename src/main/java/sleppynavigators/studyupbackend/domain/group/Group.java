@@ -56,4 +56,9 @@ public class Group {
     public boolean hasAnyMember() {
         return !members.isEmpty();
     }
+
+    public boolean hasMember(User user) {
+        return members.stream()
+                .anyMatch(member -> member.getUser().equals(user));
+    }
 }
