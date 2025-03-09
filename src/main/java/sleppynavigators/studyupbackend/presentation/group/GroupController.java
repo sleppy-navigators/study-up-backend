@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
@@ -83,6 +85,17 @@ public class GroupController {
         GroupResponse response =
                 groupService.acceptInvitation(userId, groupId, invitationId, groupInvitationAcceptRequest);
         return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
+    @PostMapping("/{groupId}/challenges")
+    @Operation(summary = "챌린지 생성", description = "챌린지를 생성합니다.")
+    public ResponseEntity<SuccessResponse<ChallengeResponse>> createChallenge(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long groupId,
+            @RequestBody @Valid ChallengeCreationRequest challengeCreationRequest
+    ) {
+        Long userId = userPrincipal.userId();
+        return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 
     @GetMapping("/{groupId}/challenges")

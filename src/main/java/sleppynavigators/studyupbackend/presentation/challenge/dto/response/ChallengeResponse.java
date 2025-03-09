@@ -8,9 +8,9 @@ public record ChallengeResponse(Long id, String title, LocalDateTime deadline, S
     public static ChallengeResponse fromEntity(Challenge challenge) {
         return new ChallengeResponse(
                 challenge.getId(),
-                challenge.getTitle().title(),
-                challenge.getDeadline().deadline(),
-                challenge.getDescription()
+                challenge.getDetail().title(),
+                challenge.getDetail().deadline(),
+                challenge.getDetail().description()
         );
     }
 }

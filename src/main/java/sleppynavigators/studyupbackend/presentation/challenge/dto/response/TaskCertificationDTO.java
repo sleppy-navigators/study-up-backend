@@ -11,7 +11,7 @@ public record TaskCertificationDTO(List<URL> externalLinks, List<URL> imageUrls,
         return new TaskCertificationDTO(
                 taskCertification.externalLinks(),
                 taskCertification.imageUrls(),
-                taskCertification.certificateAt()
+                taskCertification.certifiedAt()
         );
     }
 }
