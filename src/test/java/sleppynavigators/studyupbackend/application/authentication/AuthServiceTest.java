@@ -146,7 +146,7 @@ class AuthServiceTest {
     void refresh_Success() {
         // given
         User user = new User("test-user", "test-email");
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
                 accessTokenProperties);
@@ -175,7 +175,7 @@ class AuthServiceTest {
     void whenExpiredSession_ThrowsInvalidCredentialException() {
         // given
         User user = new User("test-user", "test-email");
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
                 accessTokenProperties);
@@ -202,7 +202,7 @@ class AuthServiceTest {
     void whenInvalidToken_ThrowsInvalidCredentialException() {
         // given
         User user = new User("test-user", "test-email");
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         AccessToken accessToken = new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"),
                 accessTokenProperties);
@@ -217,8 +217,13 @@ class AuthServiceTest {
                 .build();
         userSessionRepository.save(userSession);
 
+        AccessToken invalidAccessToken = new AccessToken(
+                user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
+        RefreshToken invalidRefreshToken = new RefreshToken();
+
         // when & then
-        RefreshRequest request = new RefreshRequest("invalid-access-token", "invalid-refresh-token");
+        RefreshRequest request = new RefreshRequest(
+                invalidAccessToken.serialize(accessTokenProperties), invalidRefreshToken.serialize());
         assertThatThrownBy(() -> authService.refresh(request))
                 .isInstanceOf(InvalidCredentialException.class);
     }

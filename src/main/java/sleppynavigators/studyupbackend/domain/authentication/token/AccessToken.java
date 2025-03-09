@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.domain.authentication.token;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
@@ -31,14 +32,18 @@ public class AccessToken {
 
     // TODO: extract to JwtUtils
     public static AccessToken deserialize(String token, AccessTokenProperties properties) {
-        String secret = properties.secret();
-        Claims claims = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            String secret = properties.secret();
+            Claims claims = Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
 
-        return new AccessToken(claims);
+            return new AccessToken(claims);
+        } catch (JwtException ignored) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public Long getUserId() {

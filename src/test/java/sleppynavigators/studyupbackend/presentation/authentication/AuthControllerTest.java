@@ -143,7 +143,12 @@ class AuthControllerTest {
                 new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
         RefreshToken refreshToken = new RefreshToken();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
-        RefreshRequest request = new RefreshRequest("invalid-access-token", "invalid-refresh-token");
+
+        AccessToken invalidAccessToken =
+                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
+        RefreshToken invalidRefreshToken = new RefreshToken();
+        RefreshRequest request = new RefreshRequest(
+                invalidAccessToken.serialize(accessTokenProperties), invalidRefreshToken.serialize());
 
         UserSession userSession = UserSession.builder()
                 .user(user)

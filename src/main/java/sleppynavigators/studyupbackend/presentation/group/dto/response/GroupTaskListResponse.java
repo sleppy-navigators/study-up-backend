@@ -3,6 +3,7 @@ package sleppynavigators.studyupbackend.presentation.group.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
+import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskCertificationDTO;
 
 public record GroupTaskListResponse(List<GroupTaskListItem> tasks) {
@@ -11,11 +12,15 @@ public record GroupTaskListResponse(List<GroupTaskListItem> tasks) {
                                     TaskCertificationDTO certification, GroupTaskChallengeDetail challenge) {
 
         public static GroupTaskListItem fromEntity(Task task) {
+            TaskCertification taskCertification = task.getCertification();
+
             return new GroupTaskListItem(
                     task.getId(),
-                    task.getTitle().title(),
-                    task.getDeadline().deadline(),
-                    TaskCertificationDTO.fromEntity(task.getCertification()),
+                    task.getDetail().title(),
+                    task.getDetail().deadline(),
+                    (taskCertification.isCertified()) ?
+                            TaskCertificationDTO.fromEntity(taskCertification)
+                            : null,
                     GroupTaskChallengeDetail.fromEntity(task));
         }
     }
@@ -25,7 +30,7 @@ public record GroupTaskListResponse(List<GroupTaskListItem> tasks) {
         public static GroupTaskChallengeDetail fromEntity(Task task) {
             return new GroupTaskChallengeDetail(
                     task.getChallenge().getId(),
-                    task.getChallenge().getTitle().title());
+                    task.getChallenge().getDetail().title());
         }
     }
 

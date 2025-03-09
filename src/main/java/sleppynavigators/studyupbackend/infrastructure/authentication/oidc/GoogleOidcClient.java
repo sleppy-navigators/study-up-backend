@@ -52,26 +52,25 @@ public class GoogleOidcClient implements OidcClient {
         try {
             String kid = getKid(idToken);
             PublicKey publicKey = decodePublicKey(fetchPublicKey(kid));
-
-            Claims claims = parseClaims(idToken, publicKey);
-            if (!isTokenValid(claims)) {
-                throw new InvalidCredentialException();
-            }
-            return claims;
-        } catch (IOException | JwtException | IllegalArgumentException ignored) {
+            return parseIdToken(idToken, publicKey);
+        } catch (IllegalArgumentException ignored) {
             throw new InvalidCredentialException();
         }
     }
 
-    private String getKid(String idToken) throws JsonProcessingException {
+    private String getKid(String idToken) {
         String[] tokenParts = idToken.split("\\.");
         if (tokenParts.length != 3) {
-            throw new IllegalArgumentException("Invalid id token");
+            throw new IllegalArgumentException();
         }
 
-        String header = new String(Base64.getUrlDecoder().decode(tokenParts[0]));
-        JsonNode headerJson = objectMapper.readTree(header);
-        return headerJson.get("kid").asText();
+        try {
+            String header = new String(Base64.getUrlDecoder().decode(tokenParts[0]));
+            JsonNode headerJson = objectMapper.readTree(header);
+            return headerJson.get("kid").asText();
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException();
+        }
     }
 
     private String fetchPublicKey(String kid) {
@@ -82,8 +81,7 @@ public class GoogleOidcClient implements OidcClient {
         Call call = okHttpClient.newCall(request);
         try (Response response = call.execute()) {
             if (!response.isSuccessful()) {
-                log.warn("Failed to get public key from Google - {}", response.code());
-                throw new IOException();
+                throw new IOException("Response code is not successful(" + response.code() + ")");
             }
 
             String responseBody = response.body().string();
@@ -114,23 +112,32 @@ public class GoogleOidcClient implements OidcClient {
                     .generateCertificate(new ByteArrayInputStream(encoded));
             return cert.getPublicKey();
         } catch (CertificateException ignored) {
-            throw new InvalidCredentialException();
+            throw new IllegalArgumentException();
         }
     }
 
     // TODO: extract to JwtUtils
-    private Claims parseClaims(String idToken, PublicKey publicKey) {
-        return Jwts.parser()
-                .verifyWith(publicKey)
-                .build()
-                .parseSignedClaims(idToken)
-                .getPayload();
+    private Claims parseIdToken(String idToken, PublicKey publicKey) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(publicKey)
+                    .build()
+                    .parseSignedClaims(idToken)
+                    .getPayload();
+
+            validateIdTokenClaims(claims);
+            return claims;
+        } catch (JwtException ignored) {
+            throw new IllegalArgumentException();
+        }
     }
 
     // TODO: extract to JwtUtils
-    private boolean isTokenValid(Claims claims) {
+    private void validateIdTokenClaims(Claims claims) {
         String issuer = googleProperties.issuer();
         String audience = googleProperties.audience();
-        return claims.getIssuer().equals(issuer) && claims.getAudience().contains(audience);
+        if (!claims.getIssuer().equals(issuer) || !claims.getAudience().contains(audience)) {
+            throw new IllegalArgumentException();
+        }
     }
 }

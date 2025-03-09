@@ -17,11 +17,11 @@ public record GroupChallengeListResponse(List<GroupChallengeListItem> challenges
 
             return new GroupChallengeListItem(
                     challenge.getId(),
-                    challenge.getTitle().title(),
-                    challenge.getDeadline().deadline(),
-                    challenge.getDescription(),
-                    challenge.getOwner().getUser().getId(),
-                    challenge.getOwner().getUser().getUserProfile().username(),
+                    challenge.getDetail().title(),
+                    challenge.getDetail().deadline(),
+                    challenge.getDetail().description(),
+                    challenge.getOwner().getId(),
+                    challenge.getOwner().getUserProfile().username(),
                     (recentCertifiedTask != null) ?
                             TaskCertificationDTO.fromEntity(recentCertifiedTask.getCertification())
                             : null

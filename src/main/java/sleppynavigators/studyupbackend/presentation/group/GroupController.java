@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sleppynavigators.studyupbackend.application.challenge.ChallengeService;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
@@ -35,6 +38,7 @@ public class GroupController {
 
     private final GroupService groupService;
     private final ChatMessageService chatMessageService;
+    private final ChallengeService challengeService;
 
     @PostMapping
     @Operation(summary = "그룹 생성", description = "그룹을 생성합니다.")
@@ -85,6 +89,18 @@ public class GroupController {
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
+    @PostMapping("/{groupId}/challenges")
+    @Operation(summary = "챌린지 생성", description = "챌린지를 생성합니다.")
+    public ResponseEntity<SuccessResponse<ChallengeResponse>> createChallenge(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long groupId,
+            @RequestBody @Valid ChallengeCreationRequest challengeCreationRequest
+    ) {
+        Long userId = userPrincipal.userId();
+        ChallengeResponse response = challengeService.createChallenge(userId, groupId, challengeCreationRequest);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
     @GetMapping("/{groupId}/challenges")
     @Operation(summary = "그룹 챌린지 목록 조회", description = "그룹의 챌린지 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<GroupChallengeListResponse>> getChallenges(
@@ -92,7 +108,8 @@ public class GroupController {
             @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId
     ) {
         Long userId = userPrincipal.userId();
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        GroupChallengeListResponse response = groupService.getChallenges(userId, groupId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @GetMapping("/{groupId}/tasks")
@@ -102,7 +119,8 @@ public class GroupController {
             // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
             @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId) {
         Long userId = userPrincipal.userId();
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        GroupTaskListResponse response = groupService.getTasks(userId, groupId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @GetMapping("/{groupId}/messages")

@@ -10,13 +10,22 @@ import sleppynavigators.studyupbackend.infrastructure.common.attribute.converter
 
 @Embeddable
 public record TaskCertification(
-        @Convert(converter = UrlConverter.class) @Column(nullable = false) List<URL> externalLinks,
-        @Convert(converter = UrlConverter.class) @Column(nullable = false) List<URL> imageUrls,
-        @Column(nullable = false) LocalDateTime certificateAt) {
+        @Column(nullable = false) @Convert(converter = UrlConverter.class) List<URL> externalLinks,
+        @Column(nullable = false) @Convert(converter = UrlConverter.class) List<URL> imageUrls,
+        @Column LocalDateTime certifiedAt) {
 
     public TaskCertification {
-        if (externalLinks.isEmpty() && imageUrls.isEmpty()) {
+        if (isCertified() && noCertificationProvided()) {
             throw new IllegalArgumentException("At least one external link or image URL must be provided");
         }
+    }
+
+    public boolean isCertified() {
+        return certifiedAt != null;
+    }
+
+    private boolean noCertificationProvided() {
+        assert externalLinks != null && imageUrls != null;
+        return externalLinks.isEmpty() && imageUrls.isEmpty();
     }
 }
