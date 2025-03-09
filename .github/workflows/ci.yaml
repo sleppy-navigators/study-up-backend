@@ -32,7 +32,7 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonar --info
+        run: ./gradlew build jacocoTestReport sonar --info
 
       - name: Upload Gradle report
         uses: actions/upload-artifact@v4
