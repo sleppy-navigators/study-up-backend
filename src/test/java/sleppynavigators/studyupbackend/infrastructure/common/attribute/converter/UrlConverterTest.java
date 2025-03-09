@@ -28,6 +28,20 @@ class UrlConverterTest {
     }
 
     @Test
+    @DisplayName("URL 목록이 null일 때 DB Column 하나로 변경할 수 있다")
+    void convertNullURLsToDatabaseColumn() {
+        // given
+        UrlConverter converter = new UrlConverter();
+        List<URL> urls = null;
+
+        // when
+        String dbData = converter.convertToDatabaseColumn(urls);
+
+        // then
+        assertThat(dbData).isEqualTo("");
+    }
+
+    @Test
     @DisplayName("DB Column 하나를 URL 목록으로 변경할 수 있다")
     void convertDatabaseColumnToURLs() throws MalformedURLException {
         // given
@@ -55,7 +69,7 @@ class UrlConverterTest {
         List<URL> urls = converter.convertToEntityAttribute(dbData);
 
         // then
-        assertThat(urls).isNull();
+        assertThat(urls).isEmpty();
     }
 
     @Test
