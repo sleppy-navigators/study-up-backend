@@ -10,12 +10,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
-import sleppynavigators.studyupbackend.domain.challenge.vo.Deadline;
-import sleppynavigators.studyupbackend.domain.challenge.vo.Title;
+import sleppynavigators.studyupbackend.domain.challenge.vo.TaskDetail;
+import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.exception.business.OveredDeadlineException;
 
 @Entity(name = "tasks")
 @Getter
@@ -27,10 +29,7 @@ public class Task {
     private Long id;
 
     @Embedded
-    private Title title;
-
-    @Embedded
-    private Deadline deadline;
+    private TaskDetail detail;
 
     @Embedded
     private TaskCertification certification;
@@ -40,26 +39,24 @@ public class Task {
     private Challenge challenge;
 
     public Task(String title, LocalDateTime deadline, Challenge challenge) {
-        this.title = new Title(title);
-        this.deadline = new Deadline(deadline);
+        this.detail = new TaskDetail(title, deadline);
         this.challenge = challenge;
-        this.certification = null;
+        this.certification = new TaskCertification(new ArrayList<>(), new ArrayList<>(), null);
     }
 
-    // TODO: implement business utilizing the following methods
     public void certify(List<URL> externalLinks, List<URL> imageUrls) {
+        if (detail.isPast()) {
+            throw new OveredDeadlineException();
+        }
+
         this.certification = new TaskCertification(externalLinks, imageUrls, LocalDateTime.now());
     }
 
-    public boolean isDone() {
-        return isSucceed() || isFailed();
+    public boolean canModify(User user) {
+        return challenge.canModify(user);
     }
 
     public boolean isSucceed() {
-        return certification != null;
-    }
-
-    public boolean isFailed() {
-        return !isSucceed() && deadline.isPast();
+        return certification.isCertified();
     }
 }
