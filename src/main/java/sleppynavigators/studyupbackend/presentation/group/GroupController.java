@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sleppynavigators.studyupbackend.application.challenge.ChallengeService;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
@@ -37,6 +38,7 @@ public class GroupController {
 
     private final GroupService groupService;
     private final ChatMessageService chatMessageService;
+    private final ChallengeService challengeService;
 
     @PostMapping
     @Operation(summary = "그룹 생성", description = "그룹을 생성합니다.")
@@ -95,7 +97,8 @@ public class GroupController {
             @RequestBody @Valid ChallengeCreationRequest challengeCreationRequest
     ) {
         Long userId = userPrincipal.userId();
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        ChallengeResponse response = challengeService.createChallenge(userId, groupId, challengeCreationRequest);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @GetMapping("/{groupId}/challenges")
@@ -105,7 +108,8 @@ public class GroupController {
             @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId
     ) {
         Long userId = userPrincipal.userId();
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        GroupChallengeListResponse response = groupService.getChallenges(userId, groupId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @GetMapping("/{groupId}/tasks")
@@ -115,7 +119,8 @@ public class GroupController {
             // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
             @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId) {
         Long userId = userPrincipal.userId();
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        GroupTaskListResponse response = groupService.getTasks(userId, groupId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @GetMapping("/{groupId}/messages")
