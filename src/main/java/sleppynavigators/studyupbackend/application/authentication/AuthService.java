@@ -1,7 +1,6 @@
 package sleppynavigators.studyupbackend.application.authentication;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
-import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
@@ -46,19 +44,15 @@ public class AuthService {
 
     @Transactional
     public TokenResponse refresh(RefreshRequest request) {
-        try {
-            AccessToken accessToken = AccessToken.deserialize(request.accessToken(), accessTokenProperties);
-            RefreshToken refreshToken = RefreshToken.deserialize(request.refreshToken());
+        AccessToken accessToken = AccessToken.deserialize(request.accessToken(), accessTokenProperties);
+        RefreshToken refreshToken = RefreshToken.deserialize(request.refreshToken());
 
-            Long userId = accessToken.getUserId();
-            UserSession userSession = userSessionRepository.findByUserId(userId)
-                    .orElseThrow(EntityNotFoundException::new);
+        Long userId = accessToken.getUserId();
+        UserSession userSession = userSessionRepository.findByUserId(userId)
+                .orElseThrow(EntityNotFoundException::new);
 
-            sessionManager.extendSession(userSession, refreshToken, accessToken);
-            return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
-        } catch (JwtException ignored) {
-            throw new InvalidCredentialException();
-        }
+        sessionManager.extendSession(userSession, refreshToken, accessToken);
+        return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
     }
 
     private TokenResponse signIn(String subject, String username, String email, String provider) {
