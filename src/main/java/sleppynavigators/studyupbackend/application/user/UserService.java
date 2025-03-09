@@ -21,12 +21,12 @@ public class UserService {
     private final TaskRepository taskRepository;
 
     public GroupListResponse getGroups(Long userId) {
-        List<Group> groups = groupRepository.findAllByUserId(userId);
+        List<Group> groups = groupRepository.findAllByMembersUserId(userId);
         return GroupListResponse.fromEntities(groups);
     }
 
     public UserTaskListResponse getTasks(Long userId) {
-        List<Task> tasks = taskRepository.findAllByUserId(userId);
+        List<Task> tasks = taskRepository.findAllByChallengeOwnerId(userId);
         return UserTaskListResponse.fromEntities(tasks);
     }
 }

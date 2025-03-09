@@ -119,7 +119,7 @@ public class GroupService {
             throw new ForbiddenContentException();
         }
 
-        List<Task> tasks = taskRepository.findAllByGroupId(groupId);
+        List<Task> tasks = taskRepository.findAllByChallengeGroupId(groupId);
         return GroupTaskListResponse.fromEntities(tasks);
     }
 }
