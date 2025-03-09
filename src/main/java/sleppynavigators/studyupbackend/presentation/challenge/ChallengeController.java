@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sleppynavigators.studyupbackend.application.challenge.ChallengeService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
@@ -25,6 +26,8 @@ import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChallengeController {
 
+    private final ChallengeService challengeService;
+
     @GetMapping("/{challengeId}/tasks")
     @Operation(summary = "챌린지 테스크 목록 조회", description = "챌린지의 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<TaskListResponse>> getTasks(
@@ -33,7 +36,8 @@ public class ChallengeController {
     ) {
         // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
         Long userId = userPrincipal.userId();
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        TaskListResponse response = challengeService.getTasks(userId, challengeId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @PostMapping("/{challengeId}/tasks/{taskId}/certify")
@@ -45,6 +49,7 @@ public class ChallengeController {
             @RequestBody @Valid TaskCertificationRequest taskCertificationRequest
     ) {
         Long userId = userPrincipal.userId();
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        TaskResponse response = challengeService.completeTask(userId, challengeId, taskId, taskCertificationRequest);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }
