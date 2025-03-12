@@ -12,6 +12,7 @@ import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
+import sleppynavigators.studyupbackend.exception.business.HasDependencyException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
@@ -49,14 +50,8 @@ public class GroupService {
 
     @Transactional
     public void leaveGroup(Long userId, Long groupId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
-        GroupMember targetMember = groupMemberRepository.findByGroupIdAndUserId(groupId, userId)
-                .orElseThrow(EntityNotFoundException::new);
-
-        group.removeMember(targetMember);
-        if (!group.hasAnyMember()) {
-            groupRepository.delete(group);
-        }
+        groupMemberRepository.findByGroupIdAndUserId(groupId, userId)
+                .ifPresent(this::removeMemberFromGroupThenDeleteGroupIfEmpty);
     }
 
     public GroupResponse getInvitedGroup(Long groupId, Long invitationId) {
@@ -121,5 +116,18 @@ public class GroupService {
 
         List<Task> tasks = taskRepository.findAllByChallengeGroupId(groupId);
         return GroupTaskListResponse.fromEntities(tasks);
+    }
+
+    private void removeMemberFromGroupThenDeleteGroupIfEmpty(GroupMember member) {
+        try {
+            Group group = member.getGroup();
+            group.removeMember(member);
+
+            if (!group.hasAnyMember()) {
+                groupRepository.delete(group);
+            }
+        } catch (IllegalArgumentException ignored) {
+            throw new HasDependencyException("Challenger cannot leave the group.");
+        }
     }
 }
