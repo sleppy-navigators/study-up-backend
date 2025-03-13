@@ -1,7 +1,9 @@
 package sleppynavigators.studyupbackend.domain.group.invitation;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,16 +16,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
+import sleppynavigators.studyupbackend.domain.common.UserAuditAttribute;
+import sleppynavigators.studyupbackend.domain.common.UserAuditorListener;
 import sleppynavigators.studyupbackend.domain.group.Group;
 
 @Entity(name = "group_invitations")
 @Getter
+@EntityListeners(UserAuditorListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupInvitation extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Embedded
+    private UserAuditAttribute userAuditAttribute;
 
     @Immutable
     @OneToOne(fetch = FetchType.EAGER)
