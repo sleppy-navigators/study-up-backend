@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Immutable;
 import sleppynavigators.studyupbackend.domain.user.User;
 
 @Entity(name = "group_members")
@@ -26,10 +27,12 @@ public class GroupMember {
     // There is room to add fields for group permissions in the future.
     // For now, we only need to know the group and the user.
 
+    @Immutable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
+    @Immutable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

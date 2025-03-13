@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Immutable;
 import sleppynavigators.studyupbackend.domain.user.User;
 
 @Entity(name = "user_credentials")
@@ -29,6 +30,7 @@ public class UserCredential {
     @Column(nullable = false)
     private String provider;
 
+    @Immutable
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
