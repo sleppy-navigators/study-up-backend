@@ -18,12 +18,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 
+@SoftDelete
 @Entity(name = "challenges")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
@@ -34,12 +36,12 @@ public class Challenge extends TimeAuditBaseEntity {
     private Long id;
 
     @Immutable
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     @Immutable
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 

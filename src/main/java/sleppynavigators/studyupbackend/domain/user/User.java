@@ -7,9 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 
+@SoftDelete
 @Entity(name = "users")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)

@@ -12,9 +12,11 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.User;
 
+@SoftDelete
 @Entity(name = "group_members")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"group_id", "user_id"})})
 @Getter
@@ -29,12 +31,12 @@ public class GroupMember extends TimeAuditBaseEntity {
     // For now, we only need to know the group and the user.
 
     @Immutable
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
     @Immutable
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
