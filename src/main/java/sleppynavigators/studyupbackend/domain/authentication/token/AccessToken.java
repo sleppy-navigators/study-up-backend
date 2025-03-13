@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
+import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 
 @RequiredArgsConstructor
 public class AccessToken {
@@ -42,7 +43,7 @@ public class AccessToken {
 
             return new AccessToken(claims);
         } catch (JwtException ignored) {
-            throw new IllegalArgumentException();
+            throw new InvalidCredentialException();
         }
     }
 
