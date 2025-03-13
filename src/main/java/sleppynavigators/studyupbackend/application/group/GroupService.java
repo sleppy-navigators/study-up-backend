@@ -12,7 +12,6 @@ import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
-import sleppynavigators.studyupbackend.exception.business.HasDependencyException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
@@ -50,16 +49,21 @@ public class GroupService {
 
     @Transactional
     public void leaveGroup(Long userId, Long groupId) {
-        groupMemberRepository.findByGroupIdAndUserId(groupId, userId)
-                .ifPresent(this::removeMemberFromGroupThenDeleteGroupIfEmpty);
+        groupMemberRepository.findByGroupIdAndUserId(groupId, userId).ifPresent(member -> {
+            Group group = member.getGroup();
+            group.removeMember(member);
+
+            if (!group.hasAnyMember()) {
+                groupRepository.delete(group);
+            }
+        });
     }
 
     public GroupResponse getInvitedGroup(Long groupId, Long invitationId) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
                 .orElseThrow(EntityNotFoundException::new);
-        Group invitedGroup = invitation.getGroup();
 
-        if (!invitedGroup.getId().equals(groupId)) {
+        if (!invitation.matchGroupId(groupId)) {
             throw new InvalidPayloadException();
         }
 
@@ -81,7 +85,7 @@ public class GroupService {
                 .orElseThrow(EntityNotFoundException::new);
         Group group = invitation.getGroup();
 
-        if (!group.getId().equals(groupId) || !invitation.matchKey(request.invitationKey())) {
+        if (!invitation.matchGroupId(groupId) || !invitation.matchKey(request.invitationKey())) {
             throw new InvalidPayloadException();
         }
 
@@ -116,18 +120,5 @@ public class GroupService {
 
         List<Task> tasks = taskRepository.findAllByChallengeGroupId(groupId);
         return GroupTaskListResponse.fromEntities(tasks);
-    }
-
-    private void removeMemberFromGroupThenDeleteGroupIfEmpty(GroupMember member) {
-        try {
-            Group group = member.getGroup();
-            group.removeMember(member);
-
-            if (!group.hasAnyMember()) {
-                groupRepository.delete(group);
-            }
-        } catch (IllegalArgumentException ignored) {
-            throw new HasDependencyException("Challenger cannot leave the group.");
-        }
     }
 }

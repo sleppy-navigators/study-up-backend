@@ -280,7 +280,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.HAS_DEPENDENCY.getCode());
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ACTION_REQUIRED_BEFORE.getCode());
         assertThat(response.jsonPath().getString("message")).isEqualTo("Challenger cannot leave the group.");
     }
 

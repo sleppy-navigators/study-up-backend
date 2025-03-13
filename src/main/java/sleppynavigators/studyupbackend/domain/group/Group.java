@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.vo.GroupDetail;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.exception.business.ActionRequiredBeforeException;
 
 @Entity(name = "`groups`")
 @Getter
@@ -54,7 +55,7 @@ public class Group {
 
     public void removeMember(GroupMember member) {
         if (isChallengeOwner(member.getUser())) {
-            throw new IllegalArgumentException("The user is the owner of the challenge.");
+            throw new ActionRequiredBeforeException("Challenger cannot leave the group.");
         }
 
         members.remove(member);
