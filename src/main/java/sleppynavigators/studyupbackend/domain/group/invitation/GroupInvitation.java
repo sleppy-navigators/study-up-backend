@@ -13,12 +13,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 
 @Entity(name = "group_invitations")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GroupInvitation {
+public class GroupInvitation extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

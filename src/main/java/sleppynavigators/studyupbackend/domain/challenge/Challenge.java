@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
@@ -26,7 +27,7 @@ import sleppynavigators.studyupbackend.exception.business.ForbiddenContentExcept
 @Entity(name = "challenges")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Challenge {
+public class Challenge extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

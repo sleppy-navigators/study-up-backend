@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskDetail;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.OveredDeadlineException;
@@ -24,7 +25,7 @@ import sleppynavigators.studyupbackend.exception.business.OveredDeadlineExceptio
 @Entity(name = "tasks")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Task {
+public class Task extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

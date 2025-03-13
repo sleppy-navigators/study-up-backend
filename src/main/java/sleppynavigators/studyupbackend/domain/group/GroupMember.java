@@ -12,13 +12,14 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.User;
 
 @Entity(name = "group_members")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"group_id", "user_id"})})
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class GroupMember {
+public class GroupMember extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

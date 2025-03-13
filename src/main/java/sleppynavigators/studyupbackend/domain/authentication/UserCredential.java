@@ -12,12 +12,13 @@ import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.User;
 
 @Entity(name = "user_credentials")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class UserCredential {
+public class UserCredential extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

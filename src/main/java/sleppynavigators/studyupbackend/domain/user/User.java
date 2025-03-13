@@ -7,12 +7,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 
 @Entity(name = "users")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class User {
+public class User extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
