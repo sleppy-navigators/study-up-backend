@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskDetail;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.OveredDeadlineException;
 
 @Entity(name = "tasks")
@@ -44,16 +45,16 @@ public class Task {
         this.certification = new TaskCertification(new ArrayList<>(), new ArrayList<>(), null);
     }
 
-    public void certify(List<URL> externalLinks, List<URL> imageUrls) {
+    public void certify(List<URL> externalLinks, List<URL> imageUrls, User certifier) {
+        if (!challenge.canModify(certifier)) {
+            throw new ForbiddenContentException();
+        }
+
         if (detail.isPast()) {
             throw new OveredDeadlineException();
         }
 
         this.certification = new TaskCertification(externalLinks, imageUrls, LocalDateTime.now());
-    }
-
-    public boolean canModify(User user) {
-        return challenge.canModify(user);
     }
 
     public boolean isSucceed() {

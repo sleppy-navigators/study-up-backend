@@ -136,10 +136,10 @@ public class UserControllerTest {
                 new TaskRequest("test task 3-3-4", LocalDateTime.now().plusHours(12))
         )).toEntity(currentUser, group3));
 
-        challenge1.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")));
+        challenge1.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")), currentUser);
         challenge2.getTasks().get(0)
                 .certify(List.of(new URL("https://test.com"), new URL("https://test2.com")),
-                        List.of(new URL("https://test.com")));
+                        List.of(new URL("https://test.com")), currentUser);
         challengeRepository.saveAll(List.of(challenge1, challenge2, challenge3));
 
         // when

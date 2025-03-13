@@ -49,22 +49,21 @@ public class GroupService {
 
     @Transactional
     public void leaveGroup(Long userId, Long groupId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
-        GroupMember targetMember = groupMemberRepository.findByGroupIdAndUserId(groupId, userId)
-                .orElseThrow(EntityNotFoundException::new);
+        groupMemberRepository.findByGroupIdAndUserId(groupId, userId).ifPresent(member -> {
+            Group group = member.getGroup();
+            group.removeMember(member);
 
-        group.removeMember(targetMember);
-        if (!group.hasAnyMember()) {
-            groupRepository.delete(group);
-        }
+            if (!group.hasAnyMember()) {
+                groupRepository.delete(group);
+            }
+        });
     }
 
     public GroupResponse getInvitedGroup(Long groupId, Long invitationId) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
                 .orElseThrow(EntityNotFoundException::new);
-        Group invitedGroup = invitation.getGroup();
 
-        if (!invitedGroup.getId().equals(groupId)) {
+        if (!invitation.matchGroupId(groupId)) {
             throw new InvalidPayloadException();
         }
 
@@ -86,7 +85,7 @@ public class GroupService {
                 .orElseThrow(EntityNotFoundException::new);
         Group group = invitation.getGroup();
 
-        if (!group.getId().equals(groupId) || !invitation.matchKey(request.invitationKey())) {
+        if (!invitation.matchGroupId(groupId) || !invitation.matchKey(request.invitationKey())) {
             throw new InvalidPayloadException();
         }
 

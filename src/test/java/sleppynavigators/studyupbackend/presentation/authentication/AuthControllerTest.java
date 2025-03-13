@@ -133,8 +133,34 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("유효하지 않은 토큰으로 토큰 갱신 요청을 수행하면 예외가 발생한다")
-    void whenInvalidToken_ThrowsInvalidCredentialException() {
+    @DisplayName("존재하지 않는 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
+    void whenNonExistentSession_ThrowsInvalidCredentialException() {
+        // given
+        User user = new User("test-user", "test-email");
+        userRepository.save(user);
+
+        AccessToken accessToken =
+                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
+        RefreshToken refreshToken = new RefreshToken();
+        RefreshRequest request =
+                new RefreshRequest(accessToken.serialize(accessTokenProperties), refreshToken.serialize());
+
+        // when
+        ExtractableResponse<?> response = with().body(request)
+                .when().request(POST, "/auth/refresh")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(
+                ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
+    }
+
+    @Test
+    @DisplayName("토큰 정보가 일치하지 않을 경우 예외가 발생한다")
+    void whenUnMatchedToken_ThrowsInvalidCredentialException() {
         // given
         User user = new User("test-user", "test-email");
         userRepository.save(user);
@@ -149,6 +175,41 @@ class AuthControllerTest {
         RefreshToken invalidRefreshToken = new RefreshToken();
         RefreshRequest request = new RefreshRequest(
                 invalidAccessToken.serialize(accessTokenProperties), invalidRefreshToken.serialize());
+
+        UserSession userSession = UserSession.builder()
+                .user(user)
+                .refreshToken(refreshToken.serialize())
+                .accessToken(accessToken.serialize(accessTokenProperties))
+                .expiration(notExpiredTime)
+                .build();
+        userSessionRepository.save(userSession);
+
+        // when
+        ExtractableResponse<?> response = with().body(request)
+                .when().request(POST, "/auth/refresh")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(
+                ErrorCode.INVALID_CREDENTIALS.getDefaultMessage());
+    }
+
+    @Test
+    @DisplayName("JWT가 아닌 Access 토큰으로 토큰 갱신 요청을 수행하면 예외가 발생한다")
+    void whenNotJwtAccessToken_ThrowsInvalidCredentialException() {
+        // given
+        User user = new User("test-user", "test-email");
+        userRepository.save(user);
+
+        AccessToken accessToken =
+                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
+        RefreshToken refreshToken = new RefreshToken();
+        LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
+        RefreshRequest request =
+                new RefreshRequest("not-jwt-access-token", refreshToken.serialize());
 
         UserSession userSession = UserSession.builder()
                 .user(user)

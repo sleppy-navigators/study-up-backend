@@ -38,6 +38,10 @@ public class GroupInvitation {
         this.invitationKey = UUID.randomUUID().toString();
     }
 
+    public boolean matchGroupId(Long groupId) {
+        return this.group.getId().equals(groupId);
+    }
+
     public boolean matchKey(String key) {
         return this.invitationKey.equals(key);
     }

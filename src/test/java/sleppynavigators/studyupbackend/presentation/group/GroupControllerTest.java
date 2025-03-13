@@ -244,7 +244,7 @@ public class GroupControllerTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 그룹에 탈퇴를 요청하면 오류로 응답한다")
+    @DisplayName("존재하지 않는 그룹, 멤버에 탈퇴를 요청해도 정상 응답한다")
     void leaveGroup_NotFound() {
         // given
         assert groupRepository.findAll().isEmpty();
@@ -256,10 +256,34 @@ public class GroupControllerTest {
                 .log().all().extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
-        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(Optional.ofNullable(response.jsonPath().get("data"))).isEmpty();
     }
+
+    @Test
+    @DisplayName("챌린저가 그룹 탈퇴를 요청하면 실패한다.")
+    void challengerLeaveGroup_Fail() {
+        // given
+        Group group = new Group("test group", "test description", "https://test.com", currentUser);
+        Group savedGroup = groupRepository.save(group);
+
+        challengeRepository.save(new ChallengeCreationRequest("test challenge",
+                LocalDateTime.now().plusDays(3), null, List.of(
+                new TaskRequest("test task 1-2-1", LocalDateTime.now().plusHours(3))
+        )).toEntity(currentUser, savedGroup));
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/groups/{groupId}/leave", savedGroup.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ACTION_REQUIRED_BEFORE.getCode());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("Challenger cannot leave the group.");
+    }
+
 
     @Test
     @DisplayName("그룹 초대를 생성한다")
@@ -810,11 +834,11 @@ public class GroupControllerTest {
                 new TaskRequest("test task 3-4", LocalDateTime.now().plusHours(12))
         )).toEntity(currentUser, group));
 
-        challenge1.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")));
+        challenge1.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")), currentUser);
         challenge2.getTasks().get(0)
                 .certify(List.of(new URL("https://test.com"), new URL("https://test2.com")),
-                        List.of(new URL("https://test.com")));
-        challenge3.getTasks().get(2).certify(List.of(new URL("https://test.com")), List.of());
+                        List.of(new URL("https://test.com")), currentUser);
+        challenge3.getTasks().get(2).certify(List.of(new URL("https://test.com")), List.of(), currentUser);
         challengeRepository.saveAll(List.of(challenge1, challenge2, challenge3));
 
         // when
