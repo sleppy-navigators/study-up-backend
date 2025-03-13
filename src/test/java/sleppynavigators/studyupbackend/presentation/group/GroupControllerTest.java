@@ -834,11 +834,11 @@ public class GroupControllerTest {
                 new TaskRequest("test task 3-4", LocalDateTime.now().plusHours(12))
         )).toEntity(currentUser, group));
 
-        challenge1.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")));
+        challenge1.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")), currentUser);
         challenge2.getTasks().get(0)
                 .certify(List.of(new URL("https://test.com"), new URL("https://test2.com")),
-                        List.of(new URL("https://test.com")));
-        challenge3.getTasks().get(2).certify(List.of(new URL("https://test.com")), List.of());
+                        List.of(new URL("https://test.com")), currentUser);
+        challenge3.getTasks().get(2).certify(List.of(new URL("https://test.com")), List.of(), currentUser);
         challengeRepository.saveAll(List.of(challenge1, challenge2, challenge3));
 
         // when

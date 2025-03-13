@@ -103,11 +103,11 @@ public class ChallengeControllerTest {
                 new TaskRequest("test task 3", LocalDateTime.now().plusHours(9))
         )).toEntity(currentUser, group));
 
-        challenge.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")));
+        challenge.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")), currentUser);
         challenge.getTasks().get(2).certify(List.of(new URL("https://test.com")),
                 List.of(new URL("https://test.com"),
                         new URL("https://test2.com"),
-                        new URL("https://test3.com")));
+                        new URL("https://test3.com")), currentUser);
         challengeRepository.save(challenge);
 
         // when
@@ -143,11 +143,11 @@ public class ChallengeControllerTest {
                 new TaskRequest("test task 3", LocalDateTime.now().plusHours(9))
         )).toEntity(currentUser, group));
 
-        challenge.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")));
+        challenge.getTasks().get(0).certify(List.of(), List.of(new URL("https://test.com")), currentUser);
         challenge.getTasks().get(2).certify(List.of(new URL("https://test.com")),
                 List.of(new URL("https://test.com"),
                         new URL("https://test2.com"),
-                        new URL("https://test3.com")));
+                        new URL("https://test3.com")), currentUser);
         challengeRepository.save(challenge);
 
         TaskCertificationRequest request = new TaskCertificationRequest(
