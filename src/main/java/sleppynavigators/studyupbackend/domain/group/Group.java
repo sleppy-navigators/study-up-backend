@@ -60,6 +60,10 @@ public class Group extends TimeAuditBaseEntity {
     }
 
     public void addMember(User member) {
+        if (hasMember(member)) {
+            return;
+        }
+
         members.add(new GroupMember(this, member));
     }
 
