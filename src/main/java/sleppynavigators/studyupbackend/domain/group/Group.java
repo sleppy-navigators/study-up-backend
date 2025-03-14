@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.common.UserAuditAttribute;
-import sleppynavigators.studyupbackend.domain.common.UserAuditorListener;
+import sleppynavigators.studyupbackend.infrastructure.common.attribute.listener.UserAuditListener;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.vo.GroupDetail;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -26,7 +26,7 @@ import sleppynavigators.studyupbackend.exception.business.ActionRequiredBeforeEx
 @SoftDelete
 @Entity(name = "`groups`")
 @Getter
-@EntityListeners(UserAuditorListener.class)
+@EntityListeners(UserAuditListener.class)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Group extends TimeAuditBaseEntity {
 

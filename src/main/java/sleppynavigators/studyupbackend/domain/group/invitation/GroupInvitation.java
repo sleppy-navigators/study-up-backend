@@ -17,12 +17,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.common.UserAuditAttribute;
-import sleppynavigators.studyupbackend.domain.common.UserAuditorListener;
+import sleppynavigators.studyupbackend.infrastructure.common.attribute.listener.UserAuditListener;
 import sleppynavigators.studyupbackend.domain.group.Group;
 
 @Entity(name = "group_invitations")
 @Getter
-@EntityListeners(UserAuditorListener.class)
+@EntityListeners(UserAuditListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupInvitation extends TimeAuditBaseEntity {
 
