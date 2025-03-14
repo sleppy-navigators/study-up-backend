@@ -9,9 +9,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+/**
+ * Represents the time audit attributes. It tracks the creation and update time of the entity.
+ */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class TimeAuditBaseEntity {
+abstract public class TimeAuditBaseEntity {
 
     @Immutable
     @CreatedDate
