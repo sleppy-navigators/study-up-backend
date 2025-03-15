@@ -90,10 +90,6 @@ public class GroupService {
         }
 
         User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
-        if (groupMemberRepository.findByGroupIdAndUserId(groupId, userId).isPresent()) {
-            return GroupResponse.fromEntity(group);
-        }
-
         group.addMember(user);
         return GroupResponse.fromEntity(group);
     }

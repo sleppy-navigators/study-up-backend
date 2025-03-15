@@ -14,28 +14,34 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskDetail;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.OveredDeadlineException;
 
+@SoftDelete
 @Entity(name = "tasks")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Task {
+public class Task extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Immutable
     @Embedded
     private TaskDetail detail;
 
     @Embedded
     private TaskCertification certification;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Immutable
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "challenge_id", nullable = false)
     private Challenge challenge;
 

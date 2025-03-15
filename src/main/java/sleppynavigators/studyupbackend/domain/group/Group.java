@@ -3,6 +3,7 @@ package sleppynavigators.studyupbackend.domain.group;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,19 +14,28 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SoftDelete;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
+import sleppynavigators.studyupbackend.domain.common.UserAuditAttribute;
+import sleppynavigators.studyupbackend.infrastructure.common.attribute.listener.UserAuditListener;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.vo.GroupDetail;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ActionRequiredBeforeException;
 
+@SoftDelete
 @Entity(name = "`groups`")
 @Getter
+@EntityListeners(UserAuditListener.class)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Group {
+public class Group extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Embedded
+    private UserAuditAttribute userAuditAttribute;
 
     @Embedded
     private GroupDetail groupDetail;
@@ -50,6 +60,10 @@ public class Group {
     }
 
     public void addMember(User member) {
+        if (hasMember(member)) {
+            return;
+        }
+
         members.add(new GroupMember(this, member));
     }
 
