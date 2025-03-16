@@ -14,7 +14,6 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Immutable;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.common.UserAuditAttribute;
 import sleppynavigators.studyupbackend.infrastructure.common.attribute.listener.UserAuditListener;
@@ -33,9 +32,8 @@ public class GroupInvitation extends TimeAuditBaseEntity {
     @Embedded
     private UserAuditAttribute userAuditAttribute;
 
-    @Immutable
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "group_id", nullable = false, updatable = false)
     private Group group;
 
     @Column(nullable = false)

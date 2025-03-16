@@ -35,14 +35,12 @@ public class Challenge extends TimeAuditBaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Immutable
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false, updatable = false)
     private User owner;
 
-    @Immutable
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_id", nullable = false)
+    @JoinColumn(name = "group_id", nullable = false, updatable = false)
     private Group group;
 
     @Immutable
@@ -68,7 +66,7 @@ public class Challenge extends TimeAuditBaseEntity {
         if (!canAccess(user)) {
             throw new ForbiddenContentException();
         }
-        
+
         return tasks;
     }
 
