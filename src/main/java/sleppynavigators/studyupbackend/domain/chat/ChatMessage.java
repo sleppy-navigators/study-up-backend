@@ -59,14 +59,4 @@ public class ChatMessage {
             .senderType(SenderType.BOT)
             .build();
     }
-
-    public static ChatMessage of(Long senderId, Long groupId, String content, LocalDateTime createdAt) {
-        return ChatMessage.builder()
-            .senderId(senderId)
-            .groupId(groupId)
-            .content(content)
-            .senderType(SenderType.USER)
-            .createdAt(createdAt)
-            .build();
-    }
 }

@@ -5,4 +5,4 @@ public enum Event {
     USER_LEAVE,
     CHALLENGE_CREATE,
     CHALLENGE_COMPLETE
-} 
+}

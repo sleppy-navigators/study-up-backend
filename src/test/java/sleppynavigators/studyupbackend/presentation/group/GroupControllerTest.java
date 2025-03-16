@@ -27,6 +27,7 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.chat.SenderType;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -865,9 +866,27 @@ public class GroupControllerTest {
 
         LocalDateTime now = LocalDateTime.now();
         List<ChatMessage> messages = List.of(
-                ChatMessage.of(currentUser.getId(), group.getId(), "첫 번째 메시지", now.plusSeconds(1)),
-                ChatMessage.of(currentUser.getId(), group.getId(), "두 번째 메시지", now.plusSeconds(2)),
-                ChatMessage.of(currentUser.getId(), group.getId(), "세 번째 메시지", now.plusSeconds(3))
+                ChatMessage.builder()
+                    .senderId(currentUser.getId())
+                    .groupId(group.getId())
+                    .content("첫 번째 메시지")
+                    .senderType(SenderType.USER)
+                    .createdAt(now.plusSeconds(1))
+                    .build(),
+                ChatMessage.builder()
+                    .senderId(currentUser.getId())
+                    .groupId(group.getId())
+                    .content("두 번째 메시지")
+                    .senderType(SenderType.USER)
+                    .createdAt(now.plusSeconds(2))
+                    .build(),
+                ChatMessage.builder()
+                    .senderId(currentUser.getId())
+                    .groupId(group.getId())
+                    .content("세 번째 메시지")
+                    .senderType(SenderType.USER)
+                    .createdAt(now.plusSeconds(3))
+                    .build()
         );
         chatMessageRepository.saveAll(messages);
 
