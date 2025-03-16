@@ -21,7 +21,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.chat.SystemMessageEvent;
+import sleppynavigators.studyupbackend.domain.event.Event;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
@@ -170,7 +170,7 @@ class ChatMessageServiceTest {
         String destination = "/topic/group/1";
 
         // when
-        chatMessageService.sendSystemMessage(groupId, SystemMessageEvent.USER_JOIN, username);
+        chatMessageService.sendSystemMessage(groupId, Event.USER_JOIN, username);
 
         // then
         verify(messagingTemplate).convertAndSend(eq(destination), any(SuccessResponse.class));
@@ -198,7 +198,7 @@ class ChatMessageServiceTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatMessageService.sendSystemMessage(groupId, SystemMessageEvent.USER_JOIN, username))
+        assertThatThrownBy(() -> chatMessageService.sendSystemMessage(groupId, Event.USER_JOIN, username))
                 .isInstanceOf(ChatMessageException.class);
 
         assertThat(chatMessageRepository.findAll()).isEmpty();

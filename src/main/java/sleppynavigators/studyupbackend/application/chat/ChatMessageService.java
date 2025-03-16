@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.chat.SystemMessageEvent;
+import sleppynavigators.studyupbackend.domain.event.Event;
 import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
@@ -49,7 +49,7 @@ public class ChatMessageService {
         }
     }
 
-    public void sendSystemMessage(Long groupId, SystemMessageEvent event, String... args) {
+    public void sendSystemMessage(Long groupId, Event event, String... args) {
         ChatMessage savedMessage = null;
         try {
             String content = SystemMessageTemplate.from(event).getMessage(args);
