@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 
 @Entity(name = "bots")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Bot {
+public class Bot extends TimeAuditBaseEntity {
 
     private static final String BOT_NAME = "StudyUpBot";
 
@@ -20,7 +21,7 @@ public class Bot {
     @Column(nullable = false)
     private String name = BOT_NAME;
     
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
