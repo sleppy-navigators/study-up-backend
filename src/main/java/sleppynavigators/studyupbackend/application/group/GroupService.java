@@ -11,6 +11,7 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
@@ -20,6 +21,7 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupMemberRepositor
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
+import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
@@ -38,12 +40,17 @@ public class GroupService {
     private final GroupInvitationRepository groupInvitationRepository;
     private final ChallengeRepository challengeRepository;
     private final TaskRepository taskRepository;
+    private final BotRepository botRepository;
 
 
     @Transactional
     public GroupResponse createGroup(Long creatorId, GroupCreationRequest request) {
         User creator = userRepository.findById(creatorId).orElseThrow(EntityNotFoundException::new);
         Group savedGroup = groupRepository.save(request.toEntity(creator));
+        
+        Bot bot = new Bot(savedGroup);
+        botRepository.save(bot);
+        
         return GroupResponse.fromEntity(savedGroup);
     }
 
@@ -54,6 +61,7 @@ public class GroupService {
             group.removeMember(member);
 
             if (!group.hasAnyMember()) {
+                botRepository.findByGroupId(groupId).ifPresent(botRepository::delete);
                 groupRepository.delete(group);
             }
         });
