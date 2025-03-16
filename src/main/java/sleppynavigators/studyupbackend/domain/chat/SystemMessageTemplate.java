@@ -4,18 +4,26 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public enum SystemMessageTemplate {
+    USER_JOIN(SystemMessageEvent.USER_JOIN, "%s님이 그룹에 참여했습니다.", 1),
+    USER_LEAVE(SystemMessageEvent.USER_LEAVE, "%s님이 그룹을 나갔습니다.", 1),
+    CHALLENGE_CREATE(SystemMessageEvent.CHALLENGE_CREATE, "%s님이 %s 챌린지를 생성했습니다.", 2),
+    CHALLENGE_COMPLETE(SystemMessageEvent.CHALLENGE_COMPLETE, "%s님이 %s 챌린지를 완료했습니다.", 2);
 
-    USER_JOIN("%s님이 그룹에 참여했습니다.", 1),
-    USER_LEAVE("%s님이 그룹을 나갔습니다.", 1),
-    CHALLENGE_CREATE("%s님이 %s 챌린지를 생성했습니다.", 2),
-    CHALLENGE_COMPLETE("%s님이 %s 챌린지를 완료했습니다.", 2);
-
+    private final SystemMessageEvent event;
     private final String messageFormat;
     private final int expectedArgCount;
 
-    SystemMessageTemplate(String messageFormat, int expectedArgCount) {
+    SystemMessageTemplate(SystemMessageEvent event, String messageFormat, int expectedArgCount) {
+        this.event = event;
         this.messageFormat = messageFormat;
         this.expectedArgCount = expectedArgCount;
+    }
+
+    public static SystemMessageTemplate from(SystemMessageEvent event) {
+        return Arrays.stream(values())
+                .filter(template -> template.event == event)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 이벤트입니다: " + event));
     }
 
     public String getMessage(String... args) {

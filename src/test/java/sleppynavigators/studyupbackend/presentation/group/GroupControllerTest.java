@@ -865,9 +865,9 @@ public class GroupControllerTest {
 
         LocalDateTime now = LocalDateTime.now();
         List<ChatMessage> messages = List.of(
-                new ChatMessage(currentUser.getId(), group.getId(), "첫 번째 메시지", now.plusSeconds(1)),
-                new ChatMessage(currentUser.getId(), group.getId(), "두 번째 메시지", now.plusSeconds(2)),
-                new ChatMessage(currentUser.getId(), group.getId(), "세 번째 메시지", now.plusSeconds(3))
+                ChatMessage.of(currentUser.getId(), group.getId(), "첫 번째 메시지", now.plusSeconds(1)),
+                ChatMessage.of(currentUser.getId(), group.getId(), "두 번째 메시지", now.plusSeconds(2)),
+                ChatMessage.of(currentUser.getId(), group.getId(), "세 번째 메시지", now.plusSeconds(3))
         );
         chatMessageRepository.saveAll(messages);
 

@@ -32,28 +32,41 @@ public class ChatMessage {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Builder(builderMethodName = "userMessageBuilder")
-    public ChatMessage(Long userId, Long groupId, String content) {
-        this(userId, groupId, content, SenderType.USER, LocalDateTime.now());
-    }
-
-    @Builder(builderMethodName = "botMessageBuilder")
-    public ChatMessage(Long botId, Long groupId, String content) {
-        this(botId, groupId, content, SenderType.BOT, LocalDateTime.now());
-    }
-
-    private ChatMessage(
-        Long senderId, 
-        Long groupId, 
-        String content, 
-        SenderType senderType, 
-        LocalDateTime createdAt
-    ) {
+    @Builder
+    private ChatMessage(Long senderId, Long groupId, String content, SenderType senderType, LocalDateTime createdAt) {
         this.id = new ObjectId();
         this.senderId = senderId;
         this.groupId = groupId;
         this.content = content;
         this.senderType = senderType;
-        this.createdAt = createdAt;
+        this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
+    }
+
+    public static ChatMessage fromUser(Long userId, Long groupId, String content) {
+        return ChatMessage.builder()
+            .senderId(userId)
+            .groupId(groupId)
+            .content(content)
+            .senderType(SenderType.USER)
+            .build();
+    }
+
+    public static ChatMessage fromBot(Long botId, Long groupId, String content) {
+        return ChatMessage.builder()
+            .senderId(botId)
+            .groupId(groupId)
+            .content(content)
+            .senderType(SenderType.BOT)
+            .build();
+    }
+
+    public static ChatMessage of(Long senderId, Long groupId, String content, LocalDateTime createdAt) {
+        return ChatMessage.builder()
+            .senderId(senderId)
+            .groupId(groupId)
+            .content(content)
+            .senderType(SenderType.USER)
+            .createdAt(createdAt)
+            .build();
     }
 }
