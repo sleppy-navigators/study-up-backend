@@ -27,19 +27,33 @@ public class ChatMessage {
 
     private String content;
 
+    private SenderType senderType;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Builder
-    public ChatMessage(Long senderId, Long groupId, String content) {
-        this(senderId, groupId, content, LocalDateTime.now());
+    @Builder(builderMethodName = "userMessageBuilder")
+    public ChatMessage(Long userId, Long groupId, String content) {
+        this(userId, groupId, content, SenderType.USER, LocalDateTime.now());
     }
 
-    public ChatMessage(Long senderId, Long groupId, String content, LocalDateTime createdAt) {
+    @Builder(builderMethodName = "botMessageBuilder")
+    public ChatMessage(Long botId, Long groupId, String content) {
+        this(botId, groupId, content, SenderType.BOT, LocalDateTime.now());
+    }
+
+    private ChatMessage(
+        Long senderId, 
+        Long groupId, 
+        String content, 
+        SenderType senderType, 
+        LocalDateTime createdAt
+    ) {
         this.id = new ObjectId();
         this.senderId = senderId;
         this.groupId = groupId;
         this.content = content;
+        this.senderType = senderType;
         this.createdAt = createdAt;
     }
 }
