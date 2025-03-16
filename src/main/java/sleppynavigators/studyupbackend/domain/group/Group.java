@@ -13,15 +13,18 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SoftDelete;
+import sleppynavigators.studyupbackend.domain.common.UserAndTimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.vo.GroupDetail;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ActionRequiredBeforeException;
 
+@SoftDelete
 @Entity(name = "`groups`")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class Group {
+public class Group extends UserAndTimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +53,10 @@ public class Group {
     }
 
     public void addMember(User member) {
+        if (hasMember(member)) {
+            return;
+        }
+
         members.add(new GroupMember(this, member));
     }
 

@@ -11,12 +11,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SoftDelete;
+import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.User;
 
+@SoftDelete
 @Entity(name = "user_credentials")
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class UserCredential {
+public class UserCredential extends TimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +32,8 @@ public class UserCredential {
     @Column(nullable = false)
     private String provider;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private User user;
 
     public UserCredential(String subject, String provider, User user) {

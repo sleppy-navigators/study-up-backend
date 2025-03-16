@@ -12,20 +12,20 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sleppynavigators.studyupbackend.domain.common.UserAndTimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 
 @Entity(name = "group_invitations")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GroupInvitation {
+public class GroupInvitation extends UserAndTimeAuditBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // We might modify it to allow multiple invitations to a single group later, but we won't modify it now.
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "group_id", nullable = false, updatable = false)
     private Group group;
 
     @Column(nullable = false)
