@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.chat.SenderType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,11 +31,7 @@ class ChatMessageRepositoryTest {
     @DisplayName("채팅 메시지를 저장하고 조회할 수 있다")
     void saveChatMessage() {
         // given
-        ChatMessage chatMessage = ChatMessage.builder()
-                .senderId(1L)
-                .groupId(1L)
-                .content("테스트 메시지")
-                .build();
+        ChatMessage chatMessage = ChatMessage.fromUser(1L, 1L, "테스트 메시지");
 
         // when
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
@@ -54,12 +51,13 @@ class ChatMessageRepositoryTest {
         Long groupId = 1L;
         LocalDateTime now = LocalDateTime.now();
         for (int i = 1; i <= 5; i++) {
-            chatMessageRepository.save(new ChatMessage(
-                            1L,
-                            groupId,
-                            "테스트 메시지 " + i,
-                            now.plusSeconds(i)
-                    )
+            chatMessageRepository.save(ChatMessage.builder()
+                .senderId(1L)
+                .groupId(groupId)
+                .content("테스트 메시지 " + i)
+                .senderType(SenderType.USER)
+                .createdAt(now.plusSeconds(i))
+                .build()
             );
         }
 

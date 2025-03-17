@@ -22,6 +22,6 @@ public class ChatMessageHandler {
             UserAuthentication userAuthentication // WebSocket은 @AuthenticationPrincipal을 지원하지 않음
     ) {
         String destination = String.format(GROUP_DESTINATION, message.groupId());
-        chatMessageService.sendMessage(message, destination, userAuthentication.getPrincipal().userId());
+        chatMessageService.sendUserMessage(message, destination, userAuthentication.getPrincipal().userId());
     }
 }

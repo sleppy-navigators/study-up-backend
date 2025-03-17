@@ -8,10 +8,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.event.Event;
+import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
+import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
@@ -24,30 +28,50 @@ import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatMessageService {
 
+    private static final String GROUP_DESTINATION = "/topic/group/%s";
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final GroupRepository groupRepository;
+    private final BotRepository botRepository;
 
-    // TODO(@Jayon): 향후 카프카 도입하여 메시지 전송 로직 변경
-    public void sendMessage(ChatMessageRequest request, String destination, Long senderId) {
+    public void sendUserMessage(ChatMessageRequest request, String destination, Long senderId) {
         ChatMessage savedMessage = null;
         try {
-            ChatMessage chatMessage = ChatMessage.builder()
-                    .senderId(senderId)
-                    .groupId(request.groupId())
-                    .content(request.content())
-                    .build();
+            ChatMessage chatMessage = ChatMessage.fromUser(senderId, request.groupId(), request.content());
             
             savedMessage = chatMessageRepository.save(chatMessage);
-
-            ChatMessageResponse response = ChatMessageResponse.from(savedMessage);
-            messagingTemplate.convertAndSend(destination, new SuccessResponse<>(response));
+            sendToWebSocket(destination, savedMessage);
         } catch (Exception e) {
             if (savedMessage != null) {
                 chatMessageRepository.delete(savedMessage);
             }
             throw new ChatMessageException("메시지 처리 중 오류가 발생했습니다: " + e);
         }
+    }
+
+    public void sendSystemMessage(Long groupId, Event event, String... args) {
+        ChatMessage savedMessage = null;
+        try {
+            String content = SystemMessageTemplate.from(event).getMessage(args);
+            Bot bot = botRepository.findByGroupId(groupId)
+                    .orElseThrow(() -> new EntityNotFoundException("해당 그룹의 봇을 찾을 수 없습니다. groupId: " + groupId));
+            String destination = String.format(GROUP_DESTINATION, groupId);
+            
+            ChatMessage chatMessage = ChatMessage.fromBot(bot.getId(), groupId, content);
+
+            savedMessage = chatMessageRepository.save(chatMessage);
+            sendToWebSocket(destination, savedMessage);
+        } catch (Exception e) {
+            if (savedMessage != null) {
+                chatMessageRepository.delete(savedMessage);
+            }
+            throw new ChatMessageException("시스템 메시지 처리 중 오류가 발생했습니다: " + e);
+        }
+    }
+
+    private void sendToWebSocket(String destination, ChatMessage message) {
+        ChatMessageResponse response = ChatMessageResponse.from(message);
+        messagingTemplate.convertAndSend(destination, new SuccessResponse<>(response));
     }
 
     @Transactional(readOnly = true)
