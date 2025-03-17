@@ -21,7 +21,7 @@ public class Bot extends TimeAuditBaseEntity {
     @Column(nullable = false)
     private String name = BOT_NAME;
     
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
