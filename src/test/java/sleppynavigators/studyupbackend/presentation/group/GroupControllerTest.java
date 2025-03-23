@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -40,10 +41,10 @@ import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvi
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskCertificationDTO;
 import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskListItem;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -116,7 +117,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getString("data.id")).isNotBlank();
+        assertThat(response.jsonPath().getLong("data.id")).isNotNull();
         assertThat(response.jsonPath().getString("data.name")).isNotBlank();
         assertThat(response.jsonPath().getString("data.description")).isNotBlank();
         assertThat(response.jsonPath().getString("data.thumbnailUrl")).isNotBlank();
@@ -301,6 +302,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getLong("data.invitationId")).isNotNull();
         assertThat(response.jsonPath().getString("data.invitationKey")).isNotBlank();
     }
 
@@ -338,7 +340,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getString("data.id")).isNotBlank();
+        assertThat(response.jsonPath().getLong("data.id")).isNotNull();
         assertThat(response.jsonPath().getString("data.name")).isNotBlank();
         assertThat(response.jsonPath().getString("data.description")).isNotBlank();
         assertThat(response.jsonPath().getString("data.thumbnailUrl")).isNotBlank();
@@ -381,7 +383,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getString("data.id")).isNotBlank();
+        assertThat(response.jsonPath().getLong("data.id")).isNotNull();
         assertThat(response.jsonPath().getString("data.name")).isNotBlank();
         assertThat(response.jsonPath().getString("data.description")).isNotBlank();
         assertThat(response.jsonPath().getString("data.thumbnailUrl")).isNotBlank();
@@ -805,9 +807,15 @@ public class GroupControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
         assertThat(response.jsonPath().getList("data.challenges")).hasSize(3);
-        assertThat(response.jsonPath().getString("data.challenges[0].title")).isEqualTo("test challenge 1");
-        assertThat(response.jsonPath().getString("data.challenges[1].title")).isEqualTo("test challenge 2");
-        assertThat(response.jsonPath().getString("data.challenges[2].title")).isEqualTo("test challenge 3");
+        assertThat(response.jsonPath().getList("data.challenges.id", Long.class)).allMatch(Objects::nonNull);
+        assertThat(response.jsonPath().getList("data.challenges.title", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.challenges.deadline", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.challenges.description", String.class)).allMatch(Objects::isNull);
+        assertThat(response.jsonPath().getList("data.challenges.challengerId", Long.class)).allMatch(Objects::nonNull);
+        assertThat(response.jsonPath().getList("data.challenges.challengerName", String.class))
+                .noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.challenges.recentCertification", TaskCertificationDTO.class))
+                .noneMatch(Objects::nonNull);
     }
 
     @Test
@@ -851,10 +859,13 @@ public class GroupControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
         assertThat(response.jsonPath().getList("data.tasks")).hasSize(8);
-        assertThat(response.jsonPath().getList("data.tasks", GroupTaskListItem.class))
-                .anySatisfy(task -> assertThat(task.certification()).isNotNull());
-        assertThat(response.jsonPath().getList("data.tasks", GroupTaskListItem.class))
-                .anySatisfy(task -> assertThat(task.certification()).isNull());
+        assertThat(response.jsonPath().getList("data.tasks.id", Long.class)).allMatch(Objects::nonNull);
+        assertThat(response.jsonPath().getList("data.tasks.title", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.tasks.deadline", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.tasks.certification", TaskCertificationDTO.class))
+                .anyMatch(Objects::nonNull);
+        assertThat(response.jsonPath().getList("data.tasks.certification", TaskCertificationDTO.class))
+                .anyMatch(Objects::isNull);
     }
 
     @Test
@@ -867,26 +878,26 @@ public class GroupControllerTest {
         LocalDateTime now = LocalDateTime.now();
         List<ChatMessage> messages = List.of(
                 ChatMessage.builder()
-                    .senderId(currentUser.getId())
-                    .groupId(group.getId())
-                    .content("첫 번째 메시지")
-                    .senderType(SenderType.USER)
-                    .createdAt(now.plusSeconds(1))
-                    .build(),
+                        .senderId(currentUser.getId())
+                        .groupId(group.getId())
+                        .content("첫 번째 메시지")
+                        .senderType(SenderType.USER)
+                        .createdAt(now.plusSeconds(1))
+                        .build(),
                 ChatMessage.builder()
-                    .senderId(currentUser.getId())
-                    .groupId(group.getId())
-                    .content("두 번째 메시지")
-                    .senderType(SenderType.USER)
-                    .createdAt(now.plusSeconds(2))
-                    .build(),
+                        .senderId(currentUser.getId())
+                        .groupId(group.getId())
+                        .content("두 번째 메시지")
+                        .senderType(SenderType.USER)
+                        .createdAt(now.plusSeconds(2))
+                        .build(),
                 ChatMessage.builder()
-                    .senderId(currentUser.getId())
-                    .groupId(group.getId())
-                    .content("세 번째 메시지")
-                    .senderType(SenderType.USER)
-                    .createdAt(now.plusSeconds(3))
-                    .build()
+                        .senderId(currentUser.getId())
+                        .groupId(group.getId())
+                        .content("세 번째 메시지")
+                        .senderType(SenderType.USER)
+                        .createdAt(now.plusSeconds(3))
+                        .build()
         );
         chatMessageRepository.saveAll(messages);
 
@@ -922,6 +933,8 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
     }
 
     @Test
