@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,10 +102,11 @@ public class UserControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
         assertThat(response.jsonPath().getList("data.groups")).hasSize(4);
-        assertThat(response.jsonPath().getString("data.groups[].id")).isNotBlank();
-        assertThat(response.jsonPath().getString("data.groups[].name")).isNotBlank();
-        assertThat(response.jsonPath().getString("data.groups[].description")).isNotBlank();
-        assertThat(response.jsonPath().getString("data.groups[].thumbnailUrl")).isNotBlank();
+        assertThat(response.jsonPath().getList("data.groups.id", Long.class)).noneMatch(Objects::isNull);
+        assertThat(response.jsonPath().getList("data.groups.name", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.groups.thumbnailUrl", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.groups.lastSystemMessage", String.class))
+                .noneMatch(String::isBlank);
     }
 
     @Test
@@ -151,9 +153,14 @@ public class UserControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
         assertThat(response.jsonPath().getList("data.tasks")).hasSize(8);
+        assertThat(response.jsonPath().getList("data.tasks.id", Long.class)).allMatch(Objects::nonNull);
+        assertThat(response.jsonPath().getList("data.tasks.title", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.tasks.deadline", String.class)).noneMatch(String::isBlank);
         assertThat(response.jsonPath().getList("data.tasks", UserTaskListItem.class))
-                .anySatisfy(task -> assertThat(task.certification()).isNotNull());
+                .map(UserTaskListItem::certification)
+                .anyMatch(Objects::nonNull);
         assertThat(response.jsonPath().getList("data.tasks", UserTaskListItem.class))
-                .anySatisfy(task -> assertThat(task.certification()).isNull());
+                .map(UserTaskListItem::certification)
+                .anyMatch(Objects::isNull);
     }
 }
