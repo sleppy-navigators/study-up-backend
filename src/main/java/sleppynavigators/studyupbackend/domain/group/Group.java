@@ -77,6 +77,10 @@ public class Group extends UserAndTimeAuditBaseEntity {
                 .anyMatch(member -> member.getUser().equals(user));
     }
 
+    public int getNumOfMembers() {
+        return members.size();
+    }
+
     private boolean isChallengeOwner(User user) {
         return challenges.stream()
                 .anyMatch(challenge -> challenge.getOwner().equals(user));

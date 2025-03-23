@@ -20,6 +20,7 @@ import sleppynavigators.studyupbackend.common.support.AuthSupport;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
+import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
@@ -55,8 +56,13 @@ public class UserControllerTest extends RestAssuredBaseTest {
     @DisplayName("사용자가 그룹 목록 조회에 성공한다")
     void getGroups_Success() {
         // given
-        IntStream.range(0, 3)
-                .forEach(ignored -> groupSupport.callToMakeGroup(List.of(currentUser)));
+        User anotherUser1 = userSupport.registerUserToDB();
+        User anotherUser2 = userSupport.registerUserToDB();
+        User anotherUser3 = userSupport.registerUserToDB();
+
+        Group group1 = groupSupport.callToMakeGroup(List.of(currentUser));
+        Group group2 = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser1));
+        Group group3 = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser2, anotherUser3));
 
         // when
         ExtractableResponse<?> response = with()
@@ -70,6 +76,8 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.groups()).hasSize(3);
+                    assertThat(data.groups()).map(GroupListResponse.GroupListItem::numOfMembers)
+                            .containsExactly(1, 2, 3);
                 });
     }
 

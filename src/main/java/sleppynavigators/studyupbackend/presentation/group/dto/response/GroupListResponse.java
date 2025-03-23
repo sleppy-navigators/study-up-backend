@@ -11,6 +11,7 @@ public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
     public record GroupListItem(@NotNull Long id,
                                 @NotBlank String name,
                                 String thumbnailUrl,
+                                @NotNull Integer numOfMembers,
                                 @NotBlank String lastSystemMessage) {
 
         public static GroupListItem fromEntity(Group group) {
@@ -18,6 +19,7 @@ public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
                     group.getId(),
                     group.getGroupDetail().name(),
                     group.getGroupDetail().thumbnailUrl(),
+                    group.getNumOfMembers(),
                     "누구누구님이 이런저런일을 했다고 하시네요. 1h"
             );
         }
