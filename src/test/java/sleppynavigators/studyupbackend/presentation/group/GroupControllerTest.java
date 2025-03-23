@@ -117,7 +117,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getLong("data.id")).isNotNull();
+        assertThat(response.jsonPath().getLong("data.id")).isPositive();
         assertThat(response.jsonPath().getString("data.name")).isNotBlank();
         assertThat(response.jsonPath().getString("data.description")).isNotBlank();
         assertThat(response.jsonPath().getString("data.thumbnailUrl")).isNotBlank();
@@ -302,7 +302,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getLong("data.invitationId")).isNotNull();
+        assertThat(response.jsonPath().getLong("data.invitationId")).isPositive();
         assertThat(response.jsonPath().getString("data.invitationKey")).isNotBlank();
     }
 
@@ -340,7 +340,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getLong("data.id")).isNotNull();
+        assertThat(response.jsonPath().getLong("data.id")).isPositive();
         assertThat(response.jsonPath().getString("data.name")).isNotBlank();
         assertThat(response.jsonPath().getString("data.description")).isNotBlank();
         assertThat(response.jsonPath().getString("data.thumbnailUrl")).isNotBlank();
@@ -383,7 +383,7 @@ public class GroupControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getLong("data.id")).isNotNull();
+        assertThat(response.jsonPath().getLong("data.id")).isPositive();
         assertThat(response.jsonPath().getString("data.name")).isNotBlank();
         assertThat(response.jsonPath().getString("data.description")).isNotBlank();
         assertThat(response.jsonPath().getString("data.thumbnailUrl")).isNotBlank();

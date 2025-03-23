@@ -166,7 +166,7 @@ public class ChallengeControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getLong("data.id")).isNotNull();
+        assertThat(response.jsonPath().getLong("data.id")).isPositive();
         assertThat(response.jsonPath().getString("data.title")).isNotBlank();
         assertThat(response.jsonPath().getString("data.deadline")).isNotBlank();
         assertThat(response.jsonPath().getObject("data.certification", TaskCertificationDTO.class)).isNotNull();
