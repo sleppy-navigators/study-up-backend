@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +36,6 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskCertificationDTO;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
 import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -119,10 +119,13 @@ public class ChallengeControllerTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
         assertThat(response.jsonPath().getList("data.tasks")).hasSize(3);
-        assertThat(response.jsonPath().getList("data.tasks", TaskListItem.class))
-                .anySatisfy(task -> assertThat(task.certification()).isNotNull());
-        assertThat(response.jsonPath().getList("data.tasks", TaskListItem.class))
-                .anySatisfy(task -> assertThat(task.certification()).isNull());
+        assertThat(response.jsonPath().getList("data.tasks.id", Long.class)).noneMatch(Objects::isNull);
+        assertThat(response.jsonPath().getList("data.tasks.title", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.tasks.deadline", String.class)).noneMatch(String::isBlank);
+        assertThat(response.jsonPath().getList("data.tasks.certification", TaskCertificationDTO.class))
+                .anyMatch(Objects::nonNull);
+        assertThat(response.jsonPath().getList("data.tasks.certification", TaskCertificationDTO.class))
+                .anyMatch(Objects::isNull);
     }
 
     @Test
@@ -163,6 +166,9 @@ public class ChallengeControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getLong("data.id")).isNotNull();
+        assertThat(response.jsonPath().getString("data.title")).isNotBlank();
+        assertThat(response.jsonPath().getString("data.deadline")).isNotBlank();
         assertThat(response.jsonPath().getObject("data.certification", TaskCertificationDTO.class)).isNotNull();
         assertThat(response.jsonPath().getString("data.certification.certificatedAt")).isNotBlank();
     }
