@@ -112,7 +112,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
     }
 
     @Transactional
-    static class TestFixtureMother {
+    private static class TestFixtureMother {
 
         /**
          * Generate a test user and save it to the database. `username` and `email` are set to "test-user" and
