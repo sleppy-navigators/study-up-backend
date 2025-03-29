@@ -6,26 +6,23 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willThrow;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
@@ -40,10 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest
-@ActiveProfiles("test")
 @DisplayName("ChatService 통합 테스트")
-class ChatMessageServiceTest {
+class ChatMessageServiceTest extends ApplicationBaseTest {
 
     private static final Long AUTHENTICATED_USER_ID = 1L;
 
@@ -62,9 +57,6 @@ class ChatMessageServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
     @MockitoBean
     private SimpMessageSendingOperations messagingTemplate;
 
@@ -73,11 +65,11 @@ class ChatMessageServiceTest {
         User creator = userRepository.save(new User("testUser", "test@test.com"));
 
         Group group = Group.builder()
-            .name("testGroup")
-            .description("테스트용 그룹")
-            .thumbnailUrl("https://test.com")
-            .creator(creator)
-            .build();
+                .name("testGroup")
+                .description("테스트용 그룹")
+                .thumbnailUrl("https://test.com")
+                .creator(creator)
+                .build();
         Group savedGroup = groupRepository.save(group);
 
         Bot bot = new Bot(savedGroup);
@@ -91,11 +83,6 @@ class ChatMessageServiceTest {
         public SimpMessageSendingOperations messagingTemplate() {
             return Mockito.mock(SimpMessageSendingOperations.class);
         }
-    }
-
-    @AfterEach
-    void tearDown() {
-        databaseCleaner.execute();
     }
 
     @Test

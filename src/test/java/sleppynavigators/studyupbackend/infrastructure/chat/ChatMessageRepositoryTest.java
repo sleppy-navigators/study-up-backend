@@ -1,31 +1,22 @@
 package sleppynavigators.studyupbackend.infrastructure.chat;
 
 import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
+import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.SenderType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataMongoTest
-@ActiveProfiles("test")
 @DisplayName("ChatMessageRepository 테스트")
-class ChatMessageRepositoryTest {
+class ChatMessageRepositoryTest extends ApplicationBaseTest {
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
-
-    @BeforeEach
-    void setUp() {
-        chatMessageRepository.deleteAll();
-    }
 
     @Test
     @DisplayName("채팅 메시지를 저장하고 조회할 수 있다")
@@ -52,12 +43,12 @@ class ChatMessageRepositoryTest {
         LocalDateTime now = LocalDateTime.now();
         for (int i = 1; i <= 5; i++) {
             chatMessageRepository.save(ChatMessage.builder()
-                .senderId(1L)
-                .groupId(groupId)
-                .content("테스트 메시지 " + i)
-                .senderType(SenderType.USER)
-                .createdAt(now.plusSeconds(i))
-                .build()
+                    .senderId(1L)
+                    .groupId(groupId)
+                    .content("테스트 메시지 " + i)
+                    .senderType(SenderType.USER)
+                    .createdAt(now.plusSeconds(i))
+                    .build()
             );
         }
 

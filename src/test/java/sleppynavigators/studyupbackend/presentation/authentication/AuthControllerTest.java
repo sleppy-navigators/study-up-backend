@@ -4,21 +4,14 @@ import static io.restassured.RestAssured.with;
 import static io.restassured.http.Method.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
@@ -29,11 +22,10 @@ import sleppynavigators.studyupbackend.infrastructure.authentication.session.Use
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
+import sleppynavigators.studyupbackend.common.RestAssuredBaseTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @DisplayName("AuthController API 테스트")
-class AuthControllerTest {
+class AuthControllerTest extends RestAssuredBaseTest {
 
     @Autowired
     private AccessTokenProperties accessTokenProperties;
@@ -43,26 +35,6 @@ class AuthControllerTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setContentType(ContentType.JSON)
-                .build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        databaseCleaner.execute();
-        RestAssured.reset();
-    }
 
     @Test
     @DisplayName("토큰 갱신 요청이 성공적으로 수행된다")

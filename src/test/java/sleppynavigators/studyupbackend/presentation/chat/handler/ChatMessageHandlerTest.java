@@ -13,12 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.simp.stomp.ConnectionLostException;
 import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.test.context.ActiveProfiles;
+import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
 import sleppynavigators.studyupbackend.domain.authentication.session.SessionManager;
 import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
@@ -31,13 +30,10 @@ import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.support.WebSocketTestSupport;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @DisplayName("ChatMessageHandler 통합 테스트")
-class ChatMessageHandlerTest {
+class ChatMessageHandlerTest extends ApplicationBaseTest {
 
     private static final String TEST_USERNAME = "test-user";
     private static final String TEST_EMAIL = "test@email.com";
@@ -60,22 +56,18 @@ class ChatMessageHandlerTest {
     private SessionManager sessionManager;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @Autowired
     private ChatMessageRepository chatMessageRepository;
 
     private WebSocketTestSupport webSocketTestSupport;
     private StompSession stompSession;
     private User testUser;
-    private UserSession userSession;
 
     @BeforeEach
     void setup() throws Exception {
         testUser = new User(TEST_USERNAME, TEST_EMAIL);
         userCredentialRepository.save(new UserCredential(TEST_SUBJECT, TEST_PROVIDER, testUser));
 
-        userSession = userSessionRepository.save(UserSession.builder().user(testUser).build());
+        UserSession userSession = userSessionRepository.save(UserSession.builder().user(testUser).build());
         sessionManager.startSession(userSession);
 
         String wsUrl = String.format("ws://localhost:%d/ws", port);
@@ -89,8 +81,6 @@ class ChatMessageHandlerTest {
         if (webSocketTestSupport != null) {
             webSocketTestSupport.disconnect();
         }
-
-        databaseCleaner.execute();
     }
 
     @Test

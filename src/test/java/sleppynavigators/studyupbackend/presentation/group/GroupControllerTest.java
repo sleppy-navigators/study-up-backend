@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,14 +15,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
+import sleppynavigators.studyupbackend.common.RestAssuredBaseTest;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
@@ -42,14 +38,11 @@ import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskCertificationDTO;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @DisplayName("GroupController API 테스트")
-public class GroupControllerTest {
+public class GroupControllerTest extends RestAssuredBaseTest {
 
     @Autowired
     private GroupRepository groupRepository;
@@ -69,12 +62,6 @@ public class GroupControllerTest {
     @Autowired
     private AccessTokenProperties accessTokenProperties;
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @LocalServerPort
-    private int port;
-
     private User currentUser;
 
     @BeforeEach
@@ -86,17 +73,9 @@ public class GroupControllerTest {
                 new AccessToken(currentUser.getId(), userProfile, List.of("profile"), accessTokenProperties);
         String bearerToken = "Bearer " + accessToken.serialize(accessTokenProperties);
 
-        RestAssured.port = port;
         RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setContentType(ContentType.JSON)
                 .addHeader("Authorization", bearerToken)
                 .build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        databaseCleaner.execute();
-        RestAssured.reset();
     }
 
     @Test

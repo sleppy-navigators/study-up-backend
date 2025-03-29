@@ -7,17 +7,15 @@ import static org.mockito.BDDMockito.then;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
@@ -25,12 +23,9 @@ import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredent
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @DisplayName("AuthService 테스트")
-class AuthServiceTest {
+class AuthServiceTest extends ApplicationBaseTest {
 
     @Autowired
     private AuthService authService;
@@ -41,9 +36,6 @@ class AuthServiceTest {
     @MockitoBean
     private GoogleOidcClient googleOidcClient;
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
     @TestConfiguration
     static class TestConfig {
 
@@ -52,11 +44,6 @@ class AuthServiceTest {
         public GoogleOidcClient googleOidcClient() {
             return Mockito.mock(GoogleOidcClient.class);
         }
-    }
-
-    @AfterEach
-    void tearDown() {
-        databaseCleaner.execute();
     }
 
     @Test

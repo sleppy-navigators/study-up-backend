@@ -8,8 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import sleppynavigators.studyupbackend.common.IntegrationBaseTest;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
 import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
@@ -18,10 +17,8 @@ import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @DisplayName("Session Manager 테스트")
-class SessionManagerTest {
+class SessionManagerTest extends IntegrationBaseTest {
 
     @Autowired
     private SessionManager sessionManager;
