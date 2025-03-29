@@ -44,7 +44,7 @@ class AuthControllerTest extends RestAssuredBaseTest {
         User userToRefresh = TestFixtureMother.registerUser(userRepository);
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
         UserSession sessionToRefresh = TestFixtureMother
-                .registerUserSession(userSessionRepository, userToRefresh, notExpiredTime, accessTokenProperties);
+                .registerUserSession(userToRefresh, notExpiredTime, userSessionRepository, accessTokenProperties);
 
         RefreshRequest request =
                 new RefreshRequest(sessionToRefresh.getAccessToken(), sessionToRefresh.getRefreshToken());
@@ -68,7 +68,7 @@ class AuthControllerTest extends RestAssuredBaseTest {
         User userToRefresh = TestFixtureMother.registerUser(userRepository);
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
         UserSession sessionToRefresh = TestFixtureMother
-                .registerUserSession(userSessionRepository, userToRefresh, expiredTime, accessTokenProperties);
+                .registerUserSession(userToRefresh, expiredTime, userSessionRepository, accessTokenProperties);
 
         RefreshRequest request =
                 new RefreshRequest(sessionToRefresh.getAccessToken(), sessionToRefresh.getRefreshToken());
@@ -114,7 +114,7 @@ class AuthControllerTest extends RestAssuredBaseTest {
         User userToRefresh = TestFixtureMother.registerUser(userRepository);
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
         UserSession sessionToRefresh = TestFixtureMother
-                .registerUserSession(userSessionRepository, userToRefresh, notExpiredTime, accessTokenProperties);
+                .registerUserSession(userToRefresh, notExpiredTime, userSessionRepository, accessTokenProperties);
 
         String accessToken = TestFixtureMother.createAccessToken(userToRefresh, accessTokenProperties);
         String refreshToken = TestFixtureMother.createRefreshToken();
@@ -140,7 +140,7 @@ class AuthControllerTest extends RestAssuredBaseTest {
         User userToRefresh = TestFixtureMother.registerUser(userRepository);
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
         UserSession sessionToRefresh = TestFixtureMother
-                .registerUserSession(userSessionRepository, userToRefresh, notExpiredTime, accessTokenProperties);
+                .registerUserSession(userToRefresh, notExpiredTime, userSessionRepository, accessTokenProperties);
 
         RefreshRequest request =
                 new RefreshRequest("not-jwt-access-token", sessionToRefresh.getRefreshToken());
@@ -159,15 +159,32 @@ class AuthControllerTest extends RestAssuredBaseTest {
     }
 
     @Transactional
-    static class TestFixtureMother {
+    private static class TestFixtureMother {
 
+        /**
+         * Generate a test user and save it to the database. `username` and `email` are set to "test-user" and
+         * "test-email" respectively.
+         *
+         * @param userRepository UserRepository to save the user
+         * @return The saved user
+         */
         static User registerUser(UserRepository userRepository) {
             User user = new User("test-user", "test-email");
             return userRepository.save(user);
         }
 
-        static UserSession registerUserSession(UserSessionRepository userSessionRepository,
-                                               User user, LocalDateTime expiration,
+        /**
+         * Generate a test user session and save it to the database. The session is created with the given user, and
+         * expires in the given expiration time.
+         *
+         * @param user                  The user for the session
+         * @param expiration            The expiration time for the session
+         * @param userSessionRepository UserSessionRepository to save the user session
+         * @param accessTokenProperties The properties for the access token
+         * @return The saved user session
+         */
+        static UserSession registerUserSession(User user, LocalDateTime expiration,
+                                               UserSessionRepository userSessionRepository,
                                                AccessTokenProperties accessTokenProperties) {
             Long userId = user.getId();
             UserProfile userProfile = user.getUserProfile();
@@ -185,6 +202,13 @@ class AuthControllerTest extends RestAssuredBaseTest {
             return userSessionRepository.save(userSession);
         }
 
+        /**
+         * Generate access token for the given user. The token can be used to authenticate the user for testing.
+         *
+         * @param user                  The user for testing
+         * @param accessTokenProperties The properties for the access token
+         * @return The generated access token as a string
+         */
         static String createAccessToken(User user, AccessTokenProperties accessTokenProperties) {
             Long userId = user.getId();
             UserProfile userProfile = user.getUserProfile();
@@ -194,6 +218,11 @@ class AuthControllerTest extends RestAssuredBaseTest {
                     .serialize(accessTokenProperties);
         }
 
+        /**
+         * Generate a refresh token for the given user. The token can be used to authenticate the user for testing.
+         *
+         * @return The generated refresh token as a string
+         */
         static String createRefreshToken() {
             return new RefreshToken().serialize();
         }
