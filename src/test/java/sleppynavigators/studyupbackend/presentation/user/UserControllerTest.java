@@ -63,11 +63,11 @@ public class UserControllerTest extends RestAssuredBaseTest {
     @DisplayName("사용자가 그룹 목록 조회에 성공한다")
     void getGroups_Success() throws MalformedURLException {
         // given
-        List<Group> groups = TestFixtureMother
-                .registerGroupsWithChallengesAndTasks(
-                        List.of(3, 2, 1, 2, 0, 4, 5, 6),
-                        List.of(1, 0, 0, 2, 0, 3, 4, 5),
-                        currentUser, groupRepository, challengeRepository);
+        List<Group> groups = TestFixtureMother.registerGroupsWithChallengesAndTasks(List.of(
+                        List.of(new int[]{3, 1}, new int[]{2, 0}, new int[]{1, 0}),
+                        List.of(new int[]{2, 2}),
+                        List.of(new int[]{0, 0}, new int[]{4, 3}, new int[]{5, 4}, new int[]{6, 5})),
+                currentUser, groupRepository, challengeRepository);
 
         // when
         ExtractableResponse<?> response = with()
@@ -80,7 +80,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
         assertThat(response.jsonPath().getObject("data", GroupListResponse.class))
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
-                    assertThat(data.groups()).hasSize(8);
+                    assertThat(data.groups()).hasSize(3);
                 });
     }
 
@@ -88,11 +88,11 @@ public class UserControllerTest extends RestAssuredBaseTest {
     @DisplayName("사용자가 테스크 목록 조회에 성공한다")
     void getTasks_Success() throws MalformedURLException {
         // given
-        List<Group> groups = TestFixtureMother
-                .registerGroupsWithChallengesAndTasks(
-                        List.of(3, 2, 1, 2, 0, 4, 5, 6),
-                        List.of(1, 0, 0, 2, 0, 3, 4, 5),
-                        currentUser, groupRepository, challengeRepository);
+        List<Group> groups = TestFixtureMother.registerGroupsWithChallengesAndTasks(List.of(
+                        List.of(new int[]{3, 1}, new int[]{2, 0}, new int[]{1, 0}),
+                        List.of(new int[]{2, 2}),
+                        List.of(new int[]{0, 0}, new int[]{4, 3}, new int[]{5, 4}, new int[]{6, 5})),
+                currentUser, groupRepository, challengeRepository);
 
         // when
         ExtractableResponse<?> response = with()
@@ -130,35 +130,41 @@ public class UserControllerTest extends RestAssuredBaseTest {
         }
 
         static List<Group> registerGroupsWithChallengesAndTasks(
-                List<Integer> numOfTasks, List<Integer> numOfCertified, User creator,
+                List<List<int[]>> groupChallengeListOrganizedByTaskProgress, User creator,
                 GroupRepository groupRepository, ChallengeRepository challengeRepository)
                 throws MalformedURLException {
 
             List<Group> groups = new ArrayList<>();
-
-            for (int i = 0; i < numOfTasks.size(); i++) {
+            int numOfGroups = groupChallengeListOrganizedByTaskProgress.size();
+            for (int gi = 0; gi < numOfGroups; gi++) {
                 Group group = Group.builder()
-                        .name("test-group-" + i)
-                        .description("test-group-description-" + i)
+                        .name("test-group-" + gi)
+                        .description("test-group-description-" + gi)
                         .creator(creator)
                         .build();
                 groups.add(group);
                 groupRepository.save(group);
 
-                Challenge challenge = Challenge.builder()
-                        .title("test-challenge-" + i)
-                        .deadline(LocalDateTime.now().plusDays(3))
-                        .group(group)
-                        .owner(creator)
-                        .build();
+                for (int[] taskProgress : groupChallengeListOrganizedByTaskProgress.get(gi)) {
+                    Challenge challenge = Challenge.builder()
+                            .title("test-challenge-" + gi)
+                            .deadline(LocalDateTime.now().plusDays(3))
+                            .group(group)
+                            .owner(creator)
+                            .build();
 
-                for (int j = 0; j < numOfTasks.get(i); j++) {
-                    challenge.addTask("test-task-" + i + "-" + j, LocalDateTime.now().plusHours(3));
-                    if (j < numOfCertified.get(i)) {
-                        challenge.getTasks().get(j).certify(List.of(), List.of(new URL("https://test.com")), creator);
+                    int numOfTasks = taskProgress[0];
+                    int numOfCertified = taskProgress[1];
+                    for (int ti = 0; ti < numOfTasks; ti++) {
+                        challenge.addTask("test-task-" + gi + "-" + ti, LocalDateTime.now().plusHours(3));
+
+                        if (ti < numOfCertified) {
+                            challenge.getTasks().get(ti)
+                                    .certify(List.of(), List.of(new URL("https://test.com")), creator);
+                        }
                     }
+                    challengeRepository.save(challenge);
                 }
-                challengeRepository.save(challenge);
             }
             return groups;
         }
