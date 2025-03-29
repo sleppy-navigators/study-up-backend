@@ -61,7 +61,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
 
     @Test
     @DisplayName("사용자가 그룹 목록 조회에 성공한다")
-    void getGroups_Success() throws MalformedURLException {
+    void getGroups_Success() {
         // given
         List<Group> groups = TestFixtureMother.registerGroupsWithChallengesAndTasks(List.of(
                         List.of(new int[]{3, 1}, new int[]{2, 0}, new int[]{1, 0}),
@@ -86,7 +86,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
 
     @Test
     @DisplayName("사용자가 테스크 목록 조회에 성공한다")
-    void getTasks_Success() throws MalformedURLException {
+    void getTasks_Success() {
         // given
         List<Group> groups = TestFixtureMother.registerGroupsWithChallengesAndTasks(List.of(
                         List.of(new int[]{3, 1}, new int[]{2, 0}, new int[]{1, 0}),
@@ -114,11 +114,25 @@ public class UserControllerTest extends RestAssuredBaseTest {
     @Transactional
     static class TestFixtureMother {
 
+        /**
+         * Generate a test user and save it to the database. `username` and `email` are set to "test-user" and
+         * "test-email" respectively.
+         *
+         * @param userRepository UserRepository to save the user
+         * @return The saved user
+         */
         static User registerUser(UserRepository userRepository) {
             User user = new User("test-user", "test-email");
             return userRepository.save(user);
         }
 
+        /**
+         * Generate access token for the given user. The token can be used to authenticate the user for testing.
+         *
+         * @param user                  The user for testing
+         * @param accessTokenProperties The properties for the access token
+         * @return The generated access token as a string
+         */
         static String createBearerToken(User user, AccessTokenProperties accessTokenProperties) {
             Long userId = user.getId();
             UserProfile userProfile = user.getUserProfile();
@@ -129,10 +143,20 @@ public class UserControllerTest extends RestAssuredBaseTest {
             return "Bearer " + accessToken;
         }
 
+        /**
+         * Generate a list of groups with challenges and tasks. Each group contains a list of challenges, and each
+         * challenge contains a list of tasks. The tasks are organized by their progress, where the first element of the
+         * array is the number of tasks and the second element is the number of certified tasks.
+         *
+         * @param groupChallengeListOrganizedByTaskProgress A list of challenges organized by task progress
+         * @param creator                                   The user who created the groups
+         * @param groupRepository                           GroupRepository to save the groups
+         * @param challengeRepository                       ChallengeRepository to save the challenges
+         * @return A list of groups with challenges and tasks
+         */
         static List<Group> registerGroupsWithChallengesAndTasks(
                 List<List<int[]>> groupChallengeListOrganizedByTaskProgress, User creator,
-                GroupRepository groupRepository, ChallengeRepository challengeRepository)
-                throws MalformedURLException {
+                GroupRepository groupRepository, ChallengeRepository challengeRepository) {
 
             List<Group> groups = new ArrayList<>();
             int numOfGroups = groupChallengeListOrganizedByTaskProgress.size();
@@ -145,9 +169,10 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 groups.add(group);
                 groupRepository.save(group);
 
-                for (int[] taskProgress : groupChallengeListOrganizedByTaskProgress.get(gi)) {
+                for (int ci = 0; ci < groupChallengeListOrganizedByTaskProgress.get(gi).size(); ci++) {
+                    int[] taskProgress = groupChallengeListOrganizedByTaskProgress.get(gi).get(ci);
                     Challenge challenge = Challenge.builder()
-                            .title("test-challenge-" + gi)
+                            .title("test-challenge-" + gi + "-" + ci)
                             .deadline(LocalDateTime.now().plusDays(3))
                             .group(group)
                             .owner(creator)
@@ -156,11 +181,15 @@ public class UserControllerTest extends RestAssuredBaseTest {
                     int numOfTasks = taskProgress[0];
                     int numOfCertified = taskProgress[1];
                     for (int ti = 0; ti < numOfTasks; ti++) {
-                        challenge.addTask("test-task-" + gi + "-" + ti, LocalDateTime.now().plusHours(3));
+                        challenge.addTask("test-task-" + gi + "-" + ci + "-" + ti, LocalDateTime.now().plusHours(3));
 
                         if (ti < numOfCertified) {
-                            challenge.getTasks().get(ti)
-                                    .certify(List.of(), List.of(new URL("https://test.com")), creator);
+                            try {
+                                challenge.getTasks().get(ti)
+                                        .certify(List.of(), List.of(new URL("https://test.com")), creator);
+                            } catch (MalformedURLException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
                     challengeRepository.save(challenge);
