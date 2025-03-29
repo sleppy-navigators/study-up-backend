@@ -39,4 +39,4 @@ jobs:
         if: ${{ failure() }}
         with:
           name: gradle-report
-          path: build/report
+          path: build/reports
