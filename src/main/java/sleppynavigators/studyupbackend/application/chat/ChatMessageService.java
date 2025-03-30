@@ -12,6 +12,7 @@ import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.event.Event;
 import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
@@ -49,10 +50,10 @@ public class ChatMessageService {
         }
     }
 
-    public void sendSystemMessage(Long groupId, Event event, String... args) {
+    public void sendSystemMessage(Long groupId, SystemEvent event) {
         ChatMessage savedMessage = null;
         try {
-            String content = SystemMessageTemplate.from(event).getMessage(args);
+            String content = SystemMessageTemplate.generateMessage(event);
             Bot bot = botRepository.findByGroupId(groupId)
                     .orElseThrow(() -> new EntityNotFoundException("해당 그룹의 봇을 찾을 수 없습니다. groupId: " + groupId));
             String destination = String.format(GROUP_DESTINATION, groupId);
