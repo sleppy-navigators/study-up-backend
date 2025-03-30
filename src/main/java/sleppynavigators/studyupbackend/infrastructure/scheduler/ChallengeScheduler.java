@@ -14,17 +14,18 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class ChallengeScheduler {
 
     private final ChallengeRepository challengeRepository;
     private final SystemEventPublisher systemEventPublisher;
 
+    // TODO(@Jayon): properties 분리 필요성이 생기면 빼기
     @Scheduled(cron = "0 0 9 * * *") // 매일 오전 9시에 실행
     @Transactional
     public void checkExpiredChallenges() {
-        List<Challenge> completedChallenges = challengeRepository.findAll().stream()
-                .filter(challenge -> challenge.getDetail().isPast())
+        LocalDateTime now = LocalDateTime.now();
+        List<Challenge> completedChallenges = challengeRepository.findAllByDetailDeadlineBefore(now).stream()
                 .filter(Challenge::isAllTasksCompleted)
                 .toList();
 
