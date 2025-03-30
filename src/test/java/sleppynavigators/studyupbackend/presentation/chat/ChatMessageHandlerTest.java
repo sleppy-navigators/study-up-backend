@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.chat.handler;
+package sleppynavigators.studyupbackend.presentation.chat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,27 +18,19 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.simp.stomp.ConnectionLostException;
 import org.springframework.messaging.simp.stomp.StompSession;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
-import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
-import sleppynavigators.studyupbackend.domain.authentication.session.SessionManager;
-import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
+import sleppynavigators.studyupbackend.common.support.AuthSupport;
+import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
-import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
-import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
-import sleppynavigators.studyupbackend.presentation.chat.support.WebSocketTestSupport;
+import sleppynavigators.studyupbackend.common.support.WebSocketTestSupport;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @DisplayName("ChatMessageHandler 통합 테스트")
 class ChatMessageHandlerTest extends ApplicationBaseTest {
-
-    private static final String TEST_USERNAME = "test-user";
-    private static final String TEST_EMAIL = "test@email.com";
-    private static final String TEST_SUBJECT = "test-subject";
-    private static final String TEST_PROVIDER = "test-provider";
 
     @LocalServerPort
     private int port;
@@ -47,16 +39,13 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserCredentialRepository userCredentialRepository;
-
-    @Autowired
-    private UserSessionRepository userSessionRepository;
-
-    @Autowired
-    private SessionManager sessionManager;
-
-    @Autowired
     private ChatMessageRepository chatMessageRepository;
+
+    @Autowired
+    private UserSupport userSupport;
+
+    @Autowired
+    private AuthSupport authSupport;
 
     private WebSocketTestSupport webSocketTestSupport;
     private StompSession stompSession;
@@ -64,14 +53,11 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
 
     @BeforeEach
     void setup() throws Exception {
-        testUser = new User(TEST_USERNAME, TEST_EMAIL);
-        userCredentialRepository.save(new UserCredential(TEST_SUBJECT, TEST_PROVIDER, testUser));
-
-        UserSession userSession = userSessionRepository.save(UserSession.builder().user(testUser).build());
-        sessionManager.startSession(userSession);
+        testUser = userSupport.registerUser();
+        String accessToken = authSupport.createAccessToken(testUser);
 
         String wsUrl = String.format("ws://localhost:%d/ws", port);
-        webSocketTestSupport = new WebSocketTestSupport(wsUrl, objectMapper, userSession.getAccessToken());
+        webSocketTestSupport = new WebSocketTestSupport(wsUrl, objectMapper, accessToken);
         webSocketTestSupport.connect();
         this.stompSession = webSocketTestSupport.getStompSession();
     }

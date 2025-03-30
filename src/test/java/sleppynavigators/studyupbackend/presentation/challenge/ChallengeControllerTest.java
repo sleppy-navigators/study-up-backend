@@ -10,7 +10,6 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import org.apache.http.HttpStatus;
@@ -18,18 +17,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.common.RestAssuredBaseTest;
-import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
-import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
+import sleppynavigators.studyupbackend.common.support.AuthSupport;
+import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
+import sleppynavigators.studyupbackend.common.support.GroupSupport;
+import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
-import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
-import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
-import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
@@ -39,23 +35,23 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskR
 public class ChallengeControllerTest extends RestAssuredBaseTest {
 
     @Autowired
-    private GroupRepository groupRepository;
+    private UserSupport userSupport;
 
     @Autowired
-    private UserRepository userRepository;
+    private AuthSupport authSupport;
 
     @Autowired
-    private ChallengeRepository challengeRepository;
+    private GroupSupport groupSupport;
 
     @Autowired
-    private AccessTokenProperties accessTokenProperties;
+    private ChallengeSupport challengeSupport;
 
     private User currentUser;
 
     @BeforeEach
     void setUp() {
-        currentUser = TestFixtureMother.registerUser(userRepository);
-        String bearerToken = TestFixtureMother.createBearerToken(currentUser, accessTokenProperties);
+        currentUser = userSupport.registerUser();
+        String bearerToken = authSupport.createBearerToken(currentUser);
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .addHeader("Authorization", bearerToken)
                 .build();
@@ -65,8 +61,9 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
     @DisplayName("챌린지 테스크 목록 조회")
     void getTasks_Success() {
         // given
-        Challenge challengeToQuery = TestFixtureMother.registerChallengeWithTasks(
-                new int[]{3, 1}, currentUser, groupRepository, challengeRepository);
+        Group groupToBelong = groupSupport.registerGroup(List.of(currentUser));
+        Challenge challengeToQuery = challengeSupport
+                .registerChallengeWithTasks(groupToBelong, new int[]{3, 1}, currentUser);
 
         // when
         ExtractableResponse<?> response = with()
@@ -89,12 +86,18 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
     @DisplayName("챌린지 테스크 완료")
     void completeTask_Success() throws MalformedURLException {
         // given
-        Challenge challengeToQuery = TestFixtureMother.registerChallengeWithTasks(
-                new int[]{3, 1}, currentUser, groupRepository, challengeRepository);
+        Group groupToBelong = groupSupport.registerGroup(List.of(currentUser));
+        Challenge challengeToQuery = challengeSupport
+                .registerChallengeWithTasks(groupToBelong, new int[]{3, 1}, currentUser);
         Task taskToCertify = challengeToQuery.getTasks().get(1);
 
-        TaskCertificationRequest request = new TaskCertificationRequest(
-                List.of(new URL("https://test.com")), List.of());
+        TaskCertificationRequest request =
+                new TaskCertificationRequest(
+                        List.of(new URL("https://blog.com/article1"),
+                                new URL("https://blog.com/article2")),
+                        List.of(new URL("https://sns.com/image1"),
+                                new URL("https://sns.com/image2"),
+                                new URL("https://sns.com/image3")));
 
         // when
         ExtractableResponse<?> response = with()
@@ -111,86 +114,5 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.certification()).isNotNull();
                 });
-    }
-
-    @Transactional
-    private static class TestFixtureMother {
-
-        /**
-         * Generate a test user and save it to the database. `username` and `email` are set to "test-user" and
-         * "test-email" respectively.
-         *
-         * @param userRepository UserRepository to save the user
-         * @return The saved user
-         */
-        static User registerUser(UserRepository userRepository) {
-            User user = new User("test-user", "test-email");
-            return userRepository.save(user);
-        }
-
-        /**
-         * Generate access token for the given user. The token can be used to authenticate the user for testing.
-         *
-         * @param user                  The user for testing
-         * @param accessTokenProperties The properties for the access token
-         * @return The generated access token as a string
-         */
-        static String createBearerToken(User user, AccessTokenProperties accessTokenProperties) {
-            Long userId = user.getId();
-            UserProfile userProfile = user.getUserProfile();
-            List<String> authorities = List.of("profile");
-
-            String accessToken = new AccessToken(userId, userProfile, authorities, accessTokenProperties)
-                    .serialize(accessTokenProperties);
-            return "Bearer " + accessToken;
-        }
-
-        /**
-         * Generate a test challenge with tasks and save it to the database. The challenge is created by the given user
-         * and belongs to a new group. The tasks are created with the given progress, where the first element is the
-         * number of tasks and the second element is the number of certified tasks.
-         *
-         * @param taskProgress        The progress of the tasks, where the first element is the number of tasks and the
-         *                            second element is the number of certified tasks
-         * @param creator             The user who created the groups
-         * @param groupRepository     GroupRepository to save the groups
-         * @param challengeRepository ChallengeRepository to save the challenges
-         * @return The generated challenge with tasks
-         */
-        static Challenge registerChallengeWithTasks(
-                int[] taskProgress, User creator,
-                GroupRepository groupRepository, ChallengeRepository challengeRepository) {
-
-            Group group = Group.builder()
-                    .name("test-group")
-                    .description("test-group-description")
-                    .creator(creator)
-                    .build();
-            groupRepository.save(group);
-
-            Challenge challenge = Challenge.builder()
-                    .title("test-challenge")
-                    .deadline(LocalDateTime.now().plusDays(3))
-                    .group(group)
-                    .owner(creator)
-                    .build();
-
-            int numOfTasks = taskProgress[0];
-            int numOfCertified = taskProgress[1];
-            for (int ti = 0; ti < numOfTasks; ti++) {
-                challenge.addTask("test-task-" + ti, LocalDateTime.now().plusHours(3));
-
-                if (ti < numOfCertified) {
-                    try {
-                        challenge.getTasks().get(ti)
-                                .certify(List.of(), List.of(new URL("https://test.com")), creator);
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-            challengeRepository.save(challenge);
-            return challenge;
-        }
     }
 }
