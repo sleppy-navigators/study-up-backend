@@ -50,7 +50,7 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
 
     @BeforeEach
     void setUp() {
-        currentUser = userSupport.registerUser();
+        currentUser = userSupport.registerUserToDB();
         String bearerToken = authSupport.createBearerToken(currentUser);
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .addHeader("Authorization", bearerToken)
@@ -61,9 +61,9 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
     @DisplayName("챌린지 테스크 목록 조회")
     void getTasks_Success() {
         // given
-        Group groupToBelong = groupSupport.registerGroup(List.of(currentUser));
+        Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
         Challenge challengeToQuery = challengeSupport
-                .registerChallengeWithTasks(groupToBelong, new int[]{3, 1}, currentUser);
+                .callToMakeChallengesWithTasks(groupToBelong, 3, 1, currentUser);
 
         // when
         ExtractableResponse<?> response = with()
@@ -86,9 +86,9 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
     @DisplayName("챌린지 테스크 완료")
     void completeTask_Success() throws MalformedURLException {
         // given
-        Group groupToBelong = groupSupport.registerGroup(List.of(currentUser));
+        Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
         Challenge challengeToQuery = challengeSupport
-                .registerChallengeWithTasks(groupToBelong, new int[]{3, 1}, currentUser);
+                .callToMakeChallengesWithTasks(groupToBelong, 3, 1, currentUser);
         Task taskToCertify = challengeToQuery.getTasks().get(1);
 
         TaskCertificationRequest request =

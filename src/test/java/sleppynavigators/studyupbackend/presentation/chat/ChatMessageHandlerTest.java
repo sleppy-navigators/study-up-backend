@@ -53,7 +53,7 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
 
     @BeforeEach
     void setup() throws Exception {
-        testUser = userSupport.registerUser();
+        testUser = userSupport.registerUserToDB();
         String accessToken = authSupport.createAccessToken(testUser);
 
         String wsUrl = String.format("ws://localhost:%d/ws", port);

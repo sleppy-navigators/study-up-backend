@@ -44,7 +44,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
 
     @BeforeEach
     void setUp() {
-        currentUser = userSupport.registerUser();
+        currentUser = userSupport.registerUserToDB();
         String bearerToken = authSupport.createBearerToken(currentUser);
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .addHeader("Authorization", bearerToken)
@@ -56,7 +56,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
     void getGroups_Success() {
         // given
         IntStream.range(0, 3)
-                .forEach(ignored -> groupSupport.registerGroup(List.of(currentUser)));
+                .forEach(ignored -> groupSupport.callToMakeGroup(List.of(currentUser)));
 
         // when
         ExtractableResponse<?> response = with()
@@ -78,8 +78,8 @@ public class UserControllerTest extends RestAssuredBaseTest {
     void getTasks_Success() {
         // given
         IntStream.range(0, 3)
-                .mapToObj(ignored -> groupSupport.registerGroup(List.of(currentUser)))
-                .forEach(group -> challengeSupport.registerChallengeWithTasks(group, new int[]{3, 2}, currentUser));
+                .mapToObj(ignored -> groupSupport.callToMakeGroup(List.of(currentUser)))
+                .forEach(group -> challengeSupport.callToMakeChallengesWithTasks(group, 3, 2, currentUser));
 
         // when
         ExtractableResponse<?> response = with()

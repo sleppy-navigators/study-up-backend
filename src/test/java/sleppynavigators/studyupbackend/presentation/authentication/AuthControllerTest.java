@@ -32,9 +32,9 @@ class AuthControllerTest extends RestAssuredBaseTest {
     @DisplayName("토큰 갱신 요청이 성공적으로 수행된다")
     void refresh_Success() {
         // given
-        User userToRefresh = userSupport.registerUser();
+        User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
-        UserSession sessionToRefresh = authSupport.registerUserSession(userToRefresh, notExpiredTime);
+        UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, notExpiredTime);
 
         RefreshRequest request =
                 new RefreshRequest(sessionToRefresh.getAccessToken(), sessionToRefresh.getRefreshToken());
@@ -55,9 +55,9 @@ class AuthControllerTest extends RestAssuredBaseTest {
     @DisplayName("만료된 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenExpiredSession_ThrowsInvalidCredentialException() {
         // given
-        User userToRefresh = userSupport.registerUser();
+        User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
-        UserSession sessionToRefresh = authSupport.registerUserSession(userToRefresh, expiredTime);
+        UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, expiredTime);
 
         RefreshRequest request =
                 new RefreshRequest(sessionToRefresh.getAccessToken(), sessionToRefresh.getRefreshToken());
@@ -78,7 +78,7 @@ class AuthControllerTest extends RestAssuredBaseTest {
     @DisplayName("존재하지 않는 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenNonExistentSession_ThrowsInvalidCredentialException() {
         // given
-        User userToRefresh = userSupport.registerUser();
+        User userToRefresh = userSupport.registerUserToDB();
         String accessToken = authSupport.createAccessToken(userToRefresh);
         String refreshToken = authSupport.createRefreshToken();
 
@@ -101,9 +101,9 @@ class AuthControllerTest extends RestAssuredBaseTest {
     @DisplayName("토큰 정보가 일치하지 않을 경우 예외가 발생한다")
     void whenUnMatchedToken_ThrowsInvalidCredentialException() {
         // given
-        User userToRefresh = userSupport.registerUser();
+        User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
-        UserSession sessionToRefresh = authSupport.registerUserSession(userToRefresh, notExpiredTime);
+        UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, notExpiredTime);
 
         String accessToken = authSupport.createAccessToken(userToRefresh);
         String refreshToken = authSupport.createRefreshToken();
@@ -126,9 +126,9 @@ class AuthControllerTest extends RestAssuredBaseTest {
     @DisplayName("JWT가 아닌 Access 토큰으로 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenNotJwtAccessToken_ThrowsInvalidCredentialException() {
         // given
-        User userToRefresh = userSupport.registerUser();
+        User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
-        UserSession sessionToRefresh = authSupport.registerUserSession(userToRefresh, notExpiredTime);
+        UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, notExpiredTime);
 
         RefreshRequest request =
                 new RefreshRequest("not-jwt-access-token", sessionToRefresh.getRefreshToken());
