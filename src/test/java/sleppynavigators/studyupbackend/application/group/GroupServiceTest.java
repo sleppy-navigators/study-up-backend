@@ -2,68 +2,62 @@ package sleppynavigators.studyupbackend.application.group;
 
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import sleppynavigators.studyupbackend.application.event.SystemEventListener;
+import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
+import sleppynavigators.studyupbackend.common.support.BotSupport;
+import sleppynavigators.studyupbackend.common.support.GroupSupport;
+import sleppynavigators.studyupbackend.common.support.UserSupport;
+import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
-import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
-import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
-import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 
-@SpringBootTest
-@ActiveProfiles("test")
 @DisplayName("GroupService 테스트")
-class GroupServiceTest {
+class GroupServiceTest extends ApplicationBaseTest {
 
     @Autowired
     private GroupService groupService;
 
     @Autowired
-    private GroupRepository groupRepository;
+    private UserSupport userSupport;
 
     @Autowired
-    private UserRepository userRepository;
+    private GroupSupport groupSupport;
 
     @Autowired
-    private GroupInvitationRepository groupInvitationRepository;
+    private BotSupport botSupport;
 
     @MockitoSpyBean
     private SystemEventListener systemEventListener;
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
     private User testUser;
+
     private Group testGroup;
+
     private GroupInvitation testInvitation;
 
     @BeforeEach
     void setUp() {
-        databaseCleaner.execute();
-        testUser = userRepository.save(new User("testUser", "test@test.com"));
-        
-        GroupCreationRequest request = new GroupCreationRequest("testGroup", "description", null);
-        testGroup = groupRepository.save(request.toEntity(testUser));
-        testInvitation = groupInvitationRepository.save(new GroupInvitation(testGroup));
+        testUser = userSupport.registerUserToDB();
+        testGroup = groupSupport.registerGroupToDB(List.of(testUser));
+        Bot testBot = botSupport.registerBotToDB(testGroup);
+        testInvitation = groupSupport.callToMakeInvitation(testGroup, testUser);
     }
 
     @Test
     @DisplayName("그룹 참여 시 UserJoinEvent가 발행된다")
     void acceptInvitation_PublishesUserJoinEvent() {
         // given
-        User newUser = userRepository.save(new User("newUser", "new@test.com"));
+        User newUser = userSupport.registerUserToDB();
         GroupInvitationAcceptRequest request = new GroupInvitationAcceptRequest(testInvitation.getInvitationKey());
 
         // when
@@ -71,7 +65,7 @@ class GroupServiceTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-            new UserJoinEvent("newUser", testGroup.getId())
+                new UserJoinEvent(testUser.getUserProfile().username(), testGroup.getId())
         );
     }
 
@@ -79,16 +73,16 @@ class GroupServiceTest {
     @DisplayName("그룹 탈퇴 시 UserLeaveEvent가 발행된다")
     void leaveGroup_PublishesUserLeaveEvent() {
         // given
-        User member = userRepository.save(new User("member", "member@test.com"));
-        testGroup.addMember(member);
-        groupRepository.save(testGroup);
+        User anotherMember = userSupport.registerUserToDB();
+        Group groupToLeave = groupSupport.registerGroupToDB(List.of(testUser, anotherMember));
+        Bot testBot = botSupport.registerBotToDB(groupToLeave);
 
         // when
-        groupService.leaveGroup(member.getId(), testGroup.getId());
+        groupService.leaveGroup(anotherMember.getId(), groupToLeave.getId());
 
         // then
         verify(systemEventListener).handleSystemEvent(
-            new UserLeaveEvent("member", testGroup.getId())
+                new UserLeaveEvent(testUser.getUserProfile().username(), groupToLeave.getId())
         );
     }
 }

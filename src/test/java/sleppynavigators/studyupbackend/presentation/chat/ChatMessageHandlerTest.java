@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.chat.handler;
+package sleppynavigators.studyupbackend.presentation.chat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,36 +13,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.simp.stomp.ConnectionLostException;
 import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.test.context.ActiveProfiles;
-import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
-import sleppynavigators.studyupbackend.domain.authentication.session.SessionManager;
-import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
+import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
+import sleppynavigators.studyupbackend.common.support.AuthSupport;
+import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
-import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
-import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
-import sleppynavigators.studyupbackend.presentation.chat.support.WebSocketTestSupport;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
+import sleppynavigators.studyupbackend.common.support.WebSocketTestSupport;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @DisplayName("ChatMessageHandler 통합 테스트")
-class ChatMessageHandlerTest {
-
-    private static final String TEST_USERNAME = "test-user";
-    private static final String TEST_EMAIL = "test@email.com";
-    private static final String TEST_SUBJECT = "test-subject";
-    private static final String TEST_PROVIDER = "test-provider";
+class ChatMessageHandlerTest extends ApplicationBaseTest {
 
     @LocalServerPort
     private int port;
@@ -51,35 +39,25 @@ class ChatMessageHandlerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserCredentialRepository userCredentialRepository;
-
-    @Autowired
-    private UserSessionRepository userSessionRepository;
-
-    @Autowired
-    private SessionManager sessionManager;
-
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @Autowired
     private ChatMessageRepository chatMessageRepository;
+
+    @Autowired
+    private UserSupport userSupport;
+
+    @Autowired
+    private AuthSupport authSupport;
 
     private WebSocketTestSupport webSocketTestSupport;
     private StompSession stompSession;
     private User testUser;
-    private UserSession userSession;
 
     @BeforeEach
     void setup() throws Exception {
-        testUser = new User(TEST_USERNAME, TEST_EMAIL);
-        userCredentialRepository.save(new UserCredential(TEST_SUBJECT, TEST_PROVIDER, testUser));
-
-        userSession = userSessionRepository.save(UserSession.builder().user(testUser).build());
-        sessionManager.startSession(userSession);
+        testUser = userSupport.registerUserToDB();
+        String accessToken = authSupport.createAccessToken(testUser);
 
         String wsUrl = String.format("ws://localhost:%d/ws", port);
-        webSocketTestSupport = new WebSocketTestSupport(wsUrl, objectMapper, userSession.getAccessToken());
+        webSocketTestSupport = new WebSocketTestSupport(wsUrl, objectMapper, accessToken);
         webSocketTestSupport.connect();
         this.stompSession = webSocketTestSupport.getStompSession();
     }
@@ -89,8 +67,6 @@ class ChatMessageHandlerTest {
         if (webSocketTestSupport != null) {
             webSocketTestSupport.disconnect();
         }
-
-        databaseCleaner.execute();
     }
 
     @Test

@@ -1,4 +1,7 @@
 package sleppynavigators.studyupbackend.presentation.authentication.dto.response;
 
-public record TokenResponse(String accessToken, String refreshToken) {
+import jakarta.validation.constraints.NotBlank;
+
+public record TokenResponse(@NotBlank String accessToken,
+                            @NotBlank String refreshToken) {
 }

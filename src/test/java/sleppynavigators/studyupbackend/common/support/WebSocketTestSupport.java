@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.chat.support;
+package sleppynavigators.studyupbackend.common.support;
 
 import static org.awaitility.Awaitility.await;
 

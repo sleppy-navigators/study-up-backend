@@ -1,10 +1,16 @@
 package sleppynavigators.studyupbackend.presentation.challenge.dto.response;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 
-public record TaskResponse(Long id, String title, LocalDateTime deadline, TaskCertificationDTO certification) {
+public record TaskResponse(@NotNull Long id,
+                           @NotBlank String title,
+                           @NotNull LocalDateTime deadline,
+                           @Valid TaskCertificationDTO certification) {
 
     public static TaskResponse fromEntity(Task task) {
         TaskCertification taskCertification = task.getCertification();

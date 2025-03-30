@@ -1,9 +1,14 @@
 package sleppynavigators.studyupbackend.presentation.challenge.dto.response;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 
-public record ChallengeResponse(Long id, String title, LocalDateTime deadline, String description) {
+public record ChallengeResponse(@NotNull Long id,
+                                @NotBlank String title,
+                                @NotNull LocalDateTime deadline,
+                                String description) {
 
     public static ChallengeResponse fromEntity(Challenge challenge) {
         return new ChallengeResponse(

@@ -4,87 +4,40 @@ import static io.restassured.RestAssured.with;
 import static io.restassured.http.Method.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import java.time.LocalDateTime;
-import java.util.List;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
+import sleppynavigators.studyupbackend.common.support.AuthSupport;
+import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
-import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
-import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
-import sleppynavigators.studyupbackend.domain.authentication.token.RefreshToken;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
-import sleppynavigators.studyupbackend.infrastructure.authentication.session.UserSessionRepository;
-import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
+import sleppynavigators.studyupbackend.common.RestAssuredBaseTest;
+import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @DisplayName("AuthController API 테스트")
-class AuthControllerTest {
+class AuthControllerTest extends RestAssuredBaseTest {
 
     @Autowired
-    private AccessTokenProperties accessTokenProperties;
+    private UserSupport userSupport;
 
     @Autowired
-    private UserSessionRepository userSessionRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
-    @LocalServerPort
-    private int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        RestAssured.requestSpecification = new RequestSpecBuilder()
-                .setContentType(ContentType.JSON)
-                .build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        databaseCleaner.execute();
-        RestAssured.reset();
-    }
+    private AuthSupport authSupport;
 
     @Test
     @DisplayName("토큰 갱신 요청이 성공적으로 수행된다")
     void refresh_Success() {
         // given
-        User user = new User("test-user", "test-email");
-        userRepository.save(user);
-
-        AccessToken accessToken =
-                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
-        RefreshToken refreshToken = new RefreshToken();
+        User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
-        RefreshRequest request =
-                new RefreshRequest(accessToken.serialize(accessTokenProperties), refreshToken.serialize());
+        UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, notExpiredTime);
 
-        UserSession userSession = UserSession.builder()
-                .user(user)
-                .refreshToken(refreshToken.serialize())
-                .accessToken(accessToken.serialize(accessTokenProperties))
-                .expiration(notExpiredTime)
-                .build();
-        userSessionRepository.save(userSession);
+        RefreshRequest request =
+                new RefreshRequest(sessionToRefresh.getAccessToken(), sessionToRefresh.getRefreshToken());
 
         // when
         ExtractableResponse<?> response = with().body(request)
@@ -94,31 +47,20 @@ class AuthControllerTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getString("data.accessToken")).isNotBlank();
-        assertThat(response.jsonPath().getString("data.refreshToken")).isNotBlank();
+        assertThat(response.jsonPath().getObject("data", TokenResponse.class))
+                .satisfies(data -> assertThat(this.validator.validate(data)).isEmpty());
     }
 
     @Test
     @DisplayName("만료된 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenExpiredSession_ThrowsInvalidCredentialException() {
         // given
-        User user = new User("test-user", "test-email");
-        userRepository.save(user);
-
-        AccessToken accessToken =
-                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
-        RefreshToken refreshToken = new RefreshToken();
+        User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
-        RefreshRequest request =
-                new RefreshRequest(accessToken.serialize(accessTokenProperties), refreshToken.serialize());
+        UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, expiredTime);
 
-        UserSession userSession = UserSession.builder()
-                .user(user)
-                .refreshToken(refreshToken.serialize())
-                .accessToken(accessToken.serialize(accessTokenProperties))
-                .expiration(expiredTime)
-                .build();
-        userSessionRepository.save(userSession);
+        RefreshRequest request =
+                new RefreshRequest(sessionToRefresh.getAccessToken(), sessionToRefresh.getRefreshToken());
 
         // when
         ExtractableResponse<?> response = with().body(request)
@@ -136,14 +78,11 @@ class AuthControllerTest {
     @DisplayName("존재하지 않는 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenNonExistentSession_ThrowsInvalidCredentialException() {
         // given
-        User user = new User("test-user", "test-email");
-        userRepository.save(user);
+        User userToRefresh = userSupport.registerUserToDB();
+        String accessToken = authSupport.createAccessToken(userToRefresh);
+        String refreshToken = authSupport.createRefreshToken();
 
-        AccessToken accessToken =
-                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
-        RefreshToken refreshToken = new RefreshToken();
-        RefreshRequest request =
-                new RefreshRequest(accessToken.serialize(accessTokenProperties), refreshToken.serialize());
+        RefreshRequest request = new RefreshRequest(accessToken, refreshToken);
 
         // when
         ExtractableResponse<?> response = with().body(request)
@@ -162,27 +101,13 @@ class AuthControllerTest {
     @DisplayName("토큰 정보가 일치하지 않을 경우 예외가 발생한다")
     void whenUnMatchedToken_ThrowsInvalidCredentialException() {
         // given
-        User user = new User("test-user", "test-email");
-        userRepository.save(user);
-
-        AccessToken accessToken =
-                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
-        RefreshToken refreshToken = new RefreshToken();
+        User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
+        UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, notExpiredTime);
 
-        AccessToken invalidAccessToken =
-                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
-        RefreshToken invalidRefreshToken = new RefreshToken();
-        RefreshRequest request = new RefreshRequest(
-                invalidAccessToken.serialize(accessTokenProperties), invalidRefreshToken.serialize());
-
-        UserSession userSession = UserSession.builder()
-                .user(user)
-                .refreshToken(refreshToken.serialize())
-                .accessToken(accessToken.serialize(accessTokenProperties))
-                .expiration(notExpiredTime)
-                .build();
-        userSessionRepository.save(userSession);
+        String accessToken = authSupport.createAccessToken(userToRefresh);
+        String refreshToken = authSupport.createRefreshToken();
+        RefreshRequest request = new RefreshRequest(accessToken, refreshToken);
 
         // when
         ExtractableResponse<?> response = with().body(request)
@@ -201,23 +126,12 @@ class AuthControllerTest {
     @DisplayName("JWT가 아닌 Access 토큰으로 토큰 갱신 요청을 수행하면 예외가 발생한다")
     void whenNotJwtAccessToken_ThrowsInvalidCredentialException() {
         // given
-        User user = new User("test-user", "test-email");
-        userRepository.save(user);
-
-        AccessToken accessToken =
-                new AccessToken(user.getId(), user.getUserProfile(), List.of("profile"), accessTokenProperties);
-        RefreshToken refreshToken = new RefreshToken();
+        User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
-        RefreshRequest request =
-                new RefreshRequest("not-jwt-access-token", refreshToken.serialize());
+        UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, notExpiredTime);
 
-        UserSession userSession = UserSession.builder()
-                .user(user)
-                .refreshToken(refreshToken.serialize())
-                .accessToken(accessToken.serialize(accessTokenProperties))
-                .expiration(notExpiredTime)
-                .build();
-        userSessionRepository.save(userSession);
+        RefreshRequest request =
+                new RefreshRequest("not-jwt-access-token", sessionToRefresh.getRefreshToken());
 
         // when
         ExtractableResponse<?> response = with().body(request)

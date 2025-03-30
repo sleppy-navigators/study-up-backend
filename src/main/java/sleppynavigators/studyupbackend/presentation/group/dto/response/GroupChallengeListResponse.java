@@ -1,16 +1,23 @@
 package sleppynavigators.studyupbackend.presentation.group.dto.response;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskCertificationDTO;
 
-public record GroupChallengeListResponse(List<GroupChallengeListItem> challenges) {
+public record GroupChallengeListResponse(@NotNull @Valid List<GroupChallengeListItem> challenges) {
 
-    public record GroupChallengeListItem(Long id, String title, LocalDateTime deadline, String description,
-                                         Long challengerId, String challengerName,
-                                         TaskCertificationDTO recentCertification) {
+    public record GroupChallengeListItem(@NotNull Long id,
+                                         @NotBlank String title,
+                                         @NotNull LocalDateTime deadline,
+                                         String description,
+                                         @NotNull Long challengerId,
+                                         @NotBlank String challengerName,
+                                         @Valid TaskCertificationDTO recentCertification) {
 
         public static GroupChallengeListItem fromEntity(Challenge challenge) {
             Task recentCertifiedTask = challenge.getRecentCertifiedTask();

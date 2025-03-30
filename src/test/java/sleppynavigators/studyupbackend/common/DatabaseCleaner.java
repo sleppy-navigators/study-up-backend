@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.common;
+package sleppynavigators.studyupbackend.common;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.Entity;
