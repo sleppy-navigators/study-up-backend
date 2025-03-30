@@ -12,6 +12,10 @@ import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
+import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
+import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
@@ -41,7 +45,7 @@ public class GroupService {
     private final ChallengeRepository challengeRepository;
     private final TaskRepository taskRepository;
     private final BotRepository botRepository;
-
+    private final SystemEventPublisher systemEventPublisher;
 
     @Transactional
     public GroupResponse createGroup(Long creatorId, GroupCreationRequest request) {
@@ -58,11 +62,15 @@ public class GroupService {
     public void leaveGroup(Long userId, Long groupId) {
         groupMemberRepository.findByGroupIdAndUserId(groupId, userId).ifPresent(member -> {
             Group group = member.getGroup();
+            User user = member.getUser();
             group.removeMember(member);
 
             if (!group.hasAnyMember()) {
                 botRepository.findByGroupId(groupId).ifPresent(botRepository::delete);
                 groupRepository.delete(group);
+            } else {
+                SystemEvent event = new UserLeaveEvent(user.getUserProfile().username(), groupId);
+                systemEventPublisher.publish(event);
             }
         });
     }
@@ -99,6 +107,10 @@ public class GroupService {
 
         User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         group.addMember(user);
+        
+        SystemEvent event = new UserJoinEvent(user.getUserProfile().username(), groupId);
+        systemEventPublisher.publish(event);
+        
         return GroupResponse.fromEntity(group);
     }
 
