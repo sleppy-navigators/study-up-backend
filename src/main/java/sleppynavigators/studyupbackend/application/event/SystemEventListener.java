@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.event;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -11,7 +12,7 @@ import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SystemEventListener {
     private final ChatMessageService chatMessageService;
 
