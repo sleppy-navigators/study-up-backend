@@ -2,10 +2,10 @@ package sleppynavigators.studyupbackend.application.chat;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willThrow;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,17 +19,17 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
+import sleppynavigators.studyupbackend.common.support.BotSupport;
+import sleppynavigators.studyupbackend.common.support.GroupSupport;
+import sleppynavigators.studyupbackend.common.support.UserSupport;
+import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
-import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
 import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 
@@ -49,35 +49,27 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
     private ChatMessageRepository chatMessageRepository;
 
     @Autowired
-    private BotRepository botRepository;
+    private UserSupport userSupport;
 
     @Autowired
-    private GroupRepository groupRepository;
+    private GroupSupport groupSupport;
 
     @Autowired
-    private UserRepository userRepository;
+    private BotSupport botSupport;
 
     @MockitoBean
     private SimpMessageSendingOperations messagingTemplate;
 
     @BeforeEach
     void setUp() {
-        User creator = userRepository.save(new User("testUser", "test@test.com"));
-
-        Group group = Group.builder()
-                .name("testGroup")
-                .description("테스트용 그룹")
-                .thumbnailUrl("https://test.com")
-                .creator(creator)
-                .build();
-        Group savedGroup = groupRepository.save(group);
-
-        Bot bot = new Bot(savedGroup);
-        botRepository.save(bot);
+        User creator = userSupport.registerUserToDB();
+        Group group = groupSupport.registerGroupToDB(List.of(creator));
+        Bot bot = botSupport.registerBotToDB(group);
     }
 
     @TestConfiguration
     static class TestConfig {
+
         @Primary
         @Bean
         public SimpMessageSendingOperations messagingTemplate() {
@@ -164,16 +156,16 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
 
         // then
         verify(messagingTemplate).convertAndSend(
-            eq(String.format("/topic/group/%d", groupId)),
-            any(SuccessResponse.class)
+                eq(String.format("/topic/group/%d", groupId)),
+                any(SuccessResponse.class)
         );
 
         ChatMessage savedMessage = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(
-            groupId,
-            PageRequest.of(0, 1)
-        )
-        .getContent()
-        .get(0);
+                        groupId,
+                        PageRequest.of(0, 1)
+                )
+                .getContent()
+                .get(0);
 
         assertThat(savedMessage.getContent()).isEqualTo("testUser님이 그룹에 참여했습니다.");
     }
@@ -185,13 +177,14 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         Long groupId = 1L;
         String username = "testUser";
         SystemEvent event = new UserJoinEvent(username, groupId);
+
         doThrow(new RuntimeException("메시지 전송 실패"))
-            .when(messagingTemplate)
-            .convertAndSend(eq(String.format("/topic/group/%d", groupId)), any(SuccessResponse.class));
+                .when(messagingTemplate)
+                .convertAndSend(eq(String.format("/topic/group/%d", groupId)), any(SuccessResponse.class));
 
         // when & then
         assertThatThrownBy(() -> chatMessageService.sendSystemMessage(event))
-            .isInstanceOf(ChatMessageException.class)
-            .hasMessageContaining("메시지 처리 중 오류가 발생했습니다");
+                .isInstanceOf(ChatMessageException.class)
+                .hasMessageContaining("메시지 처리 중 오류가 발생했습니다");
     }
 }

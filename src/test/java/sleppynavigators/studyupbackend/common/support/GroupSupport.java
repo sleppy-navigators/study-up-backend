@@ -66,12 +66,17 @@ public class GroupSupport {
      *
      * @see GroupService#createGroup(Long, GroupCreationRequest)
      */
-    public Group registerGroupToDB(User creator) {
+    public Group registerGroupToDB(List<User> members) {
+        User creator = members.get(0);
         Group group = Group.builder()
                 .name("test-group")
                 .description("test-group-description")
                 .creator(creator)
                 .build();
+
+        for (User member : members) {
+            group.addMember(member);
+        }
         return groupRepository.save(group);
     }
 

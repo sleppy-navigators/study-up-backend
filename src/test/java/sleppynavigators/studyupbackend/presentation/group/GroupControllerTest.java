@@ -533,7 +533,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     @DisplayName("그룹의 채팅 메시지를 페이지네이션하여 조회한다")
     void getMessages_Success() {
         // given
-        Group groupToQuery = groupSupport.registerGroupToDB(currentUser);
+        Group groupToQuery = groupSupport.registerGroupToDB(List.of(currentUser));
         Long pageNumber = 0L;
         Long pageSize = 2L;
         List<ChatMessage> messages = groupSupport.registerChatMessagesToDB(groupToQuery, currentUser,
@@ -590,7 +590,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     @DisplayName("채팅 메시지가 없는 그룹을 조회하면 빈 목록을 반환한다")
     void getMessages_EmptyMessages() {
         // given
-        Group groupToQuery = groupSupport.registerGroupToDB(currentUser);
+        Group groupToQuery = groupSupport.registerGroupToDB(List.of(currentUser));
         assert chatMessageRepository.findAll().isEmpty();
 
         // when

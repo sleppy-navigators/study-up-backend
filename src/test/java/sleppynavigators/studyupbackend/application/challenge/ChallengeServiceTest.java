@@ -10,63 +10,54 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import sleppynavigators.studyupbackend.application.event.SystemEventListener;
+import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
+import sleppynavigators.studyupbackend.common.support.BotSupport;
+import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
+import sleppynavigators.studyupbackend.common.support.GroupSupport;
+import sleppynavigators.studyupbackend.common.support.UserSupport;
+import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
-import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
-import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
-import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
-import sleppynavigators.studyupbackend.presentation.common.DatabaseCleaner;
 
-@SpringBootTest
-@ActiveProfiles("test")
 @DisplayName("ChallengeService 테스트")
-class ChallengeServiceTest {
+class ChallengeServiceTest extends ApplicationBaseTest {
 
     @Autowired
     private ChallengeService challengeService;
 
     @Autowired
-    private ChallengeRepository challengeRepository;
+    private UserSupport userSupport;
 
     @Autowired
-    private TaskRepository taskRepository;
+    private GroupSupport groupSupport;
 
     @Autowired
-    private GroupRepository groupRepository;
+    private ChallengeSupport challengeSupport;
 
     @Autowired
-    private UserRepository userRepository;
+    private BotSupport botSupport;
 
     @MockitoSpyBean
     private SystemEventListener systemEventListener;
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
     private User testUser;
+
     private Group testGroup;
 
     @BeforeEach
     void setUp() {
-        databaseCleaner.execute();
-        testUser = userRepository.save(new User("testUser", "test@test.com"));
-        testGroup = Group.builder()
-            .name("testGroup")
-            .description("description")
-            .creator(testUser)
-            .build();
-        testGroup = groupRepository.save(testGroup);
+        testUser = userSupport.registerUserToDB();
+        testGroup = groupSupport.registerGroupToDB(List.of(testUser));
+        Bot testBot = botSupport.registerBotToDB(testGroup);
     }
 
     @Test
@@ -74,10 +65,9 @@ class ChallengeServiceTest {
     void createChallenge_PublishesChallengeCreateEvent() {
         // given
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        ChallengeCreationRequest.TaskRequest taskRequest = 
-            new ChallengeCreationRequest.TaskRequest("testTask", deadline);
+        TaskRequest taskRequest = new ChallengeCreationRequest.TaskRequest("testTask", deadline);
         ChallengeCreationRequest request = new ChallengeCreationRequest(
-            "testChallenge", deadline, "description", List.of(taskRequest)
+                "testChallenge", deadline, "description", List.of(taskRequest)
         );
 
         // when
@@ -85,7 +75,7 @@ class ChallengeServiceTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-            new ChallengeCreateEvent("testUser", "testChallenge", testGroup.getId())
+                new ChallengeCreateEvent(testUser.getUserProfile().username(), "testChallenge", testGroup.getId())
         );
     }
 
@@ -93,28 +83,20 @@ class ChallengeServiceTest {
     @DisplayName("모든 태스크 완료 시 ChallengeCompleteEvent가 발행된다")
     void completeAllTasks_PublishesChallengeCompleteEvent() throws MalformedURLException {
         // given
-        Challenge challenge = Challenge.builder()
-            .owner(testUser)
-            .group(testGroup)
-            .title("testChallenge")
-            .deadline(LocalDateTime.now().plusDays(7))
-            .description("description")
-            .build();
-        challenge.addTask("testTask", LocalDateTime.now().plusDays(7));
-        Challenge savedChallenge = challengeRepository.save(challenge);
-        Task task = savedChallenge.getTasksForUser(testUser).get(0);
+        Challenge challenge = challengeSupport
+                .callToMakeChallengesWithTasks(testGroup, 3, 2, testUser);
+        Task taskToCertify = challenge.getTasks().get(2);
 
         TaskCertificationRequest request = new TaskCertificationRequest(
-            List.of(new URL("http://example.com")),
-            List.of(new URL("http://example.com/image"))
+                List.of(new URL("http://example.com")),
+                List.of(new URL("http://example.com/image"))
         );
 
         // when
-        challengeService.completeTask(testUser.getId(), savedChallenge.getId(), task.getId(), request);
+        challengeService.completeTask(testUser.getId(), challenge.getId(), taskToCertify.getId(), request);
 
         // then
-        verify(systemEventListener).handleSystemEvent(
-            new ChallengeCompleteEvent("testUser", "testChallenge", testGroup.getId())
-        );
+        verify(systemEventListener).handleSystemEvent(new ChallengeCompleteEvent(
+                testUser.getUserProfile().username(), challenge.getDetail().title(), testGroup.getId()));
     }
 }

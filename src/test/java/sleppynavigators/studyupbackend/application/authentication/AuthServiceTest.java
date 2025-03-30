@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
+import sleppynavigators.studyupbackend.common.support.AuthSupport;
 import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
-import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.infrastructure.authentication.UserCredentialRepository;
 import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.GoogleOidcClient;
@@ -32,6 +32,9 @@ class AuthServiceTest extends ApplicationBaseTest {
 
     @Autowired
     private UserCredentialRepository userCredentialRepository;
+
+    @Autowired
+    private AuthSupport authSupport;
 
     @MockitoBean
     private GoogleOidcClient googleOidcClient;
@@ -52,6 +55,7 @@ class AuthServiceTest extends ApplicationBaseTest {
         // given
         String idToken = "test-id-token";
         SignInRequest request = new SignInRequest(idToken);
+
         Claims idTokenClaims = Jwts.claims()
                 .subject("test-subject")
                 .add("name", "test-user")
@@ -59,10 +63,7 @@ class AuthServiceTest extends ApplicationBaseTest {
                 .build();
         given(googleOidcClient.deserialize(idToken)).willReturn(idTokenClaims);
 
-        User user = new User("test-user", "test-email");
-        UserCredential userCredential = new UserCredential("test-subject", "google", user);
-
-        userCredentialRepository.save(userCredential);
+        UserCredential userCredential = authSupport.registerUserCredentialToDB();
 
         // when
         TokenResponse response = authService.googleSignIn(request);
@@ -78,6 +79,7 @@ class AuthServiceTest extends ApplicationBaseTest {
         // given
         String idToken = "test-id-token";
         SignInRequest request = new SignInRequest(idToken);
+
         Claims idTokenClaims = Jwts.claims()
                 .subject("test-subject")
                 .add("name", "test-user")
