@@ -5,8 +5,8 @@ import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 public enum SystemMessageTemplate {
     USER_JOIN_MESSAGE_TEMPLATE("%s님이 그룹에 참여했습니다."),
     USER_LEAVE_MESSAGE_TEMPLATE("%s님이 그룹을 나갔습니다."),
-    CHALLENGE_CREATE_MESSAGE_TEMPLATE("%s님이 %s 챌린지를 생성했습니다."),
-    CHALLENGE_COMPLETE_MESSAGE_TEMPLATE("%s님이 %s 챌린지를 완료했습니다.");
+    CHALLENGE_CREATE_MESSAGE_TEMPLATE("%s님이 '%s' 챌린지를 생성했습니다."),
+    CHALLENGE_COMPLETE_MESSAGE_TEMPLATE("%s님이 '%s' 챌린지를 완료했습니다.");
 
     private final String messageFormat;
 
