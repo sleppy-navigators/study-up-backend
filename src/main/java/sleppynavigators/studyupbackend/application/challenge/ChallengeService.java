@@ -9,6 +9,10 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
+import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
+import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
@@ -31,6 +35,7 @@ public class ChallengeService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final SystemEventPublisher systemEventPublisher;
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
@@ -42,6 +47,10 @@ public class ChallengeService {
         }
 
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
+        
+        SystemEvent event = new ChallengeCreateEvent(user.getUserProfile().username(), challenge.getDetail().title(), groupId);
+        systemEventPublisher.publish(event);
+        
         return ChallengeResponse.fromEntity(challenge);
     }
 
@@ -65,6 +74,16 @@ public class ChallengeService {
 
         try {
             task.certify(request.externalLinks(), request.imageUrls(), user);
+            
+            if (task.getChallenge().isAllTasksCompleted()) {
+                SystemEvent event = new ChallengeCompleteEvent(
+                    user.getUserProfile().username(),
+                    task.getChallenge().getDetail().title(),
+                    task.getChallenge().getGroup().getId()
+                );
+                systemEventPublisher.publish(event);
+            }
+            
             return TaskResponse.fromEntity(task);
         } catch (IllegalArgumentException ignored) {
             throw new InvalidPayloadException();

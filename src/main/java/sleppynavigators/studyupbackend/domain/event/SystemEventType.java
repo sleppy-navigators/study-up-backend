@@ -1,6 +1,6 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public enum Event {
+public enum SystemEventType {
     USER_JOIN,
     USER_LEAVE,
     CHALLENGE_CREATE,

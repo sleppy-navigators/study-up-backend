@@ -63,7 +63,15 @@ public class Task extends TimeAuditBaseEntity {
         this.certification = new TaskCertification(externalLinks, imageUrls, LocalDateTime.now());
     }
 
+    public boolean isCompleted() {
+        return isSucceed() || isFailed();
+    }
+
     public boolean isSucceed() {
         return certification.isCertified();
+    }
+
+    public boolean isFailed() {
+        return detail.isPast() && !certification.isCertified();
     }
 }
