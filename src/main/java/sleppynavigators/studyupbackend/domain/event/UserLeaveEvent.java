@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.domain.event;
 
 import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
 
-public record UserLeaveEvent(String userName, String reason, String leaveTime) implements SystemEvent {
+public record UserLeaveEvent(String userName, Long groupId) implements SystemEvent {
 
     @Override
     public SystemEventType getType() {
@@ -10,7 +10,12 @@ public record UserLeaveEvent(String userName, String reason, String leaveTime) i
     }
 
     @Override
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    @Override
     public String generateMessage(SystemMessageTemplate template) {
-        return template.format(userName);
+        return template.format(userName());
     }
 }

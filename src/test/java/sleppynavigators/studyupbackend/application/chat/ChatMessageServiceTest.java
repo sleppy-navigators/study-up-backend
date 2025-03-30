@@ -170,10 +170,10 @@ class ChatMessageServiceTest {
         // given
         Long groupId = 1L;
         String username = "testUser";
-        SystemEvent event = new UserJoinEvent(username, "초대");
+        SystemEvent event = new UserJoinEvent(username, groupId);
 
         // when
-        chatMessageService.sendSystemMessage(groupId, event);
+        chatMessageService.sendSystemMessage(event);
 
         // then
         verify(messagingTemplate).convertAndSend(
@@ -197,13 +197,13 @@ class ChatMessageServiceTest {
         // given
         Long groupId = 1L;
         String username = "testUser";
-        SystemEvent event = new UserJoinEvent(username, "초대");
+        SystemEvent event = new UserJoinEvent(username, groupId);
         doThrow(new RuntimeException("메시지 전송 실패"))
             .when(messagingTemplate)
             .convertAndSend(eq(String.format("/topic/group/%d", groupId)), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatMessageService.sendSystemMessage(groupId, event))
+        assertThatThrownBy(() -> chatMessageService.sendSystemMessage(event))
             .isInstanceOf(ChatMessageException.class)
             .hasMessageContaining("메시지 처리 중 오류가 발생했습니다");
     }

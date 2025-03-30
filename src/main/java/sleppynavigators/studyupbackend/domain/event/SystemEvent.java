@@ -9,5 +9,6 @@ public sealed interface SystemEvent permits
         ChallengeCompleteEvent {
 
     SystemEventType getType();
+    Long getGroupId();
     String generateMessage(SystemMessageTemplate template);
 }
