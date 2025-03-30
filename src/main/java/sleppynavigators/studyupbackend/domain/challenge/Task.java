@@ -66,4 +66,8 @@ public class Task extends TimeAuditBaseEntity {
     public boolean isSucceed() {
         return certification.isCertified();
     }
+
+    public boolean isFailed() {
+        return detail.isPast() && !certification.isCertified();
+    }
 }

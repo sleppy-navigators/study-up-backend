@@ -86,6 +86,6 @@ public class Challenge extends TimeAuditBaseEntity {
     }
 
     public boolean isAllTasksCompleted() {
-        return tasks.stream().allMatch(Task::isSucceed);
+       return tasks.stream().allMatch(task -> task.isSucceed() || task.isFailed());
     }
 }
