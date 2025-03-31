@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.IntStream;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +44,7 @@ import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChal
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskChallengeDetail;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskListItem;
 
 @DisplayName("GroupController API 테스트")
@@ -480,11 +480,18 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     @DisplayName("그룹의 챌린지 목록을 조회한다")
     void getChallenges_Success() {
         // given
-        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
-        IntStream.range(0, 5).forEach(ignored ->
-                challengeSupport.callToMakeChallengesWithTasks(groupToQuery, 5, 3, currentUser));
+        User anotherUser = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser));
+
+        Challenge myInProgressChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 5, 3, currentUser);
+        Challenge myCompletedChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+        Challenge anotherUserChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 5, 5, anotherUser);
 
         // when
+        groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
         ExtractableResponse<?> response = with()
                 .when().request(GET, "/groups/{groupId}/challenges", groupToQuery.getId())
                 .then()
@@ -495,10 +502,16 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         assertThat(response.jsonPath().getObject("data", GroupChallengeListResponse.class))
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
-                    assertThat(data.challenges()).hasSize(5);
+                    assertThat(data.challenges()).hasSize(3);
                     assertThat(data.challenges())
                             .map(GroupChallengeListItem::recentCertification)
                             .noneMatch(Objects::isNull);
+                    assertThat(data.challenges())
+                            .map(GroupChallengeListItem::isCompleted)
+                            .containsExactly(false, true, true);
+                    assertThat(data.challenges())
+                            .map(GroupChallengeListItem::currentlyJoined)
+                            .containsExactly(true, true, false);
                 });
     }
 
@@ -506,11 +519,18 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     @DisplayName("그룹의 테스크 목록을 조회한다")
     void getTasks_Success() {
         // given
-        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
-        IntStream.range(0, 5).forEach(ignored ->
-                challengeSupport.callToMakeChallengesWithTasks(groupToQuery, 5, 3, currentUser));
+        User anotherUser = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser));
+
+        Challenge myInProgressChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 3, 1, currentUser);
+        Challenge myCompletedChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+        Challenge anotherUserChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 2, 2, anotherUser);
 
         // when
+        groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
         ExtractableResponse<?> response = with()
                 .when().request(GET, "/groups/{groupId}/tasks", groupToQuery.getId())
                 .then()
@@ -521,11 +541,19 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         assertThat(response.jsonPath().getObject("data", GroupTaskListResponse.class))
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
-                    assertThat(data.tasks()).hasSize(25);
+                    assertThat(data.tasks()).hasSize(9);
                     assertThat(data.tasks()).map(GroupTaskListItem::certification)
                             .anyMatch(Objects::isNull);
                     assertThat(data.tasks()).map(GroupTaskListItem::certification)
                             .anyMatch(Objects::nonNull);
+                    assertThat(data.tasks())
+                            .map(GroupTaskListItem::challenge)
+                            .map(GroupTaskChallengeDetail::currentlyJoined)
+                            .containsExactly(true, true, true, true, true, true, true, false, false);
+                    assertThat(data.tasks())
+                            .map(GroupTaskListItem::challenge)
+                            .map(GroupTaskChallengeDetail::isCompleted)
+                            .containsExactly(false, false, false, true, true, true, true, true, true);
                 });
     }
 

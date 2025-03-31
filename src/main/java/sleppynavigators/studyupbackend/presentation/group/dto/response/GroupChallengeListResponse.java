@@ -17,6 +17,8 @@ public record GroupChallengeListResponse(@NotNull @Valid List<GroupChallengeList
                                          String description,
                                          @NotNull Long challengerId,
                                          @NotBlank String challengerName,
+                                         @NotNull Boolean isCompleted,
+                                         @NotNull Boolean currentlyJoined,
                                          @Valid TaskCertificationDTO recentCertification) {
 
         public static GroupChallengeListItem fromEntity(Challenge challenge) {
@@ -29,6 +31,8 @@ public record GroupChallengeListResponse(@NotNull @Valid List<GroupChallengeList
                     challenge.getDetail().description(),
                     challenge.getOwner().getId(),
                     challenge.getOwner().getUserProfile().username(),
+                    challenge.isCompleted(),
+                    challenge.getGroup().hasMember(challenge.getOwner()),
                     (recentCertifiedTask != null) ?
                             TaskCertificationDTO.fromEntity(recentCertifiedTask.getCertification())
                             : null

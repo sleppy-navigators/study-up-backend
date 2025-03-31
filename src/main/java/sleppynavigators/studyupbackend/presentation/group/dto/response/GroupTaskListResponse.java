@@ -32,12 +32,16 @@ public record GroupTaskListResponse(@NotNull @Valid List<GroupTaskListItem> task
     }
 
     public record GroupTaskChallengeDetail(@NotNull Long challengeId,
-                                           @NotBlank String challengeTitle) {
+                                           @NotBlank String challengeTitle,
+                                           @NotNull Boolean isCompleted,
+                                           @NotNull Boolean currentlyJoined) {
 
         public static GroupTaskChallengeDetail fromEntity(Task task) {
             return new GroupTaskChallengeDetail(
                     task.getChallenge().getId(),
-                    task.getChallenge().getDetail().title());
+                    task.getChallenge().getDetail().title(),
+                    task.getChallenge().isCompleted(),
+                    task.getChallenge().getGroup().hasMember(task.getChallenge().getOwner()));
         }
     }
 
