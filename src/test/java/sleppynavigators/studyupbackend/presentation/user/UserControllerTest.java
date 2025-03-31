@@ -23,6 +23,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskGroupDetail;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskListItem;
@@ -51,6 +52,27 @@ public class UserControllerTest extends RestAssuredBaseTest {
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .addHeader("Authorization", bearerToken)
                 .build();
+    }
+
+    @Test
+    @DisplayName("사용자 정보 조회에 성공한다")
+    void getUserInfo_Success() {
+        // given
+        User userToQuery = userSupport.registerUserToDB();
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/users/{userId}", userToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", UserResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.id()).isEqualTo(userToQuery.getId());
+                });
     }
 
     @Test

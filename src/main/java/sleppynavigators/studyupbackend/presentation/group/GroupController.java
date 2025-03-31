@@ -70,10 +70,10 @@ public class GroupController {
 
     @GetMapping("/{groupId}/invitations/{invitationId}")
     @Operation(summary = "그룹 초대 조회", description = "그룹 초대를 조회합니다.")
-    public ResponseEntity<SuccessResponse<GroupResponse>> getInvitation(
+    public ResponseEntity<SuccessResponse<GroupInvitationResponse>> getInvitation(
             @PathVariable Long groupId, @PathVariable Long invitationId
     ) {
-        GroupResponse response = groupService.getInvitedGroup(groupId, invitationId);
+        GroupInvitationResponse response = groupService.getInvitation(groupId, invitationId);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
