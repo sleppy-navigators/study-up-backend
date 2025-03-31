@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.presentation.challenge;
 
 import static io.restassured.RestAssured.with;
+import static io.restassured.http.Method.DELETE;
 import static io.restassured.http.Method.GET;
 import static io.restassured.http.Method.POST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,6 +11,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import org.apache.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import sleppynavigators.studyupbackend.common.RestAssuredBaseTest;
 import sleppynavigators.studyupbackend.common.support.AuthSupport;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
@@ -26,6 +29,8 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.exception.ErrorCode;
+import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
@@ -33,6 +38,9 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskR
 
 @DisplayName("ChallengeController API 테스트")
 public class ChallengeControllerTest extends RestAssuredBaseTest {
+
+    @Autowired
+    private ChallengeRepository challengeRepository;
 
     @Autowired
     private UserSupport userSupport;
@@ -46,6 +54,9 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
     @Autowired
     private ChallengeSupport challengeSupport;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private User currentUser;
 
     @BeforeEach
@@ -55,6 +66,48 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .addHeader("Authorization", bearerToken)
                 .build();
+    }
+
+    @Test
+    @DisplayName("챌린지 생성 24시간 이내 삭제 성공")
+    void cancelChallenge_Success() {
+        // given
+        Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
+        Challenge challengeToCancel = challengeSupport
+                .callToMakeChallengesWithTasks(groupToBelong, 3, 1, currentUser);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(DELETE, "/challenges/{challengeId}", challengeToCancel.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(challengeRepository.findAll()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("챌린지 생성 24시간이 초과하면 삭제 실패")
+    void cancelChallenge_Fail() {
+        // given
+        Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
+        Challenge challengeToCancel = challengeSupport
+                .callToMakeChallengesWithTasks(groupToBelong, 3, 1, currentUser);
+
+        // when
+        jdbcTemplate.update("UPDATE challenges SET created_at = ? WHERE id = ?",
+                LocalDateTime.now().minusHours(24), challengeToCancel.getId());
+
+        ExtractableResponse<?> response = with()
+                .when().request(DELETE, "/challenges/{challengeId}", challengeToCancel.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.FORBIDDEN_CONTENT.getCode());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.FORBIDDEN_CONTENT.getDefaultMessage());
     }
 
     @Test

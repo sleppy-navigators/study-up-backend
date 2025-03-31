@@ -47,11 +47,26 @@ public class ChallengeService {
         }
 
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
-        
-        SystemEvent event = new ChallengeCreateEvent(user.getUserProfile().username(), challenge.getDetail().title(), groupId);
+
+        SystemEvent event = new ChallengeCreateEvent(user.getUserProfile().username(), challenge.getDetail().title(),
+                groupId);
         systemEventPublisher.publish(event);
-        
+
         return ChallengeResponse.fromEntity(challenge);
+    }
+
+    @Transactional
+    public void cancelChallenge(Long userId, Long challengeId) {
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(EntityNotFoundException::new);
+
+        if (!challenge.canModify(user)) {
+            throw new ForbiddenContentException();
+        }
+
+        // TODO: need to publish system event
+
+        challengeRepository.deleteById(challengeId);
     }
 
     public TaskListResponse getTasks(Long userId, Long challengeId) {
@@ -74,16 +89,16 @@ public class ChallengeService {
 
         try {
             task.certify(request.externalLinks(), request.imageUrls(), user);
-            
+
             if (task.getChallenge().isAllTasksCompleted()) {
                 SystemEvent event = new ChallengeCompleteEvent(
-                    user.getUserProfile().username(),
-                    task.getChallenge().getDetail().title(),
-                    task.getChallenge().getGroup().getId()
+                        user.getUserProfile().username(),
+                        task.getChallenge().getDetail().title(),
+                        task.getChallenge().getGroup().getId()
                 );
                 systemEventPublisher.publish(event);
             }
-            
+
             return TaskResponse.fromEntity(task);
         } catch (IllegalArgumentException ignored) {
             throw new InvalidPayloadException();

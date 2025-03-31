@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,17 @@ import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 public class ChallengeController {
 
     private final ChallengeService challengeService;
+
+    @DeleteMapping("/{challengeId}")
+    @Operation(summary = "챌린지 취소", description = "챌린지를 취소합니다.")
+    public ResponseEntity<SuccessResponse<Void>> deleteChallenge(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long challengeId
+    ) {
+        Long userId = userPrincipal.userId();
+        challengeService.cancelChallenge(userId, challengeId);
+        return ResponseEntity.ok(new SuccessResponse<>(null));
+    }
 
     @GetMapping("/{challengeId}/tasks")
     @Operation(summary = "챌린지 테스크 목록 조회", description = "챌린지의 테스크 목록을 조회합니다.")
