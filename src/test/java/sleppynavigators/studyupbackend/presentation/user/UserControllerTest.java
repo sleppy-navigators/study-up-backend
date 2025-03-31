@@ -9,7 +9,6 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,10 +19,12 @@ import sleppynavigators.studyupbackend.common.support.AuthSupport;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
+import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskGroupDetail;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskListItem;
 
 @DisplayName("UserController API 테스트")
@@ -85,11 +86,21 @@ public class UserControllerTest extends RestAssuredBaseTest {
     @DisplayName("사용자가 테스크 목록 조회에 성공한다")
     void getTasks_Success() {
         // given
-        IntStream.range(0, 3)
-                .mapToObj(ignored -> groupSupport.callToMakeGroup(List.of(currentUser)))
-                .forEach(group -> challengeSupport.callToMakeChallengesWithTasks(group, 3, 2, currentUser));
+        User anotherUser1 = userSupport.registerUserToDB();
+        User anotherUser2 = userSupport.registerUserToDB();
+
+        Group groupCurrentlyJoined = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser1));
+        Group groupWillNotJoined = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser2));
+
+        Challenge challenge1 = challengeSupport
+                .callToMakeChallengesWithTasks(groupCurrentlyJoined, 3, 2, currentUser);
+        Challenge challenge2 = challengeSupport
+                .callToMakeChallengesWithTasks(groupCurrentlyJoined, 4, 0, currentUser);
+        Challenge challenge3 = challengeSupport
+                .callToMakeChallengesWithTasks(groupWillNotJoined, 2, 2, currentUser);
 
         // when
+        groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());
         ExtractableResponse<?> response = with()
                 .when().request(GET, "/users/me/tasks")
                 .then()
@@ -103,6 +114,10 @@ public class UserControllerTest extends RestAssuredBaseTest {
                     assertThat(data.tasks()).hasSize(9);
                     assertThat(data.tasks()).map(UserTaskListItem::certification).anyMatch(Objects::nonNull);
                     assertThat(data.tasks()).map(UserTaskListItem::certification).anyMatch(Objects::isNull);
+                    assertThat(data.tasks())
+                            .map(UserTaskListItem::groupDetail)
+                            .map(UserTaskGroupDetail::currentlyJoined)
+                            .containsExactly(true, true, true, true, true, true, true, false, false);
                 });
     }
 }

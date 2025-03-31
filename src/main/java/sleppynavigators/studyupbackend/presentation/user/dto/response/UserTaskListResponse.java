@@ -46,12 +46,14 @@ public record UserTaskListResponse(@NotNull @Valid List<UserTaskListItem> tasks)
     }
 
     public record UserTaskGroupDetail(@NotNull Long groupId,
-                                      @NotBlank String groupName) {
+                                      @NotBlank String groupName,
+                                      @NotNull Boolean currentlyJoined) {
 
         public static UserTaskGroupDetail fromEntity(Task task) {
             return new UserTaskGroupDetail(
                     task.getChallenge().getGroup().getId(),
-                    task.getChallenge().getGroup().getGroupDetail().name());
+                    task.getChallenge().getGroup().getGroupDetail().name(),
+                    task.getChallenge().getGroup().hasMember(task.getChallenge().getOwner()));
         }
     }
 
