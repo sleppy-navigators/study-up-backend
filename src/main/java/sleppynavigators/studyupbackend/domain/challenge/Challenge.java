@@ -95,6 +95,6 @@ public class Challenge extends TimeAuditBaseEntity {
     }
 
     public boolean isCompleted() {
-        return isAllTasksCompleted() || detail.isPast();
+        return isAllTasksCompleted() || detail.isOverdue();
     }
 }

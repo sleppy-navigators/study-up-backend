@@ -13,7 +13,7 @@ public record TaskDetail(@Column(nullable = false) String title,
         validateDeadline(deadline);
     }
 
-    public boolean isPast() {
+    public boolean isOverdue() {
         return deadline.isBefore(LocalDateTime.now());
     }
 

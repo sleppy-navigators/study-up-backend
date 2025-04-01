@@ -16,7 +16,7 @@ public record ChallengeDetail(@Column(nullable = false) String title,
         validateDescription(description);
     }
 
-    public boolean isPast() {
+    public boolean isOverdue() {
         return deadline.isBefore(LocalDateTime.now());
     }
 
