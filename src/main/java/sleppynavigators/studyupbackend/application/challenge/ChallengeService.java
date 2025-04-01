@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
+import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
@@ -48,7 +49,9 @@ public class ChallengeService {
 
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
-        SystemEvent event = new ChallengeCreateEvent(user.getUserProfile().username(), challenge.getDetail().title(),
+        SystemEvent event = new ChallengeCreateEvent(
+                user.getUserProfile().username(),
+                challenge.getDetail().title(),
                 groupId);
         systemEventPublisher.publish(event);
 
@@ -64,7 +67,11 @@ public class ChallengeService {
             throw new ForbiddenContentException();
         }
 
-        // TODO: need to publish system event
+        SystemEvent event = new ChallengeCancelEvent(
+                user.getUserProfile().username(),
+                challenge.getDetail().title(),
+                challenge.getGroup().getId());
+        systemEventPublisher.publish(event);
 
         challengeRepository.deleteById(challengeId);
     }
