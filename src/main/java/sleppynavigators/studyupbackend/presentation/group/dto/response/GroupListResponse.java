@@ -14,7 +14,7 @@ public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
                                 @NotBlank String name,
                                 String thumbnailUrl,
                                 @NotNull Integer numOfMembers,
-                                @NotBlank String lastSystemMessage) {
+                                @NotBlank String lastChatMessage) {
 
         public static GroupListItem fromEntity(Group group, ChatMessage chatMessage) {
             return new GroupListItem(
@@ -30,11 +30,11 @@ public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
     public static GroupListResponse fromEntities(List<Group> groups, List<ChatMessage> chatMessages) {
 
         Function<Group, GroupListItem> aggregateToListItem = group -> {
-            ChatMessage latestChatMessage = chatMessages.stream()
+            ChatMessage lastChatMessage = chatMessages.stream()
                     .filter(message -> message.isBelongTo(group.getId()))
                     .findFirst()
                     .orElseThrow(IllegalStateException::new);
-            return GroupListItem.fromEntity(group, latestChatMessage);
+            return GroupListItem.fromEntity(group, lastChatMessage);
         };
 
         return new GroupListResponse(

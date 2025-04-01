@@ -23,6 +23,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskGroupDetail;
@@ -87,6 +88,13 @@ public class UserControllerTest extends RestAssuredBaseTest {
         Group group2 = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser1));
         Group group3 = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser2, anotherUser3));
 
+        Challenge challenge1 = challengeSupport
+                .callToMakeChallengesWithTasks(group1, 3, 2, currentUser);
+        Challenge challenge2 = challengeSupport
+                .callToMakeChallengesWithTasks(group2, 4, 0, currentUser);
+
+        challengeSupport.callToCancelChallenge(currentUser, challenge1);
+
         // when
         ExtractableResponse<?> response = with()
                 .when().request(GET, "/users/me/groups")
@@ -99,8 +107,13 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.groups()).hasSize(3);
-                    assertThat(data.groups()).map(GroupListResponse.GroupListItem::numOfMembers)
+                    assertThat(data.groups()).map(GroupListItem::numOfMembers)
                             .containsExactly(1, 2, 3);
+                    assertThat(data.groups()).map(GroupListItem::lastChatMessage)
+                            .containsExactly(
+                                    "test-user님이 'test-challenge' 챌린지를 취소했습니다.",
+                                    "test-user님이 'test-challenge' 챌린지를 생성했습니다.",
+                                    "test-user님이 그룹에 참여했습니다.");
                 });
     }
 
