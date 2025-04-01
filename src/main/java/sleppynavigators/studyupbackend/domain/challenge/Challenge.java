@@ -70,8 +70,13 @@ public class Challenge extends TimeAuditBaseEntity {
         return tasks;
     }
 
-    public boolean canModify(User user) {
+    public boolean isOwner(User user) {
         return owner.equals(user);
+    }
+
+    public boolean canModify(User user) {
+        // We might change it to allow edits even if the user is not the owner of the challenge.
+        return isOwner(user);
     }
 
     public boolean canAccess(User user) {
@@ -86,7 +91,10 @@ public class Challenge extends TimeAuditBaseEntity {
     }
 
     public boolean isAllTasksCompleted() {
-       return tasks.stream().allMatch(Task::isCompleted);
+        return tasks.stream().allMatch(Task::isCompleted);
     }
 
+    public boolean isCompleted() {
+        return isAllTasksCompleted() || detail.isOverdue();
+    }
 }

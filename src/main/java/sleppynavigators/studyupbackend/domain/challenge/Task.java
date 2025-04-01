@@ -56,7 +56,7 @@ public class Task extends TimeAuditBaseEntity {
             throw new ForbiddenContentException();
         }
 
-        if (detail.isPast()) {
+        if (detail.isOverdue()) {
             throw new OveredDeadlineException();
         }
 
@@ -72,6 +72,6 @@ public class Task extends TimeAuditBaseEntity {
     }
 
     public boolean isFailed() {
-        return detail.isPast() && !certification.isCertified();
+        return detail.isOverdue() && !certification.isCertified();
     }
 }

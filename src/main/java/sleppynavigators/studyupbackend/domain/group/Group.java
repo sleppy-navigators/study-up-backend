@@ -61,7 +61,7 @@ public class Group extends UserAndTimeAuditBaseEntity {
     }
 
     public void removeMember(GroupMember member) {
-        if (isChallengeOwner(member.getUser())) {
+        if (isChallenger(member.getUser())) {
             throw new ActionRequiredBeforeException("Challenger cannot leave the group.");
         }
 
@@ -77,8 +77,13 @@ public class Group extends UserAndTimeAuditBaseEntity {
                 .anyMatch(member -> member.getUser().equals(user));
     }
 
-    private boolean isChallengeOwner(User user) {
+    public int getNumOfMembers() {
+        return members.size();
+    }
+
+    private boolean isChallenger(User user) {
         return challenges.stream()
-                .anyMatch(challenge -> challenge.getOwner().equals(user));
+                .filter(challenge -> !challenge.isCompleted())
+                .anyMatch(challenge -> challenge.isOwner(user));
     }
 }

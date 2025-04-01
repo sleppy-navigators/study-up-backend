@@ -61,6 +61,10 @@ public class GroupSupport {
         return groupInvitationRepository.findById(response.invitationId()).orElseThrow();
     }
 
+    public void callToLeaveGroup(User user, Long groupId) {
+        groupService.leaveGroup(user.getId(), groupId);
+    }
+
     /**
      * <b>Caution!</b> This method do directly access the database. There's no consideration about side effects.
      *

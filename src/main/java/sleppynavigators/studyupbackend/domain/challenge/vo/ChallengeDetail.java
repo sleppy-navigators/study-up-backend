@@ -16,6 +16,10 @@ public record ChallengeDetail(@Column(nullable = false) String title,
         validateDescription(description);
     }
 
+    public boolean isOverdue() {
+        return deadline.isBefore(LocalDateTime.now());
+    }
+
     private void validateTitle(String title) {
         if (title.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("Title must not be longer than " + MAX_LENGTH + " characters");
