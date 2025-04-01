@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.util.function.Function;
+import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
 
 public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
@@ -14,21 +16,30 @@ public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
                                 @NotNull Integer numOfMembers,
                                 @NotBlank String lastSystemMessage) {
 
-        public static GroupListItem fromEntity(Group group) {
+        public static GroupListItem fromEntity(Group group, ChatMessage chatMessage) {
             return new GroupListItem(
                     group.getId(),
                     group.getGroupDetail().name(),
                     group.getGroupDetail().thumbnailUrl(),
                     group.getNumOfMembers(),
-                    "누구누구님이 이런저런일을 했다고 하시네요. 1h"
+                    chatMessage.getContent()
             );
         }
     }
 
-    public static GroupListResponse fromEntities(List<Group> groups) {
+    public static GroupListResponse fromEntities(List<Group> groups, List<ChatMessage> chatMessages) {
+
+        Function<Group, GroupListItem> aggregateToListItem = group -> {
+            ChatMessage latestChatMessage = chatMessages.stream()
+                    .filter(message -> message.isBelongTo(group.getId()))
+                    .findFirst()
+                    .orElseThrow(IllegalStateException::new);
+            return GroupListItem.fromEntity(group, latestChatMessage);
+        };
+
         return new GroupListResponse(
                 groups.stream()
-                        .map(GroupListItem::fromEntity)
+                        .map(aggregateToListItem)
                         .toList()
         );
     }
