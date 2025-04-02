@@ -20,6 +20,7 @@ import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
+import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
@@ -98,5 +99,30 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         // then
         verify(systemEventListener).handleSystemEvent(new ChallengeCompleteEvent(
                 testUser.getUserProfile().username(), challenge.getDetail().title(), testGroup.getId()));
+    }
+
+    @Test
+    @DisplayName("챌린지 취소 시 ChallengeCancelEvent가 발행된다")
+    void cancelChallenge_PublishesChallengeCancelEvent() {
+        // given
+        Challenge challenge = challengeSupport
+                .callToMakeChallengesWithTasks(testGroup, 3, 2, testUser);
+
+        // when
+        challengeService.cancelChallenge(testUser.getId(), challenge.getId());
+
+        // then
+        verify(systemEventListener).handleSystemEvent(
+                new ChallengeCreateEvent(
+                        testUser.getUserProfile().username(),
+                        challenge.getDetail().title(),
+                        testGroup.getId())
+        );
+        verify(systemEventListener).handleSystemEvent(
+                new ChallengeCancelEvent(
+                        testUser.getUserProfile().username(),
+                        challenge.getDetail().title(),
+                        testGroup.getId())
+        );
     }
 }

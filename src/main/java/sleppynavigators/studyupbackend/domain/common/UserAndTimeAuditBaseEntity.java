@@ -20,11 +20,11 @@ public abstract class UserAndTimeAuditBaseEntity extends TimeAuditBaseEntity {
 
     @CreatedBy
     @Column(updatable = false)
-    private Long createdBy;
+    protected Long createdBy;
 
     @LastModifiedBy
     @Column
-    private Long updatedBy;
+    protected Long updatedBy;
 
     public Long getLastModifier() {
         return Optional.ofNullable(updatedBy).orElse(createdBy);

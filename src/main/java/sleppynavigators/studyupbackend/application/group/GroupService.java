@@ -51,10 +51,10 @@ public class GroupService {
     public GroupResponse createGroup(Long creatorId, GroupCreationRequest request) {
         User creator = userRepository.findById(creatorId).orElseThrow(EntityNotFoundException::new);
         Group savedGroup = groupRepository.save(request.toEntity(creator));
-        
+
         Bot bot = new Bot(savedGroup);
         botRepository.save(bot);
-        
+
         return GroupResponse.fromEntity(savedGroup);
     }
 
@@ -75,7 +75,7 @@ public class GroupService {
         });
     }
 
-    public GroupResponse getInvitedGroup(Long groupId, Long invitationId) {
+    public GroupInvitationResponse getInvitation(Long groupId, Long invitationId) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -83,7 +83,7 @@ public class GroupService {
             throw new InvalidPayloadException();
         }
 
-        return GroupResponse.fromEntity(invitation.getGroup());
+        return GroupInvitationResponse.fromEntity(invitation);
     }
 
     @Transactional
@@ -107,10 +107,10 @@ public class GroupService {
 
         User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         group.addMember(user);
-        
+
         SystemEvent event = new UserJoinEvent(user.getUserProfile().username(), groupId);
         systemEventPublisher.publish(event);
-        
+
         return GroupResponse.fromEntity(group);
     }
 

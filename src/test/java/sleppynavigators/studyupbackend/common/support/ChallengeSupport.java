@@ -59,4 +59,8 @@ public class ChallengeSupport {
 
         return challengeRepository.findById(challengeResponse.id()).orElseThrow();
     }
+
+    public void callToCancelChallenge(User user, Challenge challenge) {
+        challengeService.cancelChallenge(user.getId(), challenge.getId());
+    }
 }

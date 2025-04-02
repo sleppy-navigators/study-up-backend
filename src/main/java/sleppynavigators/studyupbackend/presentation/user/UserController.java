@@ -7,12 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.user.UserService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 
 @Tag(name = "User", description = "유저 관련 API")
@@ -22,6 +24,13 @@ import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskLi
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/{userId}")
+    @Operation(summary = "유저 정보 조회", description = "유저 정보를 조회합니다.")
+    public ResponseEntity<SuccessResponse<UserResponse>> getUserInfo(@PathVariable Long userId) {
+        UserResponse response = userService.getUser(userId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
 
     @GetMapping("/me/groups")
     @Operation(summary = "유저의 그룹 목록 조회", description = "유저의 그룹 목록을 조회합니다.")

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
+import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
@@ -47,11 +48,32 @@ public class ChallengeService {
         }
 
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
-        
-        SystemEvent event = new ChallengeCreateEvent(user.getUserProfile().username(), challenge.getDetail().title(), groupId);
+
+        SystemEvent event = new ChallengeCreateEvent(
+                user.getUserProfile().username(),
+                challenge.getDetail().title(),
+                groupId);
         systemEventPublisher.publish(event);
-        
+
         return ChallengeResponse.fromEntity(challenge);
+    }
+
+    @Transactional
+    public void cancelChallenge(Long userId, Long challengeId) {
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(EntityNotFoundException::new);
+
+        if (!challenge.canModify(user)) {
+            throw new ForbiddenContentException();
+        }
+
+        SystemEvent event = new ChallengeCancelEvent(
+                user.getUserProfile().username(),
+                challenge.getDetail().title(),
+                challenge.getGroup().getId());
+        systemEventPublisher.publish(event);
+
+        challengeRepository.deleteById(challengeId);
     }
 
     public TaskListResponse getTasks(Long userId, Long challengeId) {
@@ -74,16 +96,16 @@ public class ChallengeService {
 
         try {
             task.certify(request.externalLinks(), request.imageUrls(), user);
-            
+
             if (task.getChallenge().isAllTasksCompleted()) {
                 SystemEvent event = new ChallengeCompleteEvent(
-                    user.getUserProfile().username(),
-                    task.getChallenge().getDetail().title(),
-                    task.getChallenge().getGroup().getId()
+                        user.getUserProfile().username(),
+                        task.getChallenge().getDetail().title(),
+                        task.getChallenge().getGroup().getId()
                 );
                 systemEventPublisher.publish(event);
             }
-            
+
             return TaskResponse.fromEntity(task);
         } catch (IllegalArgumentException ignored) {
             throw new InvalidPayloadException();

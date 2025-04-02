@@ -14,10 +14,10 @@ class SystemEventTest {
     void userJoinEvent_GeneratesCorrectMessage() {
         // given
         UserJoinEvent event = new UserJoinEvent("testUser", 1L);
-        
+
         // when
         String message = event.generateMessage(SystemMessageTemplate.USER_JOIN_MESSAGE_TEMPLATE);
-        
+
         // then
         assertThat(message).isEqualTo("testUser님이 그룹에 참여했습니다.");
     }
@@ -27,10 +27,10 @@ class SystemEventTest {
     void userLeaveEvent_GeneratesCorrectMessage() {
         // given
         UserLeaveEvent event = new UserLeaveEvent("testUser", 1L);
-        
+
         // when
         String message = event.generateMessage(SystemMessageTemplate.USER_LEAVE_MESSAGE_TEMPLATE);
-        
+
         // then
         assertThat(message).isEqualTo("testUser님이 그룹을 나갔습니다.");
     }
@@ -40,10 +40,10 @@ class SystemEventTest {
     void challengeCreateEvent_GeneratesCorrectMessage() {
         // given
         ChallengeCreateEvent event = new ChallengeCreateEvent("testUser", "스터디하기", 1L);
-        
+
         // when
         String message = event.generateMessage(SystemMessageTemplate.CHALLENGE_CREATE_MESSAGE_TEMPLATE);
-        
+
         // then
         assertThat(message).isEqualTo("testUser님이 '스터디하기' 챌린지를 생성했습니다.");
     }
@@ -53,12 +53,25 @@ class SystemEventTest {
     void challengeCompleteEvent_GeneratesCorrectMessage() {
         // given
         ChallengeCompleteEvent event = new ChallengeCompleteEvent("testUser", "스터디하기", 1L);
-        
+
         // when
         String message = event.generateMessage(SystemMessageTemplate.CHALLENGE_COMPLETE_MESSAGE_TEMPLATE);
-        
+
         // then
         assertThat(message).isEqualTo("testUser님이 '스터디하기' 챌린지를 완료했습니다.");
+    }
+
+    @Test
+    @DisplayName("ChallengeCancelEvent의 메시지가 올바르게 생성된다")
+    void challengeCancelEvent_GeneratesCorrectMessage() {
+        // given
+        ChallengeCancelEvent event = new ChallengeCancelEvent("testUser", "스터디하기", 1L);
+
+        // when
+        String message = event.generateMessage(SystemMessageTemplate.CHALLENGE_CANCEL_MESSAGE_TEMPLATE);
+
+        // then
+        assertThat(message).isEqualTo("testUser님이 '스터디하기' 챌린지를 취소했습니다.");
     }
 
     @Test
@@ -67,10 +80,10 @@ class SystemEventTest {
         // given
         Long groupId = 1L;
         UserJoinEvent event = new UserJoinEvent("testUser", groupId);
-        
+
         // when
         Long result = event.getGroupId();
-        
+
         // then
         assertThat(result).isEqualTo(groupId);
     }
@@ -80,10 +93,10 @@ class SystemEventTest {
     void event_ReturnsCorrectType() {
         // given
         UserJoinEvent event = new UserJoinEvent("testUser", 1L);
-        
+
         // when
         SystemEventType type = event.getType();
-        
+
         // then
         assertThat(type).isEqualTo(SystemEventType.USER_JOIN);
     }

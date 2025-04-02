@@ -44,19 +44,23 @@ public class ChatMessage {
 
     public static ChatMessage fromUser(Long userId, Long groupId, String content) {
         return ChatMessage.builder()
-            .senderId(userId)
-            .groupId(groupId)
-            .content(content)
-            .senderType(SenderType.USER)
-            .build();
+                .senderId(userId)
+                .groupId(groupId)
+                .content(content)
+                .senderType(SenderType.USER)
+                .build();
     }
 
     public static ChatMessage fromBot(Long botId, Long groupId, String content) {
         return ChatMessage.builder()
-            .senderId(botId)
-            .groupId(groupId)
-            .content(content)
-            .senderType(SenderType.BOT)
-            .build();
+                .senderId(botId)
+                .groupId(groupId)
+                .content(content)
+                .senderType(SenderType.BOT)
+                .build();
+    }
+
+    public boolean isBelongTo(Long groupId) {
+        return this.groupId.equals(groupId);
     }
 }
