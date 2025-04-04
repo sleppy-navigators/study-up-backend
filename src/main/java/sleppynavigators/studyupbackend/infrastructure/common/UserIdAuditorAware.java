@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.infrastructure.common.config;
+package sleppynavigators.studyupbackend.infrastructure.common;
 
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
