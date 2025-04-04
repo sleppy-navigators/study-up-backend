@@ -1,8 +1,8 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
-
 public record UserJoinEvent(String userName, Long groupId) implements SystemEvent {
+
+    private static final String MESSAGE_FORMAT = "%s님이 그룹에 참여했습니다.";
 
     @Override
     public SystemEventType getType() {
@@ -15,7 +15,7 @@ public record UserJoinEvent(String userName, Long groupId) implements SystemEven
     }
 
     @Override
-    public String generateMessage(SystemMessageTemplate template) {
-        return template.format(userName());
+    public String generateMessage() {
+        return String.format(MESSAGE_FORMAT, userName());
     }
 }

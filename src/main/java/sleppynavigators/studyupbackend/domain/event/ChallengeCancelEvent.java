@@ -1,8 +1,8 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
-
 public record ChallengeCancelEvent(String userName, String challengeName, Long groupId) implements SystemEvent {
+
+    private static final String MESSAGE_FORMAT = "%s님이 '%s' 챌린지를 취소했습니다.";
 
     @Override
     public SystemEventType getType() {
@@ -15,7 +15,7 @@ public record ChallengeCancelEvent(String userName, String challengeName, Long g
     }
 
     @Override
-    public String generateMessage(SystemMessageTemplate template) {
-        return template.format(userName, challengeName);
+    public String generateMessage() {
+        return String.format(MESSAGE_FORMAT, userName, challengeName);
     }
 }
