@@ -22,6 +22,7 @@ public class ChatMessage {
     @Indexed
     private Long senderId;
 
+    // Maybe we need a combined index on 'groupId' and 'createdAt'
     @Indexed
     private Long groupId;
 
