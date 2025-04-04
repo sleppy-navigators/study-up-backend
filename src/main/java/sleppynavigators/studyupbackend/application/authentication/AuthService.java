@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.authentication.UserCredential;
-import sleppynavigators.studyupbackend.domain.authentication.session.SessionManager;
+import sleppynavigators.studyupbackend.domain.authentication.session.UserSessionManager;
 import sleppynavigators.studyupbackend.domain.authentication.session.UserSession;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessToken;
 import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenProperties;
@@ -27,7 +27,7 @@ public class AuthService {
 
     private final UserCredentialRepository userCredentialRepository;
     private final UserSessionRepository userSessionRepository;
-    private final SessionManager sessionManager;
+    private final UserSessionManager userSessionManager;
     private final AccessTokenProperties accessTokenProperties;
     private final GoogleOidcClient googleOidcClient;
 
@@ -51,7 +51,7 @@ public class AuthService {
         UserSession userSession = userSessionRepository.findByUserId(userId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        sessionManager.extendSession(userSession, refreshToken, accessToken);
+        userSessionManager.extendSession(userSession, refreshToken, accessToken);
         return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
     }
 
@@ -63,7 +63,7 @@ public class AuthService {
         UserSession userSession = userSessionRepository.findByUserId(user.getId())
                 .orElseGet(() -> createSession(user));
 
-        sessionManager.startSession(userSession);
+        userSessionManager.startSession(userSession);
         return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());
     }
 

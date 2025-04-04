@@ -15,7 +15,7 @@ import sleppynavigators.studyupbackend.exception.network.InvalidCredentialExcept
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SessionManager {
+public class UserSessionManager {
 
     private final RefreshTokenProperties refreshTokenProperties;
     private final AccessTokenProperties accessTokenProperties;
