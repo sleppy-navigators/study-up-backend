@@ -9,6 +9,19 @@ import org.junit.jupiter.api.Test;
 class SystemEventTest {
 
     @Test
+    @DisplayName("GroupCreateEvent의 메시지가 올바르게 생성된다")
+    void groupCreateEvent_GeneratesCorrectMessage() {
+        // given
+        GroupCreateEvent event = new GroupCreateEvent("testUser", "스터디하기", 1L);
+
+        // when
+        String message = event.generateMessage();
+
+        // then
+        assertThat(message).isEqualTo("testUser님이 '스터디하기' 그룹을 생성했습니다.");
+    }
+
+    @Test
     @DisplayName("UserJoinEvent의 메시지가 올바르게 생성된다")
     void userJoinEvent_GeneratesCorrectMessage() {
         // given

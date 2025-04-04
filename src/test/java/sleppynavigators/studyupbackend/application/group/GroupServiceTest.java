@@ -14,12 +14,15 @@ import sleppynavigators.studyupbackend.common.support.BotSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 
 @DisplayName("GroupService 테스트")
 class GroupServiceTest extends ApplicationBaseTest {
@@ -51,6 +54,22 @@ class GroupServiceTest extends ApplicationBaseTest {
         testGroup = groupSupport.registerGroupToDB(List.of(testUser));
         Bot testBot = botSupport.registerBotToDB(testGroup);
         testInvitation = groupSupport.callToMakeInvitation(testGroup, testUser);
+    }
+
+    @Test
+    @DisplayName("그룹 생성 시 GroupCreateEvent가 발행된다")
+    void createGroup_PublishesGroupCreateEvent() {
+        // given
+        User creator = userSupport.registerUserToDB();
+        GroupCreationRequest request = new GroupCreationRequest("스터디하기", "스터디 설명", null);
+
+        // when
+        GroupResponse response = groupService.createGroup(creator.getId(), request);
+
+        // then
+        verify(systemEventListener).handleSystemEvent(
+                new GroupCreateEvent(creator.getUserProfile().username(), "스터디하기", response.id())
+        );
     }
 
     @Test

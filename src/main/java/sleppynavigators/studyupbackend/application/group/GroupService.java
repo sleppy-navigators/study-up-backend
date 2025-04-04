@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
+import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
@@ -54,6 +55,12 @@ public class GroupService {
 
         Bot bot = new Bot(savedGroup);
         botRepository.save(bot);
+
+        SystemEvent event = new GroupCreateEvent(
+                creator.getUserProfile().username(),
+                savedGroup.getGroupDetail().name(),
+                savedGroup.getId());
+        systemEventPublisher.publish(event);
 
         return GroupResponse.fromEntity(savedGroup);
     }

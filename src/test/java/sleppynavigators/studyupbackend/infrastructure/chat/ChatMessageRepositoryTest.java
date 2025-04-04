@@ -1,6 +1,5 @@
 package sleppynavigators.studyupbackend.infrastructure.chat;
 
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
