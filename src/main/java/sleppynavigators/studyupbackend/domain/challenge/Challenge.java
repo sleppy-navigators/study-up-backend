@@ -79,7 +79,7 @@ public class Challenge extends TimeAuditBaseEntity {
     public boolean canModify(User user) {
         // We might change it to allow edits even if the user is not the owner of the challenge.
         return isOwner(user) &&
-                LocalDateTime.now().isBefore(createdAt.plusHours(MODIFIABLE_PERIOD_HOUR));
+                LocalDateTime.now().isBefore(getCreatedAt().plusHours(MODIFIABLE_PERIOD_HOUR));
     }
 
     public boolean canAccess(User user) {

@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.chat.SenderType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,16 +39,8 @@ class ChatMessageRepositoryTest extends ApplicationBaseTest {
     void findByGroupIdOrderByCreatedAtDesc() {
         // given
         Long groupId = 1L;
-        LocalDateTime now = LocalDateTime.now();
         for (int i = 1; i <= 5; i++) {
-            chatMessageRepository.save(ChatMessage.builder()
-                    .senderId(1L)
-                    .groupId(groupId)
-                    .content("테스트 메시지 " + i)
-                    .senderType(SenderType.USER)
-                    .createdAt(now.plusSeconds(i))
-                    .build()
-            );
+            chatMessageRepository.save(ChatMessage.fromUser(1L, groupId, "테스트 메시지 " + i));
         }
 
         // when

@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.util.Optional;
+import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,17 +15,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  *
  * @see TimeAuditBaseEntity
  */
+@Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class UserAndTimeAuditBaseEntity extends TimeAuditBaseEntity {
 
     @CreatedBy
     @Column(updatable = false)
-    protected Long createdBy;
+    private Long createdBy;
 
     @LastModifiedBy
     @Column
-    protected Long updatedBy;
+    private Long updatedBy;
 
     public Long getLastModifier() {
         return Optional.ofNullable(updatedBy).orElse(createdBy);
