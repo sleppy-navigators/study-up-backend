@@ -5,8 +5,10 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,7 +57,9 @@ public class Group extends UserAndTimeAuditBaseEntity {
 
     public void removeMember(GroupMember member) {
         if (isChallenger(member.getUser())) {
-            throw new ActionRequiredBeforeException("Challenger cannot leave the group.");
+            throw new ActionRequiredBeforeException(
+                    "Challenger cannot leave the group - userId: " + member.getUser().getId() +
+                            ", groupId: " + getId());
         }
 
         members.remove(member);

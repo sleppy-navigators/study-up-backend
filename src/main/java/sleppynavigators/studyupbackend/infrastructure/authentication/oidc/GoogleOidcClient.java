@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.PublicKey;
@@ -14,6 +15,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Map;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,8 +55,8 @@ public class GoogleOidcClient implements OidcClient {
             String kid = getKid(idToken);
             PublicKey publicKey = decodePublicKey(fetchPublicKey(kid));
             return parseIdToken(idToken, publicKey);
-        } catch (IllegalArgumentException ignored) {
-            throw new InvalidCredentialException();
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidCredentialException("Invalid id token", ex);
         }
     }
 
@@ -95,7 +97,7 @@ public class GoogleOidcClient implements OidcClient {
             return (String) certs.get(kid);
         } catch (IOException e) {
             log.error("Failed to get public key from Google: {}", e.getMessage());
-            throw new UnsuccessfulResponseException("Failed to get public key from Google");
+            throw new UnsuccessfulResponseException("Failed to get public key from Google", e);
         }
     }
 

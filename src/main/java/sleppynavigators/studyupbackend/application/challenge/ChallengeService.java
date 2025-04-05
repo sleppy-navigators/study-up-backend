@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.application.challenge;
 
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,11 +41,14 @@ public class ChallengeService {
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
-        Group group = groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
 
         if (!group.hasMember(user)) {
-            throw new ForbiddenContentException();
+            throw new ForbiddenContentException(
+                    "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
         }
 
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
@@ -60,11 +64,14 @@ public class ChallengeService {
 
     @Transactional
     public void cancelChallenge(Long userId, Long challengeId) {
-        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
-        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
 
         if (!challenge.canModify(user)) {
-            throw new ForbiddenContentException();
+            throw new ForbiddenContentException(
+                    "User cannot modify this challenge - userId: " + userId + ", challengeId: " + challengeId);
         }
 
         SystemEvent event = new ChallengeCancelEvent(
@@ -78,9 +85,9 @@ public class ChallengeService {
 
     public TaskListResponse getTasks(Long userId, Long challengeId) {
         Challenge challenge = challengeRepository.findById(challengeId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
         User user = userRepository.findById(userId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
 
         // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
         List<Task> tasks = challenge.getTasksForUser(user);
@@ -90,9 +97,9 @@ public class ChallengeService {
     @Transactional
     public TaskResponse completeTask(Long userId, Long challengeId, Long taskId, TaskCertificationRequest request) {
         Task task = taskRepository.findByIdAndChallengeId(taskId, challengeId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Task not found - taskId: " + taskId));
         User user = userRepository.findById(userId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
 
         try {
             task.certify(request.externalLinks(), request.imageUrls(), user);
@@ -107,8 +114,8 @@ public class ChallengeService {
             }
 
             return TaskResponse.fromEntity(task);
-        } catch (IllegalArgumentException ignored) {
-            throw new InvalidPayloadException();
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidPayloadException(ex);
         }
     }
 }

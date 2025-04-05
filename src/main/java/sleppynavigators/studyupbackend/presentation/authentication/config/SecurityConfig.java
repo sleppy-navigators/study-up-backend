@@ -73,7 +73,7 @@ public class SecurityConfig {
     private AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {
             response.setContentType("application/json");
-            BaseException exception = new ForbiddenException();
+            BaseException exception = new ForbiddenException("Need more permissions");
             response.setStatus(exception.getStatus());
             objectMapper.writeValue(response.getWriter(),
                     new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));

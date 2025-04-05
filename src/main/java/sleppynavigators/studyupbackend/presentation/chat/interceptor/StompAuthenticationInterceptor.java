@@ -32,18 +32,18 @@ public class StompAuthenticationInterceptor implements ChannelInterceptor {
             try {
                 String bearerToken = BearerTokenExtractor.extractFromStompHeaders(accessor);
                 if (bearerToken == null) {
-                    throw new InvalidCredentialException();
+                    throw new InvalidCredentialException("Bearer token is missing");
                 }
 
                 AccessToken accessToken = AccessToken.deserialize(bearerToken, accessTokenProperties);
                 if (accessToken.isExpired()) {
-                    throw new SessionExpiredException();
+                    throw new SessionExpiredException("Access token is expired");
                 }
 
                 Authentication authentication = AuthenticationConverter.convertToAuthentication(accessToken);
                 accessor.setUser(authentication);
             } catch (RuntimeException e) {
-                throw new UnAuthorizedException("Unauthorized: " + e.getMessage());
+                throw new UnAuthorizedException("Unauthorized: " + e.getMessage(), e);
             }
         }
         return message;

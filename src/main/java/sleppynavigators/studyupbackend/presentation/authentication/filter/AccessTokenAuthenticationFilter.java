@@ -5,7 +5,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +42,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
             if (accessToken.isExpired()) {
                 response.setContentType("application/json");
-                BaseException exception = new SessionExpiredException();
+                BaseException exception = new SessionExpiredException("Access token is expired");
                 response.setStatus(exception.getStatus());
                 objectMapper.writeValue(response.getWriter(),
                         new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));

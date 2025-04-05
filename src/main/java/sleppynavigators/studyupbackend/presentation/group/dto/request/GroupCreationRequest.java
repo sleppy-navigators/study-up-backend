@@ -17,8 +17,8 @@ public record GroupCreationRequest(@NotBlank String name,
                     .thumbnailUrl(thumbnailUrl)
                     .creator(creator)
                     .build();
-        } catch (IllegalArgumentException ignored) {
-            throw new InvalidPayloadException();
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidPayloadException(ex);
         }
     }
 }
