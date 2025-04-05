@@ -4,15 +4,19 @@ import sleppynavigators.studyupbackend.exception.ErrorCode;
 
 public class OveredDeadlineException extends BusinessBaseException {
 
-    protected OveredDeadlineException(int status, String code, String message) {
-        super(status, code, message);
+    public OveredDeadlineException() {
+        super(ErrorCode.OVERED_DEADLINE);
     }
 
     public OveredDeadlineException(String message) {
         super(ErrorCode.OVERED_DEADLINE, message);
     }
 
-    public OveredDeadlineException() {
-        super(ErrorCode.OVERED_DEADLINE);
+    public OveredDeadlineException(Throwable cause) {
+        super(ErrorCode.OVERED_DEADLINE, cause);
+    }
+
+    public OveredDeadlineException(String message, Throwable cause) {
+        super(ErrorCode.OVERED_DEADLINE, message, cause);
     }
 }

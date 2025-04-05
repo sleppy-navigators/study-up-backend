@@ -7,15 +7,19 @@ import sleppynavigators.studyupbackend.exception.ErrorCode;
 @Getter
 public class ChatMessageException extends BaseException {
 
-    protected ChatMessageException(int status, String code, String message) {
-        super(status, code, message);
+    public ChatMessageException() {
+        super(ErrorCode.CHAT_MESSAGE);
     }
 
     public ChatMessageException(String message) {
         super(ErrorCode.CHAT_MESSAGE, message);
     }
 
-    public ChatMessageException() {
-        super(ErrorCode.CHAT_MESSAGE);
+    public ChatMessageException(Throwable cause) {
+        super(ErrorCode.CHAT_MESSAGE, cause);
+    }
+
+    public ChatMessageException(String message, Throwable cause) {
+        super(ErrorCode.CHAT_MESSAGE, message, cause);
     }
 }
