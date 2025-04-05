@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.bot.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
@@ -51,7 +52,7 @@ public class ChatMessageService {
     public void sendSystemMessage(SystemEvent event) {
         ChatMessage savedMessage = null;
         try {
-            String content = event.generateMessage();
+            String content = SystemMessageTemplate.generateMessage(event);
             Long groupId = event.getGroupId();
             Bot bot = botRepository.findByGroupId(groupId)
                     .orElseThrow(() -> new EntityNotFoundException("해당 그룹의 봇을 찾을 수 없습니다. groupId: " + groupId));

@@ -1,8 +1,8 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public record UserLeaveEvent(String userName, Long groupId) implements SystemEvent {
+import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
 
-    private static final String MESSAGE_FORMAT = "%s님이 그룹을 나갔습니다.";
+public record UserLeaveEvent(String userName, Long groupId) implements SystemEvent {
 
     @Override
     public SystemEventType getType() {
@@ -15,7 +15,7 @@ public record UserLeaveEvent(String userName, Long groupId) implements SystemEve
     }
 
     @Override
-    public String generateMessage() {
-        return String.format(MESSAGE_FORMAT, userName());
+    public String generateMessage(SystemMessageTemplate template) {
+        return template.format(userName());
     }
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
 
 @DisplayName("이벤트 시스템 테스트")
 class SystemEventTest {
@@ -15,7 +16,7 @@ class SystemEventTest {
         GroupCreateEvent event = new GroupCreateEvent("testUser", "스터디하기", 1L);
 
         // when
-        String message = event.generateMessage();
+        String message = event.generateMessage(SystemMessageTemplate.GROUP_CREATE_MESSAGE_TEMPLATE);
 
         // then
         assertThat(message).isEqualTo("testUser님이 '스터디하기' 그룹을 생성했습니다.");
@@ -28,7 +29,7 @@ class SystemEventTest {
         UserJoinEvent event = new UserJoinEvent("testUser", 1L);
 
         // when
-        String message = event.generateMessage();
+        String message = event.generateMessage(SystemMessageTemplate.USER_JOIN_MESSAGE_TEMPLATE);
 
         // then
         assertThat(message).isEqualTo("testUser님이 그룹에 참여했습니다.");
@@ -41,7 +42,7 @@ class SystemEventTest {
         UserLeaveEvent event = new UserLeaveEvent("testUser", 1L);
 
         // when
-        String message = event.generateMessage();
+        String message = event.generateMessage(SystemMessageTemplate.USER_LEAVE_MESSAGE_TEMPLATE);
 
         // then
         assertThat(message).isEqualTo("testUser님이 그룹을 나갔습니다.");
@@ -54,7 +55,7 @@ class SystemEventTest {
         ChallengeCreateEvent event = new ChallengeCreateEvent("testUser", "스터디하기", 1L);
 
         // when
-        String message = event.generateMessage();
+        String message = event.generateMessage(SystemMessageTemplate.CHALLENGE_CREATE_MESSAGE_TEMPLATE);
 
         // then
         assertThat(message).isEqualTo("testUser님이 '스터디하기' 챌린지를 생성했습니다.");
@@ -67,7 +68,7 @@ class SystemEventTest {
         ChallengeCompleteEvent event = new ChallengeCompleteEvent("testUser", "스터디하기", 1L);
 
         // when
-        String message = event.generateMessage();
+        String message = event.generateMessage(SystemMessageTemplate.CHALLENGE_COMPLETE_MESSAGE_TEMPLATE);
 
         // then
         assertThat(message).isEqualTo("testUser님이 '스터디하기' 챌린지를 완료했습니다.");
@@ -80,7 +81,7 @@ class SystemEventTest {
         ChallengeCancelEvent event = new ChallengeCancelEvent("testUser", "스터디하기", 1L);
 
         // when
-        String message = event.generateMessage();
+        String message = event.generateMessage(SystemMessageTemplate.CHALLENGE_CANCEL_MESSAGE_TEMPLATE);
 
         // then
         assertThat(message).isEqualTo("testUser님이 '스터디하기' 챌린지를 취소했습니다.");

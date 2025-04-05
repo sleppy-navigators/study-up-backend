@@ -1,8 +1,8 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public record GroupCreateEvent(String userName, String groupName, Long groupId) implements SystemEvent {
+import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
 
-    private static final String MESSAGE_FORMAT = "%s님이 '%s' 그룹을 생성했습니다.";
+public record GroupCreateEvent(String userName, String groupName, Long groupId) implements SystemEvent {
 
     @Override
     public SystemEventType getType() {
@@ -15,7 +15,7 @@ public record GroupCreateEvent(String userName, String groupName, Long groupId) 
     }
 
     @Override
-    public String generateMessage() {
-        return String.format(MESSAGE_FORMAT, userName, groupName);
+    public String generateMessage(SystemMessageTemplate template) {
+        return template.format(userName, groupName);
     }
 }
