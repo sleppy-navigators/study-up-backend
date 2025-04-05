@@ -41,7 +41,7 @@ public class GoogleOidcClient implements OidcClient {
         try {
             certFactory = CertificateFactory.getInstance(CERTIFICATE_TYPE);
         } catch (CertificateException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create CertificateFactory", e);
         }
     }
 
@@ -63,7 +63,7 @@ public class GoogleOidcClient implements OidcClient {
     private String getKid(String idToken) {
         String[] tokenParts = idToken.split("\\.");
         if (tokenParts.length != 3) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Id token must be in 3 parts");
         }
 
         try {
@@ -71,7 +71,7 @@ public class GoogleOidcClient implements OidcClient {
             JsonNode headerJson = objectMapper.readTree(header);
             return headerJson.get("kid").asText();
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Failed to parse id token header", e);
         }
     }
 
@@ -113,8 +113,8 @@ public class GoogleOidcClient implements OidcClient {
             X509Certificate cert = (X509Certificate) certFactory
                     .generateCertificate(new ByteArrayInputStream(encoded));
             return cert.getPublicKey();
-        } catch (CertificateException ignored) {
-            throw new IllegalArgumentException();
+        } catch (CertificateException ex) {
+            throw new IllegalArgumentException(ex);
         }
     }
 
@@ -129,8 +129,8 @@ public class GoogleOidcClient implements OidcClient {
 
             validateIdTokenClaims(claims);
             return claims;
-        } catch (JwtException ignored) {
-            throw new IllegalArgumentException();
+        } catch (JwtException ex) {
+            throw new IllegalArgumentException(ex);
         }
     }
 
@@ -139,7 +139,7 @@ public class GoogleOidcClient implements OidcClient {
         String issuer = googleProperties.issuer();
         String audience = googleProperties.audience();
         if (!claims.getIssuer().equals(issuer) || !claims.getAudience().contains(audience)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid id token claims - issuer or audience mismatch");
         }
     }
 }

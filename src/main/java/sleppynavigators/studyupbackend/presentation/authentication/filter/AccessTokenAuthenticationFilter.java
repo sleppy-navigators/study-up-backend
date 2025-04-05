@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +21,11 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.exception.BaseException;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
+import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.presentation.common.util.AuthenticationConverter;
 import sleppynavigators.studyupbackend.presentation.common.util.BearerTokenExtractor;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
@@ -51,7 +54,9 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
             Authentication authentication = AuthenticationConverter.convertToAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (RuntimeException ignored) {
+        } catch (InvalidCredentialException ignored) {
+        } catch (RuntimeException ex) {
+            log.error(ex.getMessage(), ex);
         }
 
         filterChain.doFilter(request, response);
