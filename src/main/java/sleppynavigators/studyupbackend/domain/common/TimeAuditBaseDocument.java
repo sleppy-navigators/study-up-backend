@@ -1,8 +1,10 @@
 package sleppynavigators.studyupbackend.domain.common;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 
 /**
@@ -11,8 +13,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Getter
 public abstract class TimeAuditBaseDocument {
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    @Id
+    private ObjectId id;
+
+    public LocalDateTime getCreatedAt() {
+        return LocalDateTime.ofInstant(id.getDate().toInstant(), ZoneId.systemDefault());
+    }
 
     @LastModifiedDate
     private LocalDateTime updatedAt;

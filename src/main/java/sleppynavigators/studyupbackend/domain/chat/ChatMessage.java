@@ -4,8 +4,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseDocument;
@@ -14,9 +12,6 @@ import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseDocument;
 @Document(collection = "chatMessages")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class ChatMessage extends TimeAuditBaseDocument {
-
-    @Id
-    private ObjectId id;
 
     @Indexed
     private Long senderId;
