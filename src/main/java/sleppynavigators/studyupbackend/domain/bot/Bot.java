@@ -1,6 +1,10 @@
 package sleppynavigators.studyupbackend.domain.bot;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +18,9 @@ public class Bot extends TimeAuditBaseEntity {
 
     private static final String BOT_NAME = "StudyUpBot";
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
     @Column(nullable = false)
     private String name = BOT_NAME;
-    
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;

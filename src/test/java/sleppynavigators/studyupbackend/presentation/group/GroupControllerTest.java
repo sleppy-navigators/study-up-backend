@@ -568,12 +568,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Long pageNumber = 0L;
         Long pageSize = 2L;
         List<ChatMessage> messages = groupSupport.registerChatMessagesToDB(groupToQuery, currentUser,
-                List.of("첫 번째 메시지",
-                        "두 번째 메시지",
-                        "세 번째 메시지"),
-                List.of(LocalDateTime.now().plusSeconds(1),
-                        LocalDateTime.now().plusSeconds(2),
-                        LocalDateTime.now().plusSeconds(3)));
+                List.of("첫 번째 메시지", "두 번째 메시지", "세 번째 메시지"));
 
         // when
         ExtractableResponse<?> response = with()

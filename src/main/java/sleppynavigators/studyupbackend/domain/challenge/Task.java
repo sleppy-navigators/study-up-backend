@@ -3,9 +3,6 @@ package sleppynavigators.studyupbackend.domain.challenge;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.net.URL;
@@ -28,10 +25,6 @@ import sleppynavigators.studyupbackend.exception.business.OveredDeadlineExceptio
 @Getter
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Task extends TimeAuditBaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Immutable
     @Embedded

@@ -1,6 +1,5 @@
 package sleppynavigators.studyupbackend.common.support;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.chat.SenderType;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
@@ -90,19 +88,12 @@ public class GroupSupport {
      * @see ChatMessageService#sendSystemMessage(SystemEvent)
      * @see ChatMessageService#sendUserMessage(ChatMessageRequest, String, Long)
      */
-    public List<ChatMessage> registerChatMessagesToDB(Group group, User sender, List<String> contents,
-                                                      List<LocalDateTime> createdTimes) {
+    public List<ChatMessage> registerChatMessagesToDB(Group group, User sender, List<String> contents) {
         List<ChatMessage> messages = new ArrayList<>();
-        for (int i = 0; i < contents.size(); i++) {
-            ChatMessage message = ChatMessage.builder()
-                    .senderId(sender.getId())
-                    .groupId(group.getId())
-                    .content(contents.get(i))
-                    .senderType(SenderType.USER)
-                    .createdAt(createdTimes.get(i))
-                    .build();
-            messages.add(message);
+        for (String content : contents) {
+            ChatMessage message = ChatMessage.fromUser(sender.getId(), group.getId(), content);
+            messages.add(chatMessageRepository.save(message));
         }
-        return chatMessageRepository.saveAll(messages);
+        return messages;
     }
 }

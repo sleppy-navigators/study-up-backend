@@ -17,11 +17,11 @@ import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 
-@DisplayName("Session Manager 테스트")
-class SessionManagerTest extends IntegrationBaseTest {
+@DisplayName("User Session Manager 테스트")
+class UserSessionManagerTest extends IntegrationBaseTest {
 
     @Autowired
-    private SessionManager sessionManager;
+    private UserSessionManager userSessionManager;
 
     @Autowired
     private AccessTokenProperties accessTokenProperties;
@@ -34,7 +34,7 @@ class SessionManagerTest extends IntegrationBaseTest {
         UserSession userSession = UserSession.builder().user(user).build();
 
         // when
-        sessionManager.startSession(userSession);
+        userSessionManager.startSession(userSession);
 
         // then
         assertThat(userSession.getRefreshToken()).isNotBlank();
@@ -61,7 +61,7 @@ class SessionManagerTest extends IntegrationBaseTest {
                 .build();
 
         // when
-        sessionManager.extendSession(userSession, refreshToken, accessToken);
+        userSessionManager.extendSession(userSession, refreshToken, accessToken);
 
         // then
         assertThat(userSession.getRefreshToken()).isNotBlank();
@@ -88,7 +88,7 @@ class SessionManagerTest extends IntegrationBaseTest {
                 .build();
 
         // when & then
-        assertThatThrownBy(() -> sessionManager.extendSession(userSession, refreshToken, accessToken))
+        assertThatThrownBy(() -> userSessionManager.extendSession(userSession, refreshToken, accessToken))
                 .isInstanceOf(SessionExpiredException.class);
     }
 
@@ -112,7 +112,7 @@ class SessionManagerTest extends IntegrationBaseTest {
 
         // when & then
         assertThatThrownBy(
-                () -> sessionManager.extendSession(userSession, invalidRefreshToken, invalidAccessToken))
+                () -> userSessionManager.extendSession(userSession, invalidRefreshToken, invalidAccessToken))
                 .isInstanceOf(InvalidCredentialException.class);
     }
 }

@@ -6,7 +6,7 @@ import jakarta.persistence.Embeddable;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
-import sleppynavigators.studyupbackend.infrastructure.common.attribute.converter.UrlConverter;
+import sleppynavigators.studyupbackend.infrastructure.common.jpa.attribute.converter.UrlConverter;
 
 @Embeddable
 public record TaskCertification(

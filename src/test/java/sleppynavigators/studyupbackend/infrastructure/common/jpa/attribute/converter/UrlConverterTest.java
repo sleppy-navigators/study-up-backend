@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.infrastructure.common.attribute.converter;
+package sleppynavigators.studyupbackend.infrastructure.common.jpa.attribute.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

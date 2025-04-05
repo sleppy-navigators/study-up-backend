@@ -38,7 +38,7 @@ public class ChatMessageService {
         ChatMessage savedMessage = null;
         try {
             ChatMessage chatMessage = ChatMessage.fromUser(senderId, request.groupId(), request.content());
-            
+
             savedMessage = chatMessageRepository.save(chatMessage);
             sendToWebSocket(destination, savedMessage);
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class ChatMessageService {
             Bot bot = botRepository.findByGroupId(groupId)
                     .orElseThrow(() -> new EntityNotFoundException("해당 그룹의 봇을 찾을 수 없습니다. groupId: " + groupId));
             String destination = String.format(GROUP_DESTINATION, groupId);
-            
+
             ChatMessage chatMessage = ChatMessage.fromBot(bot.getId(), groupId, content);
 
             savedMessage = chatMessageRepository.save(chatMessage);
