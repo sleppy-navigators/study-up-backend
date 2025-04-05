@@ -5,10 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
@@ -46,11 +48,12 @@ public class Task extends TimeAuditBaseEntity {
 
     public void certify(List<URL> externalLinks, List<URL> imageUrls, User certifier) {
         if (!challenge.canModify(certifier)) {
-            throw new ForbiddenContentException();
+            throw new ForbiddenContentException(
+                    "User is not allowed to certify the task - userId: " + certifier.getId());
         }
 
         if (detail.isOverdue()) {
-            throw new OveredDeadlineException();
+            throw new OveredDeadlineException("Task is overdue - taskId: " + getId());
         }
 
         this.certification = new TaskCertification(externalLinks, imageUrls, LocalDateTime.now());

@@ -9,11 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -107,7 +109,8 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.FORBIDDEN_CONTENT.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.FORBIDDEN_CONTENT.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("User cannot modify this challenge");
     }
 
     @Test

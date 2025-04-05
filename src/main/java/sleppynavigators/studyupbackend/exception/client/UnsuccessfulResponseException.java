@@ -4,15 +4,19 @@ import sleppynavigators.studyupbackend.exception.ErrorCode;
 
 public class UnsuccessfulResponseException extends ClientBaseException {
 
-    protected UnsuccessfulResponseException(int status, String code, String message) {
-        super(status, code, message);
+    public UnsuccessfulResponseException() {
+        super(ErrorCode.UNSUCCESSFUL_RESPONSE);
     }
 
     public UnsuccessfulResponseException(String message) {
         super(ErrorCode.UNSUCCESSFUL_RESPONSE, message);
     }
 
-    public UnsuccessfulResponseException() {
-        super(ErrorCode.UNSUCCESSFUL_RESPONSE);
+    public UnsuccessfulResponseException(Throwable cause) {
+        super(ErrorCode.UNSUCCESSFUL_RESPONSE, cause);
+    }
+
+    public UnsuccessfulResponseException(String message, Throwable cause) {
+        super(ErrorCode.UNSUCCESSFUL_RESPONSE, message, cause);
     }
 }

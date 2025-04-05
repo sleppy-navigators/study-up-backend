@@ -49,7 +49,7 @@ public class AuthService {
 
         Long userId = accessToken.getUserId();
         UserSession userSession = userSessionRepository.findByUserId(userId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("User session not found - userId: " + userId));
 
         userSessionManager.extendSession(userSession, refreshToken, accessToken);
         return new TokenResponse(userSession.getAccessToken(), userSession.getRefreshToken());

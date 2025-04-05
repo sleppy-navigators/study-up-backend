@@ -8,10 +8,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -185,7 +187,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ACTION_REQUIRED_BEFORE.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo("Challenger cannot leave the group.");
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Challenger cannot leave the group");
     }
 
     @Test
@@ -222,7 +225,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Group member not found");
     }
 
     @Test
@@ -267,7 +271,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Invitation not found");
     }
 
     @Test
@@ -339,7 +344,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Invitation not found");
     }
 
     @Test
@@ -364,7 +370,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Invalid groupId or invitationKey");
     }
 
     @Test
@@ -388,7 +395,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Invalid groupId or invitationKey");
     }
 
     @Test
@@ -609,7 +617,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Group not found");
     }
 
     @Test

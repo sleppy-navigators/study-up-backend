@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -32,8 +34,8 @@ public record ChallengeCreationRequest(@NotBlank String title,
                 challenge.addTask(task.title(), task.deadline());
             }
             return challenge;
-        } catch (IllegalArgumentException ignored) {
-            throw new InvalidPayloadException();
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidPayloadException(ex);
         }
     }
 }

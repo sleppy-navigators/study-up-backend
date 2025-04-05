@@ -45,7 +45,7 @@ public class ChatMessageService {
             if (savedMessage != null) {
                 chatMessageRepository.delete(savedMessage);
             }
-            throw new ChatMessageException("메시지 처리 중 오류가 발생했습니다: " + e);
+            throw new ChatMessageException("메시지 처리 중 오류가 발생했습니다", e);
         }
     }
 
@@ -55,7 +55,7 @@ public class ChatMessageService {
             String content = SystemMessageTemplate.generateMessage(event);
             Long groupId = event.getGroupId();
             Bot bot = botRepository.findByGroupId(groupId)
-                    .orElseThrow(() -> new EntityNotFoundException("해당 그룹의 봇을 찾을 수 없습니다. groupId: " + groupId));
+                    .orElseThrow(() -> new EntityNotFoundException("Bot not found - groupId: " + groupId));
             String destination = String.format(GROUP_DESTINATION, groupId);
 
             ChatMessage chatMessage = ChatMessage.fromBot(bot.getId(), groupId, content);
@@ -66,7 +66,7 @@ public class ChatMessageService {
             if (savedMessage != null) {
                 chatMessageRepository.delete(savedMessage);
             }
-            throw new ChatMessageException("시스템 메시지 처리 중 오류가 발생했습니다: " + e);
+            throw new ChatMessageException("시스템 메시지 처리 중 오류가 발생했습니다", e);
         }
     }
 
@@ -77,7 +77,8 @@ public class ChatMessageService {
 
     @Transactional(readOnly = true)
     public ChatMessageListResponse getMessages(Long groupId, Pageable pageable) {
-        Group group = groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
         Page<ChatMessage> messages = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(group.getId(), pageable);
         return ChatMessageListResponse.from(messages);
     }

@@ -44,14 +44,14 @@ public class RestApiExceptionHandler {
     @ExceptionHandler(BusinessBaseException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(
             HttpServletRequest request, BusinessBaseException exception) {
-        log.error("Business exception : {}", exception.getMessage());
+        log.error("Business exception : {}", exception.getMessage(), exception);
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
     }
 
     @ExceptionHandler(ClientBaseException.class)
     public ResponseEntity<ErrorResponse> handleClientException(
             HttpServletRequest request, ClientBaseException exception) {
-        log.error("Client exception : {}", exception.getMessage());
+        log.error("Client exception : {}", exception.getMessage(), exception);
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
     }
 
