@@ -5,7 +5,9 @@ import static io.restassured.http.Method.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
+
 import java.time.LocalDateTime;
+
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,8 +95,8 @@ class AuthControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.ENTITY_NOT_FOUND.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(
-                ErrorCode.ENTITY_NOT_FOUND.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("User session not found");
     }
 
     @Test
@@ -118,8 +120,8 @@ class AuthControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(
-                ErrorCode.INVALID_CREDENTIALS.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo("Invalid refresh token or access token");
     }
 
     @Test
@@ -142,7 +144,7 @@ class AuthControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_CREDENTIALS.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(
-                ErrorCode.INVALID_CREDENTIALS.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo("Invalid access token");
     }
 }

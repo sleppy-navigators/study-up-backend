@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.application.user;
 
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,8 @@ public class UserService {
     private final ChatMessageRepository chatMessageRepository;
 
     public UserResponse getUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         return UserResponse.fromEntity(user);
     }
 

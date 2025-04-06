@@ -7,10 +7,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,7 +61,8 @@ public class Challenge extends TimeAuditBaseEntity {
 
     public List<Task> getTasksForUser(User user) {
         if (!canAccess(user)) {
-            throw new ForbiddenContentException();
+            throw new ForbiddenContentException(
+                    "User cannot access this challenge - userId: " + user.getId() + ", challengeId: " + getId());
         }
 
         return tasks;

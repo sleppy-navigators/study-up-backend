@@ -5,9 +5,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,9 +21,11 @@ import sleppynavigators.studyupbackend.domain.authentication.token.AccessTokenPr
 import sleppynavigators.studyupbackend.exception.BaseException;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
+import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.presentation.common.util.AuthenticationConverter;
 import sleppynavigators.studyupbackend.presentation.common.util.BearerTokenExtractor;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
@@ -40,7 +45,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
             if (accessToken.isExpired()) {
                 response.setContentType("application/json");
-                BaseException exception = new SessionExpiredException();
+                BaseException exception = new SessionExpiredException("Access token is expired");
                 response.setStatus(exception.getStatus());
                 objectMapper.writeValue(response.getWriter(),
                         new ErrorResponse(exception.getCode(), exception.getMessage(), request.getRequestURI()));
@@ -49,7 +54,9 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
             Authentication authentication = AuthenticationConverter.convertToAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (RuntimeException ignored) {
+        } catch (InvalidCredentialException ignored) {
+        } catch (RuntimeException ex) {
+            log.error(ex.getMessage(), ex);
         }
 
         filterChain.doFilter(request, response);

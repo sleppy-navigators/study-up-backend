@@ -4,15 +4,19 @@ import sleppynavigators.studyupbackend.exception.ErrorCode;
 
 public class UnAuthorizedException extends NetworkBaseException {
 
-    protected UnAuthorizedException(int status, String code, String message) {
-        super(status, code, message);
+    public UnAuthorizedException() {
+        super(ErrorCode.UNAUTHORIZED);
     }
 
     public UnAuthorizedException(String message) {
         super(ErrorCode.UNAUTHORIZED, message);
     }
 
-    public UnAuthorizedException() {
-        super(ErrorCode.UNAUTHORIZED);
+    public UnAuthorizedException(Throwable cause) {
+        super(ErrorCode.UNAUTHORIZED, cause);
+    }
+
+    public UnAuthorizedException(String message, Throwable cause) {
+        super(ErrorCode.UNAUTHORIZED, message, cause);
     }
 }

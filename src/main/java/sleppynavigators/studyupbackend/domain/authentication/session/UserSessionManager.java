@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.domain.authentication.session;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class UserSessionManager {
     private void validateExtendRequest(UserSession userSession, RefreshToken refreshToken, AccessToken accessToken) {
         if (!userSession.isRegistered(refreshToken.serialize(), accessToken.serialize(accessTokenProperties))) {
             // TODO: implement a failsafe mechanism
-            throw new InvalidCredentialException();
+            throw new InvalidCredentialException("Invalid refresh token or access token");
         }
 
         if (!userSession.isAlive()) {

@@ -18,6 +18,8 @@ import sleppynavigators.studyupbackend.exception.network.UnAuthorizedException;
 import sleppynavigators.studyupbackend.presentation.common.util.AuthenticationConverter;
 import sleppynavigators.studyupbackend.presentation.common.util.BearerTokenExtractor;
 
+import java.util.Objects;
+
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class StompAuthenticationInterceptor implements ChannelInterceptor {
@@ -28,22 +30,22 @@ public class StompAuthenticationInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+        if (StompCommand.CONNECT.equals(Objects.requireNonNull(accessor).getCommand())) {
             try {
                 String bearerToken = BearerTokenExtractor.extractFromStompHeaders(accessor);
                 if (bearerToken == null) {
-                    throw new InvalidCredentialException();
+                    throw new InvalidCredentialException("Bearer token is missing");
                 }
 
                 AccessToken accessToken = AccessToken.deserialize(bearerToken, accessTokenProperties);
                 if (accessToken.isExpired()) {
-                    throw new SessionExpiredException();
+                    throw new SessionExpiredException("Access token is expired");
                 }
 
                 Authentication authentication = AuthenticationConverter.convertToAuthentication(accessToken);
                 accessor.setUser(authentication);
             } catch (RuntimeException e) {
-                throw new UnAuthorizedException("Unauthorized: " + e.getMessage());
+                throw new UnAuthorizedException("Unauthorized: " + e.getMessage(), e);
             }
         }
         return message;

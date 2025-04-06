@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.application.group;
 
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,8 @@ public class GroupService {
 
     @Transactional
     public GroupResponse createGroup(Long creatorId, GroupCreationRequest request) {
-        User creator = userRepository.findById(creatorId).orElseThrow(EntityNotFoundException::new);
+        User creator = userRepository.findById(creatorId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + creatorId));
         Group savedGroup = groupRepository.save(request.toEntity(creator));
 
         Bot bot = new Bot(savedGroup);
@@ -84,10 +86,10 @@ public class GroupService {
 
     public GroupInvitationResponse getInvitation(Long groupId, Long invitationId) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Invitation not found - invitationId: " + invitationId));
 
         if (!invitation.matchGroupId(groupId)) {
-            throw new InvalidPayloadException();
+            throw new InvalidPayloadException("Invalid groupId - groupId: " + groupId);
         }
 
         return GroupInvitationResponse.fromEntity(invitation);
@@ -96,7 +98,8 @@ public class GroupService {
     @Transactional
     public GroupInvitationResponse makeInvitation(Long groupId, Long inviterId) {
         GroupMember inviter = groupMemberRepository.findByGroupIdAndUserId(groupId, inviterId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Group member not found - groupId: " + groupId + ", userId: " + inviterId));
         GroupInvitation invitation = groupInvitationRepository.save(new GroupInvitation(inviter.getGroup()));
         return GroupInvitationResponse.fromEntity(invitation);
     }
@@ -105,14 +108,17 @@ public class GroupService {
     public GroupResponse acceptInvitation(
             Long userId, Long groupId, Long invitationId, GroupInvitationAcceptRequest request) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Invitation not found - invitationId: " + invitationId));
         Group group = invitation.getGroup();
 
         if (!invitation.matchGroupId(groupId) || !invitation.matchKey(request.invitationKey())) {
-            throw new InvalidPayloadException();
+            throw new InvalidPayloadException(
+                    "Invalid groupId or invitationKey - groupId: " + groupId +
+                            ", invitationKey: " + request.invitationKey());
         }
 
-        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         group.addMember(user);
 
         SystemEvent event = new UserJoinEvent(user.getUserProfile().username(), groupId);
@@ -122,11 +128,14 @@ public class GroupService {
     }
 
     public GroupChallengeListResponse getChallenges(Long userId, Long groupId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
-        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
 
         if (!group.hasMember(user)) {
-            throw new ForbiddenContentException();
+            throw new ForbiddenContentException(
+                    "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
         List<Challenge> challenges = challengeRepository.findAllByGroupId(groupId);
@@ -134,11 +143,14 @@ public class GroupService {
     }
 
     public GroupTaskListResponse getTasks(Long userId, Long groupId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(EntityNotFoundException::new);
-        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
 
         if (!group.hasMember(user)) {
-            throw new ForbiddenContentException();
+            throw new ForbiddenContentException(
+                    "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
         List<Task> tasks = taskRepository.findAllByChallengeGroupId(groupId);
