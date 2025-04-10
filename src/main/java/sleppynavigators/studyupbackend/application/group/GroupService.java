@@ -105,12 +105,11 @@ public class GroupService {
     }
 
     @Transactional
-    public GroupResponse acceptInvitation(
+    public GroupInvitationResponse acceptInvitation(
             Long userId, Long groupId, Long invitationId, GroupInvitationAcceptRequest request) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
                 .orElseThrow(() -> new EntityNotFoundException("Invitation not found - invitationId: " + invitationId));
-        Group group = invitation.getGroup();
-
+        
         if (!invitation.matchGroupId(groupId) || !invitation.matchKey(request.invitationKey())) {
             throw new InvalidPayloadException(
                     "Invalid groupId or invitationKey - groupId: " + groupId +
@@ -119,12 +118,12 @@ public class GroupService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
-        group.addMember(user);
+        invitation.getGroup().addMember(user);
 
         SystemEvent event = new UserJoinEvent(user.getUserProfile().username(), groupId);
         systemEventPublisher.publish(event);
 
-        return GroupResponse.fromEntity(group);
+        return GroupInvitationResponse.fromEntity(invitation);
     }
 
     public GroupChallengeListResponse getChallenges(Long userId, Long groupId) {

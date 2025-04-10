@@ -79,12 +79,12 @@ public class GroupController {
 
     @PostMapping("/{groupId}/invitations/{invitationId}/accept")
     @Operation(summary = "그룹 초대 수락", description = "그룹 초대를 수락합니다.")
-    public ResponseEntity<SuccessResponse<GroupResponse>> acceptInvitation(
+    public ResponseEntity<SuccessResponse<GroupInvitationResponse>> acceptInvitation(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long groupId, @PathVariable Long invitationId,
             @RequestBody @Valid GroupInvitationAcceptRequest groupInvitationAcceptRequest) {
         Long userId = userPrincipal.userId();
-        GroupResponse response =
+        GroupInvitationResponse response =
                 groupService.acceptInvitation(userId, groupId, invitationId, groupInvitationAcceptRequest);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }

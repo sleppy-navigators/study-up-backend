@@ -4,22 +4,17 @@ import jakarta.validation.constraints.NotBlank;
 import org.jetbrains.annotations.NotNull;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 
-public record GroupInvitationResponse(@NotNull Long groupId,
-                                      @NotBlank String groupName,
-                                      @NotBlank String groupDescription,
-                                      String groupThumbnailUrl,
-                                      @NotNull Long invitationId,
+public record GroupInvitationResponse(@NotNull Long id,
                                       @NotBlank String invitationKey,
-                                      @NotNull Long inviterId) {
+                                      @NotNull Long inviterId,
+                                      @NotNull Long groupId) {
 
     public static GroupInvitationResponse fromEntity(GroupInvitation groupInvitation) {
         return new GroupInvitationResponse(
-                groupInvitation.getGroup().getId(),
-                groupInvitation.getGroup().getGroupDetail().name(),
-                groupInvitation.getGroup().getGroupDetail().description(),
-                groupInvitation.getGroup().getGroupDetail().thumbnailUrl(),
                 groupInvitation.getId(),
                 groupInvitation.getInvitationKey(),
-                groupInvitation.getLastModifier());
+                groupInvitation.getCreatedBy(),
+                groupInvitation.getGroup().getId()
+        );
     }
 }

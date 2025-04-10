@@ -48,7 +48,7 @@ public class GroupSupport {
         // Invite other users to the group
         GroupInvitationResponse invitationResponse = groupService.makeInvitation(groupResponse.id(), creator.getId());
         for (User member : members) {
-            groupService.acceptInvitation(member.getId(), groupResponse.id(), invitationResponse.invitationId(),
+            groupService.acceptInvitation(member.getId(), groupResponse.id(), invitationResponse.id(),
                     new GroupInvitationAcceptRequest(invitationResponse.invitationKey()));
         }
 
@@ -57,7 +57,7 @@ public class GroupSupport {
 
     public GroupInvitation callToMakeInvitation(Group group, User inviter) {
         GroupInvitationResponse response = groupService.makeInvitation(group.getId(), inviter.getId());
-        return groupInvitationRepository.findById(response.invitationId()).orElseThrow();
+        return groupInvitationRepository.findById(response.id()).orElseThrow();
     }
 
     public void callToLeaveGroup(User user, Long groupId) {

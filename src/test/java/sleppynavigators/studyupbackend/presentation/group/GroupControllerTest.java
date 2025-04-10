@@ -296,7 +296,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getObject("data", GroupResponse.class))
+        assertThat(response.jsonPath().getObject("data", GroupInvitationResponse.class))
                 .satisfies(data -> assertThat(this.validator.validate(data)).isEmpty());
     }
 
