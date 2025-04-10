@@ -3,7 +3,8 @@ package sleppynavigators.studyupbackend.presentation.group.dto.response;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ public record GroupTaskListResponse(@NotNull @Valid List<GroupTaskListItem> task
 
     public record GroupTaskListItem(@NotNull Long id,
                                     @NotBlank String title,
-                                    @NotNull LocalDateTime deadline,
+                                    @NotNull ZonedDateTime deadline,
                                     @NotNull @Valid TaskChallengeDTO challengeDetail,
                                     @NotNull @Valid ChallengerDTO challengerDetail,
                                     @Valid TaskCertificationDTO certification) {
@@ -28,7 +29,7 @@ public record GroupTaskListResponse(@NotNull @Valid List<GroupTaskListItem> task
             return new GroupTaskListItem(
                     task.getId(),
                     task.getDetail().title(),
-                    task.getDetail().deadline(),
+                    task.getDetail().deadline().atZone(ZoneId.systemDefault()),
                     TaskChallengeDTO.fromEntity(task),
                     ChallengerDTO.fromEntity(task.getChallenge()),
                     (taskCertification.isCertified()) ?

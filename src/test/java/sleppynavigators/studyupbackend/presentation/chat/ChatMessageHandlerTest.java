@@ -96,7 +96,7 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
         assertThat(response.content()).isEqualTo("테스트 메시지");
         assertThat(response.senderId()).isEqualTo(testUser.getId());
         assertThat(response.groupId()).isEqualTo(groupId);
-        assertThat(response.timestamp()).isNotNull();
+        assertThat(response.createdAt()).isNotNull();
 
         // MongoDB에 저장된 메시지 검증
         assertThat(chatMessageRepository.findById(new ObjectId(response.id()))).isPresent()

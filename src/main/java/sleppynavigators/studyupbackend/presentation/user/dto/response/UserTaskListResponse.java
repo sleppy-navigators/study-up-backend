@@ -4,7 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import sleppynavigators.studyupbackend.domain.challenge.Task;
@@ -18,7 +19,7 @@ public record UserTaskListResponse(@NotNull @Valid List<UserTaskListItem> tasks)
     public record UserTaskListItem(
             @NotNull Long id,
             @NotBlank String title,
-            @NotNull LocalDateTime deadline,
+            @NotNull ZonedDateTime deadline,
             @Valid TaskCertificationDTO certification,
             @NotNull @Valid TaskChallengeDTO challengeDetail,
             @NotNull @Valid TaskGroupDTO groupDetail) {
@@ -29,7 +30,7 @@ public record UserTaskListResponse(@NotNull @Valid List<UserTaskListItem> tasks)
             return new UserTaskListItem(
                     task.getId(),
                     task.getDetail().title(),
-                    task.getDetail().deadline(),
+                    task.getDetail().deadline().atZone(ZoneId.systemDefault()),
                     (taskCertification.isCertified())
                             ? TaskCertificationDTO.fromEntity(task.getCertification())
                             : null,

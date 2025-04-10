@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.presentation.chat.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -15,7 +16,7 @@ public record ChatMessageResponse(
         @NotNull Long senderId,
         @NotNull SenderType senderType,
         @NotBlank String content,
-        @NotNull LocalDateTime timestamp
+        @NotNull ZonedDateTime createdAt
 ) {
     public static ChatMessageResponse from(ChatMessage chatMessage) {
         return ChatMessageResponse.builder()
@@ -24,7 +25,7 @@ public record ChatMessageResponse(
                 .senderId(chatMessage.getSenderId())
                 .senderType(chatMessage.getSenderType())
                 .content(chatMessage.getContent())
-                .timestamp(chatMessage.getCreatedAt())
+                .createdAt(chatMessage.getCreatedAt().atZone(ZoneId.systemDefault()))
                 .build();
     }
 }

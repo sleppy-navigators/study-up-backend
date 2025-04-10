@@ -9,7 +9,7 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -431,11 +431,11 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "test challenge",
-                LocalDateTime.now().plusDays(3),
+                ZonedDateTime.now().plusDays(3),
                 "test description",
-                List.of(new TaskRequest("test task 1", LocalDateTime.now().plusHours(3)),
-                        new TaskRequest("test task 2", LocalDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", LocalDateTime.now().plusHours(9))));
+                List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
+                        new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
 
         // when
         ExtractableResponse<?> response = with()
@@ -463,11 +463,11 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "test challenge",
-                LocalDateTime.now().minusDays(1),
+                ZonedDateTime.now().minusDays(1),
                 "test description",
-                List.of(new TaskRequest("test task 1", LocalDateTime.now().plusHours(3)),
-                        new TaskRequest("test task 2", LocalDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", LocalDateTime.now().plusHours(9))));
+                List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
+                        new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
 
         // when
         ExtractableResponse<?> response = with()
@@ -490,11 +490,11 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "test challenge",
-                LocalDateTime.now().plusDays(3),
+                ZonedDateTime.now().plusDays(3),
                 "test description",
-                List.of(new TaskRequest("test task 1", LocalDateTime.now().minusHours(3)),
-                        new TaskRequest("test task 2", LocalDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", LocalDateTime.now().plusHours(9))));
+                List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
+                        new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
 
         // when
         ExtractableResponse<?> response = with()

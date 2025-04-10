@@ -3,7 +3,8 @@ package sleppynavigators.studyupbackend.presentation.group.dto.response;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ public record GroupChallengeListResponse(@NotNull @Valid List<GroupChallengeList
 
     public record GroupChallengeListItem(@NotNull Long id,
                                          @NotBlank String title,
-                                         @NotNull LocalDateTime deadline,
+                                         @NotNull ZonedDateTime deadline,
                                          String description,
                                          @NotNull Boolean isCompleted,
                                          @NotNull @Valid ChallengerDTO challengerDetail,
@@ -28,7 +29,7 @@ public record GroupChallengeListResponse(@NotNull @Valid List<GroupChallengeList
             return new GroupChallengeListItem(
                     challenge.getId(),
                     challenge.getDetail().title(),
-                    challenge.getDetail().deadline(),
+                    challenge.getDetail().deadline().atZone(ZoneId.systemDefault()),
                     challenge.getDetail().description(),
                     challenge.isCompleted(),
                     ChallengerDTO.fromEntity(challenge),

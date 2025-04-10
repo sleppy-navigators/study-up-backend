@@ -4,8 +4,9 @@ import static org.mockito.Mockito.verify;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
     @DisplayName("챌린지 생성 시 ChallengeCreateEvent가 발행된다")
     void createChallenge_PublishesChallengeCreateEvent() {
         // given
-        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+        ZonedDateTime deadline = ZonedDateTime.now().plusDays(7);
         TaskRequest taskRequest = new ChallengeCreationRequest.TaskRequest("testTask", deadline);
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "testChallenge", deadline, "description", List.of(taskRequest)
