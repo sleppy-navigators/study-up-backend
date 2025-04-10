@@ -49,6 +49,12 @@ public class GroupService {
     private final BotRepository botRepository;
     private final SystemEventPublisher systemEventPublisher;
 
+    public GroupResponse getGroup(Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
+        return GroupResponse.fromEntity(group);
+    }
+
     @Transactional
     public GroupResponse createGroup(Long creatorId, GroupCreationRequest request) {
         User creator = userRepository.findById(creatorId)
@@ -109,7 +115,7 @@ public class GroupService {
             Long userId, Long groupId, Long invitationId, GroupInvitationAcceptRequest request) {
         GroupInvitation invitation = groupInvitationRepository.findById(invitationId)
                 .orElseThrow(() -> new EntityNotFoundException("Invitation not found - invitationId: " + invitationId));
-        
+
         if (!invitation.matchGroupId(groupId) || !invitation.matchKey(request.invitationKey())) {
             throw new InvalidPayloadException(
                     "Invalid groupId or invitationKey - groupId: " + groupId +

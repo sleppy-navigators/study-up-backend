@@ -117,6 +117,27 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
+    @DisplayName("그룹 조회에 성공한다")
+    void memberGroupQuery_Success() {
+        // given
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/groups/{groupId}", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.id()).isEqualTo(groupToQuery.getId());
+                });
+    }
+
+    @Test
     @DisplayName("사용자가 그룹에서 탈퇴에 성공한다")
     void memberLeaveGroup_Success() {
         // given
