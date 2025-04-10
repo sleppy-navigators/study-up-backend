@@ -7,8 +7,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
+
 import java.util.List;
 import java.util.Objects;
+
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,11 +24,11 @@ import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskGroupDTO;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
-import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskGroupDetail;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskListItem;
 
 @DisplayName("UserController API 테스트")
@@ -151,7 +153,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
                     assertThat(data.tasks()).map(UserTaskListItem::certification).anyMatch(Objects::isNull);
                     assertThat(data.tasks())
                             .map(UserTaskListItem::groupDetail)
-                            .map(UserTaskGroupDetail::currentlyJoined)
+                            .map(TaskGroupDTO::currentlyJoined)
                             .containsExactly(true, true, true, true, true, true, true, false, false);
                 });
     }
