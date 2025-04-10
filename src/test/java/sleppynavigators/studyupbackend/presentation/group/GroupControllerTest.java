@@ -593,8 +593,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.messages()).hasSize(2);
                     assertThat(data.currentPage()).isEqualTo(0);
-                    assertThat(data.totalPages()).isEqualTo(2);
-                    assertThat(data.totalElements()).isEqualTo(3);
+                    assertThat(data.pageCount()).isEqualTo(2);
+                    assertThat(data.chatMessageCount()).isEqualTo(3);
                     assertThat(data.messages().stream().map(ChatMessageDto::content).toList())
                             .containsExactly("세 번째 메시지", "두 번째 메시지"); // 최신순 정렬 확인
                 });
@@ -641,8 +641,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.messages()).isEmpty();
                     assertThat(data.currentPage()).isEqualTo(0);
-                    assertThat(data.totalPages()).isEqualTo(0);
-                    assertThat(data.totalElements()).isEqualTo(0);
+                    assertThat(data.pageCount()).isEqualTo(0);
+                    assertThat(data.chatMessageCount()).isEqualTo(0);
                 });
     }
 }

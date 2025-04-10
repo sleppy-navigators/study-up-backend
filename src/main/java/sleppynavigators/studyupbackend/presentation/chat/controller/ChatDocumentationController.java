@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
+import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @Tag(name = "Chat WebSocket", description = "채팅 웹소켓 통신 명세")
