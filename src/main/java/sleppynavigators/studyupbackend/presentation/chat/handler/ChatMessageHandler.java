@@ -7,7 +7,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserAuthentication;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
+import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
 
 @Controller
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)

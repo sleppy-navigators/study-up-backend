@@ -18,8 +18,8 @@ import sleppynavigators.studyupbackend.exception.database.EntityNotFoundExceptio
 import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
+import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 

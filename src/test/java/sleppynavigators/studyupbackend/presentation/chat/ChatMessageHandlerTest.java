@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +26,8 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageResponse;
+import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
 import sleppynavigators.studyupbackend.common.support.WebSocketTestSupport;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
@@ -94,7 +96,7 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
         assertThat(response.content()).isEqualTo("테스트 메시지");
         assertThat(response.senderId()).isEqualTo(testUser.getId());
         assertThat(response.groupId()).isEqualTo(groupId);
-        assertThat(response.timestamp()).isNotNull();
+        assertThat(response.createdAt()).isNotNull();
 
         // MongoDB에 저장된 메시지 검증
         assertThat(chatMessageRepository.findById(new ObjectId(response.id()))).isPresent()

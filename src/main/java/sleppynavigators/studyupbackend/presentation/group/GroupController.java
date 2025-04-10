@@ -51,6 +51,15 @@ public class GroupController {
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
+    @GetMapping("/{groupId}")
+    @Operation(summary = "그룹 조회", description = "그룹을 조회합니다.")
+    public ResponseEntity<SuccessResponse<GroupResponse>> getGroup(
+            @PathVariable Long groupId
+    ) {
+        GroupResponse response = groupService.getGroup(groupId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
     @PostMapping("/{groupId}/leave")
     @Operation(summary = "그룹 탈퇴", description = "그룹에서 탈퇴합니다.")
     public ResponseEntity<SuccessResponse<Void>> leaveGroup(
@@ -79,12 +88,12 @@ public class GroupController {
 
     @PostMapping("/{groupId}/invitations/{invitationId}/accept")
     @Operation(summary = "그룹 초대 수락", description = "그룹 초대를 수락합니다.")
-    public ResponseEntity<SuccessResponse<GroupResponse>> acceptInvitation(
+    public ResponseEntity<SuccessResponse<GroupInvitationResponse>> acceptInvitation(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long groupId, @PathVariable Long invitationId,
             @RequestBody @Valid GroupInvitationAcceptRequest groupInvitationAcceptRequest) {
         Long userId = userPrincipal.userId();
-        GroupResponse response =
+        GroupInvitationResponse response =
                 groupService.acceptInvitation(userId, groupId, invitationId, groupInvitationAcceptRequest);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }

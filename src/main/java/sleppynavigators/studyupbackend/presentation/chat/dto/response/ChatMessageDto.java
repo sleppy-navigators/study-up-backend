@@ -5,14 +5,15 @@ import org.jetbrains.annotations.NotNull;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.SenderType;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public record ChatMessageDto(
         @NotNull String id,
         @NotNull Long senderId,
         @NotNull SenderType senderType,
         @NotBlank String content,
-        @NotNull LocalDateTime createdAt
+        @NotNull ZonedDateTime createdAt
 ) {
     public static ChatMessageDto from(ChatMessage message) {
         return new ChatMessageDto(
@@ -20,7 +21,7 @@ public record ChatMessageDto(
                 message.getSenderId(),
                 message.getSenderType(),
                 message.getContent(),
-                message.getCreatedAt()
+                message.getCreatedAt().atZone(ZoneId.systemDefault())
         );
     }
 } 

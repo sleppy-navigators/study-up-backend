@@ -9,7 +9,7 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,6 +37,8 @@ import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvi
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageDto;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
@@ -46,7 +48,6 @@ import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChal
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskChallengeDetail;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskListItem;
 
 @DisplayName("GroupController API 테스트")
@@ -112,6 +113,27 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.name()).isEqualTo(request.name());
                     assertThat(data.description()).isEqualTo(request.description());
                     assertThat(data.thumbnailUrl()).isEqualTo(request.thumbnailUrl());
+                });
+    }
+
+    @Test
+    @DisplayName("그룹 조회에 성공한다")
+    void memberGroupQuery_Success() {
+        // given
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/groups/{groupId}", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.id()).isEqualTo(groupToQuery.getId());
                 });
     }
 
@@ -295,7 +317,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
-        assertThat(response.jsonPath().getObject("data", GroupResponse.class))
+        assertThat(response.jsonPath().getObject("data", GroupInvitationResponse.class))
                 .satisfies(data -> assertThat(this.validator.validate(data)).isEmpty());
     }
 
@@ -409,11 +431,11 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "test challenge",
-                LocalDateTime.now().plusDays(3),
+                ZonedDateTime.now().plusDays(3),
                 "test description",
-                List.of(new TaskRequest("test task 1", LocalDateTime.now().plusHours(3)),
-                        new TaskRequest("test task 2", LocalDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", LocalDateTime.now().plusHours(9))));
+                List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
+                        new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
 
         // when
         ExtractableResponse<?> response = with()
@@ -441,11 +463,11 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "test challenge",
-                LocalDateTime.now().minusDays(1),
+                ZonedDateTime.now().minusDays(1),
                 "test description",
-                List.of(new TaskRequest("test task 1", LocalDateTime.now().plusHours(3)),
-                        new TaskRequest("test task 2", LocalDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", LocalDateTime.now().plusHours(9))));
+                List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
+                        new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
 
         // when
         ExtractableResponse<?> response = with()
@@ -468,11 +490,11 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "test challenge",
-                LocalDateTime.now().plusDays(3),
+                ZonedDateTime.now().plusDays(3),
                 "test description",
-                List.of(new TaskRequest("test task 1", LocalDateTime.now().minusHours(3)),
-                        new TaskRequest("test task 2", LocalDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", LocalDateTime.now().plusHours(9))));
+                List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
+                        new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
 
         // when
         ExtractableResponse<?> response = with()
@@ -521,7 +543,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                             .map(GroupChallengeListItem::isCompleted)
                             .containsExactly(false, true, true);
                     assertThat(data.challenges())
-                            .map(GroupChallengeListItem::currentlyJoined)
+                            .map(GroupChallengeListItem::challengerDetail)
+                            .map(ChallengerDTO::currentlyJoined)
                             .containsExactly(true, true, false);
                 });
     }
@@ -558,12 +581,12 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.tasks()).map(GroupTaskListItem::certification)
                             .anyMatch(Objects::nonNull);
                     assertThat(data.tasks())
-                            .map(GroupTaskListItem::challenge)
-                            .map(GroupTaskChallengeDetail::currentlyJoined)
+                            .map(GroupTaskListItem::challengerDetail)
+                            .map(ChallengerDTO::currentlyJoined)
                             .containsExactly(true, true, true, true, true, true, true, false, false);
                     assertThat(data.tasks())
-                            .map(GroupTaskListItem::challenge)
-                            .map(GroupTaskChallengeDetail::isCompleted)
+                            .map(GroupTaskListItem::challengeDetail)
+                            .map(TaskChallengeDTO::isCompleted)
                             .containsExactly(false, false, false, true, true, true, true, true, true);
                 });
     }
@@ -593,8 +616,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.messages()).hasSize(2);
                     assertThat(data.currentPage()).isEqualTo(0);
-                    assertThat(data.totalPages()).isEqualTo(2);
-                    assertThat(data.totalElements()).isEqualTo(3);
+                    assertThat(data.pageCount()).isEqualTo(2);
+                    assertThat(data.chatMessageCount()).isEqualTo(3);
                     assertThat(data.messages().stream().map(ChatMessageDto::content).toList())
                             .containsExactly("세 번째 메시지", "두 번째 메시지"); // 최신순 정렬 확인
                 });
@@ -641,8 +664,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.messages()).isEmpty();
                     assertThat(data.currentPage()).isEqualTo(0);
-                    assertThat(data.totalPages()).isEqualTo(0);
-                    assertThat(data.totalElements()).isEqualTo(0);
+                    assertThat(data.pageCount()).isEqualTo(0);
+                    assertThat(data.chatMessageCount()).isEqualTo(0);
                 });
     }
 }

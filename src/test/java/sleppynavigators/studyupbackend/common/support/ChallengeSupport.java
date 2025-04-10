@@ -2,9 +2,10 @@ package sleppynavigators.studyupbackend.common.support;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +38,10 @@ public class ChallengeSupport {
         // Create a challenge with tasks
         ChallengeCreationRequest challengeCreationRequest = new ChallengeCreationRequest(
                 "test-challenge",
-                LocalDateTime.now().plusDays(3),
+                ZonedDateTime.now().plusDays(3),
                 "test-challenge-description",
                 IntStream.range(0, numOfTotalTasks)
-                        .mapToObj(i -> new TaskRequest("test-task-" + i, LocalDateTime.now().plusHours(3)))
+                        .mapToObj(i -> new TaskRequest("test-task-" + i, ZonedDateTime.now().plusHours(3)))
                         .toList());
         ChallengeResponse challengeResponse = challengeService
                 .createChallenge(challenger.getId(), group.getId(), challengeCreationRequest);

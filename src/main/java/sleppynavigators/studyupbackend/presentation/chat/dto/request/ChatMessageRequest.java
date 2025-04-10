@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.chat.dto;
+package sleppynavigators.studyupbackend.presentation.chat.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
