@@ -37,6 +37,8 @@ import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvi
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageDto;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
@@ -46,7 +48,6 @@ import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChal
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskChallengeDetail;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskListItem;
 
 @DisplayName("GroupController API 테스트")
@@ -521,7 +522,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                             .map(GroupChallengeListItem::isCompleted)
                             .containsExactly(false, true, true);
                     assertThat(data.challenges())
-                            .map(GroupChallengeListItem::currentlyJoined)
+                            .map(GroupChallengeListItem::challengerDetail)
+                            .map(ChallengerDTO::currentlyJoined)
                             .containsExactly(true, true, false);
                 });
     }
@@ -558,12 +560,12 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.tasks()).map(GroupTaskListItem::certification)
                             .anyMatch(Objects::nonNull);
                     assertThat(data.tasks())
-                            .map(GroupTaskListItem::challenge)
-                            .map(GroupTaskChallengeDetail::currentlyJoined)
+                            .map(GroupTaskListItem::challengerDetail)
+                            .map(ChallengerDTO::currentlyJoined)
                             .containsExactly(true, true, true, true, true, true, true, false, false);
                     assertThat(data.tasks())
-                            .map(GroupTaskListItem::challenge)
-                            .map(GroupTaskChallengeDetail::isCompleted)
+                            .map(GroupTaskListItem::challengeDetail)
+                            .map(TaskChallengeDTO::isCompleted)
                             .containsExactly(false, false, false, true, true, true, true, true, true);
                 });
     }
