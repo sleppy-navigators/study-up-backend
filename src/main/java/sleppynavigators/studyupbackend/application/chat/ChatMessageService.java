@@ -24,7 +24,7 @@ import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessage
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupChatMessageSearch;
+import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearch;
 
 @Slf4j
 @Service
@@ -81,7 +81,7 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public ChatMessageListResponse getMessages(Long userId, Long groupId, GroupChatMessageSearch search) {
+    public ChatMessageListResponse getMessages(Long userId, Long groupId, ChatMessageSearch search) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         Group group = groupRepository.findById(groupId)

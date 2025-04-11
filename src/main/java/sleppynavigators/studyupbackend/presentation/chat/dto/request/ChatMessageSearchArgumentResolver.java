@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.group.dto.request;
+package sleppynavigators.studyupbackend.presentation.chat.dto.request;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
@@ -7,16 +7,16 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
-import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupChatMessageSearch.GroupChatMessageSortType;
+import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearch.GroupChatMessageSortType;
 
 import java.util.Optional;
 
-public class GroupChatMessageArgumentResolver implements HandlerMethodArgumentResolver {
+public class ChatMessageSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return (parameter.hasParameterAnnotation(SearchParam.class) &&
-                parameter.nestedIfOptional().getParameterType().equals(GroupChatMessageSearch.class));
+                parameter.nestedIfOptional().getParameterType().equals(ChatMessageSearch.class));
     }
 
     @Override
@@ -32,6 +32,6 @@ public class GroupChatMessageArgumentResolver implements HandlerMethodArgumentRe
                 .map(GroupChatMessageSortType::valueOf)
                 .orElse(null);
 
-        return new GroupChatMessageSearch(pageNum, pageSize, sortBy);
+        return new ChatMessageSearch(pageNum, pageSize, sortBy);
     }
 }

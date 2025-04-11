@@ -21,7 +21,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
-import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupChatMessageSearch;
+import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
@@ -137,11 +137,11 @@ public class GroupController {
     public ResponseEntity<SuccessResponse<ChatMessageListResponse>> getMessages(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long groupId,
-            @SearchParam @Valid GroupChatMessageSearch groupChatMessageSearch
+            @SearchParam @Valid ChatMessageSearch chatMessageSearch
     ) {
         Long userId = userPrincipal.userId();
         ChatMessageListResponse response = chatMessageService
-                .getMessages(userId, groupId, groupChatMessageSearch);
+                .getMessages(userId, groupId, chatMessageSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }
