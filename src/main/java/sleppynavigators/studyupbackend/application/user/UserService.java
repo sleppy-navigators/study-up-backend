@@ -4,6 +4,8 @@ import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
@@ -15,6 +17,7 @@ import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
@@ -42,8 +45,12 @@ public class UserService {
         return GroupListResponse.fromEntities(groups, chatMessages);
     }
 
-    public UserTaskListResponse getTasks(Long userId) {
-        List<Task> tasks = taskRepository.findAllByChallengeOwnerId(userId);
+    public UserTaskListResponse getTasks(Long userId, TaskSearch taskSearch) {
+        Specification<Task> specification = taskSearch.toCertificationSpecification()
+                .and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.join("challenge").join("owner").get("id"), userId));
+        Pageable pageable = taskSearch.toPageable();
+        List<Task> tasks = taskRepository.findAll(specification, pageable).getContent();
         return UserTaskListResponse.fromEntities(tasks);
     }
 }

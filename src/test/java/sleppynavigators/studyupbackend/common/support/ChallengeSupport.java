@@ -5,6 +5,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,8 @@ import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeReposit
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
 
@@ -47,7 +50,10 @@ public class ChallengeSupport {
 
         // Complete the tasks
         try {
-            List<TaskListItem> tasks = challengeService.getTasks(challenger.getId(), challengeResponse.id()).tasks();
+            TaskSearch taskSearch = new TaskSearch(0, 20, CertificationStatus.ALL);
+            List<TaskListItem> tasks = challengeService
+                    .getTasks(challenger.getId(), challengeResponse.id(), taskSearch)
+                    .tasks();
             for (int ti = 0; ti < numOfCertifiedTasks; ti++) {
                 challengeService.completeTask(
                         challenger.getId(), challengeResponse.id(), tasks.get(ti).id(),
