@@ -24,6 +24,7 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
@@ -83,14 +84,24 @@ public class ChallengeService {
         challengeRepository.deleteById(challengeId);
     }
 
-    public TaskListResponse getTasks(Long userId, Long challengeId) {
+    public TaskListResponse getTasks(Long userId, Long challengeId, TaskSearch search) {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
 
-        // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
-        List<Task> tasks = challenge.getTasksForUser(user);
+        List<Task> tasks = challenge.getTasksForUser(user).stream()
+                .filter(task ->
+                        switch (search.status()) {
+                            case ALL -> true;
+                            case SUCCEED -> task.isSucceed();
+                            case FAILED -> task.isFailed();
+                            case IN_PROGRESS -> !task.isCompleted();
+                            case COMPLETED -> task.isCompleted();
+                        })
+                .skip((long) search.pageNum() * search.pageSize())
+                .limit(search.pageSize())
+                .toList();
         return TaskListResponse.fromEntities(tasks);
     }
 
