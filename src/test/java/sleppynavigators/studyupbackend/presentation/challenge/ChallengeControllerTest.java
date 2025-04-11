@@ -34,6 +34,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
@@ -135,6 +136,31 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
                     assertThat(data.tasks()).hasSize(3);
                     assertThat(data.tasks()).map(TaskListItem::certification).anyMatch(Objects::nonNull);
                     assertThat(data.tasks()).map(TaskListItem::certification).anyMatch(Objects::isNull);
+                });
+    }
+
+    @Test
+    @DisplayName("챌린지 테스크 목록 조회 - 인증된 테스크만")
+    void getTasks_Certified_Success() {
+        // given
+        Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
+        Challenge challengeToQuery = challengeSupport
+                .callToMakeChallengesWithTasks(groupToBelong, 3, 1, currentUser);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .queryParam("status", TaskCertificationStatus.SUCCEED)
+                .when().request(GET, "/challenges/{challengeId}/tasks", challengeToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", TaskListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.tasks()).hasSize(1);
+                    assertThat(data.tasks()).map(TaskListItem::certification).allMatch(Objects::nonNull);
                 });
     }
 
