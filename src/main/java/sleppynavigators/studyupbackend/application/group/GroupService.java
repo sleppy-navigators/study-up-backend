@@ -4,6 +4,8 @@ import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
@@ -28,6 +30,7 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
@@ -147,7 +150,7 @@ public class GroupService {
         return GroupChallengeListResponse.fromEntities(challenges);
     }
 
-    public GroupTaskListResponse getTasks(Long userId, Long groupId) {
+    public GroupTaskListResponse getTasks(Long userId, Long groupId, TaskSearch search) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
         User user = userRepository.findById(userId)
@@ -158,7 +161,12 @@ public class GroupService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        List<Task> tasks = taskRepository.findAllByChallengeGroupId(groupId);
+        Pageable pageable = search.toPageable();
+        Specification<Task> specification = search.toCertificationSpecification()
+                .and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.join("challenge").join("group").get("id"), groupId));
+
+        List<Task> tasks = taskRepository.findAll(specification, pageable).getContent();
         return GroupTaskListResponse.fromEntities(tasks);
     }
 }

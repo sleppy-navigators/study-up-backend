@@ -36,6 +36,7 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
@@ -588,6 +589,47 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                             .map(GroupTaskListItem::challengeDetail)
                             .map(TaskChallengeDTO::isCompleted)
                             .containsExactly(false, false, false, true, true, true, true, true, true);
+                });
+    }
+
+    @Test
+    @DisplayName("그룹의 테스크 목록을 조회한다 - 진행중인 테스크만")
+    void getTasks_InProgress_Success() {
+        // given
+        User anotherUser = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser));
+
+        Challenge myInProgressChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 3, 1, currentUser);
+        Challenge myCompletedChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+        Challenge anotherUserChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 2, 2, anotherUser);
+
+        // when
+        groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
+        ExtractableResponse<?> response = with()
+                .queryParam("status", CertificationStatus.IN_PROGRESS)
+                .when().request(GET, "/groups/{groupId}/tasks", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupTaskListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.tasks()).hasSize(2);
+                    assertThat(data.tasks()).map(GroupTaskListItem::certification)
+                            .allMatch(Objects::isNull);
+                    assertThat(data.tasks())
+                            .map(GroupTaskListItem::challenge)
+                            .map(GroupTaskChallengeDetail::currentlyJoined)
+                            .containsExactly(true, true);
+                    assertThat(data.tasks())
+                            .map(GroupTaskListItem::challenge)
+                            .map(GroupTaskChallengeDetail::isCompleted)
+                            .containsExactly(false, false);
                 });
     }
 

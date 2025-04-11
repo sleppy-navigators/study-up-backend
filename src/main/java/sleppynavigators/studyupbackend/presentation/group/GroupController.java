@@ -18,6 +18,7 @@ import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
@@ -124,11 +125,10 @@ public class GroupController {
     @GetMapping("/{groupId}/tasks")
     @Operation(summary = "그룹 테스크 목록 조회", description = "그룹의 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<GroupTaskListResponse>> getTasks(
-            // TODO: filter by deadline utilizing `RSQL` or `QueryDSL Web Support`
-            // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
-            @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId) {
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long groupId, @SearchParam @Valid TaskSearch taskSearch) {
         Long userId = userPrincipal.userId();
-        GroupTaskListResponse response = groupService.getTasks(userId, groupId);
+        GroupTaskListResponse response = groupService.getTasks(userId, groupId, taskSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
