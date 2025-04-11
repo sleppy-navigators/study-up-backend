@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +20,8 @@ import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPr
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
+import sleppynavigators.studyupbackend.presentation.common.SearchParam;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupChatMessageSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
@@ -137,9 +137,10 @@ public class GroupController {
     public ResponseEntity<SuccessResponse<ChatMessageListResponse>> getMessages(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long groupId,
-            @PageableDefault(size = 20) Pageable pageable
+            @SearchParam @Valid GroupChatMessageSearch groupChatMessageSearch
     ) {
-        ChatMessageListResponse response = chatMessageService.getMessages(groupId, pageable);
+        ChatMessageListResponse response = chatMessageService
+                .getMessages(groupId, groupChatMessageSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }

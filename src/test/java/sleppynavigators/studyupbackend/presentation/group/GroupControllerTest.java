@@ -603,8 +603,9 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         // when
         ExtractableResponse<?> response = with()
-                .queryParam("page", pageNumber)
-                .queryParam("size", pageSize)
+                .queryParam("pageNum", pageNumber)
+                .queryParam("pageSize", pageSize)
+                .queryParam("sortBy", "LATEST")
                 .when().request(GET, "/groups/{groupId}/messages", groupToQuery.getId())
                 .then()
                 .log().all().extract();

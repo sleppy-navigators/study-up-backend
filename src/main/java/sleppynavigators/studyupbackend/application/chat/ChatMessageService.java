@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +21,7 @@ import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessage
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupChatMessageSearch;
 
 @Slf4j
 @Service
@@ -76,10 +76,11 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public ChatMessageListResponse getMessages(Long groupId, Pageable pageable) {
+    public ChatMessageListResponse getMessages(Long groupId, GroupChatMessageSearch search) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
-        Page<ChatMessage> messages = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(group.getId(), pageable);
+        Page<ChatMessage> messages = chatMessageRepository
+                .findByGroupIdOrderByCreatedAtDesc(group.getId(), search.toPageable());
         return ChatMessageListResponse.from(messages);
     }
 }
