@@ -25,6 +25,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskGroupDTO;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
@@ -155,6 +156,45 @@ public class UserControllerTest extends RestAssuredBaseTest {
                             .map(UserTaskListItem::groupDetail)
                             .map(TaskGroupDTO::currentlyJoined)
                             .containsExactly(true, true, true, true, true, true, true, false, false);
+                });
+    }
+
+    @Test
+    @DisplayName("사용자가 테스크 목록 조회 - 진행중인 테스크만")
+    void getTasks_Certified_Success() {
+        // given
+        User anotherUser1 = userSupport.registerUserToDB();
+        User anotherUser2 = userSupport.registerUserToDB();
+
+        Group groupCurrentlyJoined = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser1));
+        Group groupWillNotJoined = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser2));
+
+        Challenge challenge1 = challengeSupport
+                .callToMakeChallengesWithTasks(groupCurrentlyJoined, 3, 2, currentUser);
+        Challenge challenge2 = challengeSupport
+                .callToMakeChallengesWithTasks(groupCurrentlyJoined, 4, 0, currentUser);
+        Challenge challenge3 = challengeSupport
+                .callToMakeChallengesWithTasks(groupWillNotJoined, 2, 2, currentUser);
+
+        // when
+        groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());
+        ExtractableResponse<?> response = with()
+                .queryParam("status", CertificationStatus.IN_PROGRESS)
+                .when().request(GET, "/users/me/tasks")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", UserTaskListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.tasks()).hasSize(5);
+                    assertThat(data.tasks()).map(UserTaskListItem::certification).allMatch(Objects::isNull);
+                    assertThat(data.tasks())
+                            .map(UserTaskListItem::groupDetail)
+                            .map(UserTaskGroupDetail::currentlyJoined)
+                            .containsExactly(true, true, true, true, true);
                 });
     }
 }
