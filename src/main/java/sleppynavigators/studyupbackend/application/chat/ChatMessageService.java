@@ -12,11 +12,14 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
+import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
+import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
+import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
@@ -29,10 +32,12 @@ import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupChatM
 public class ChatMessageService {
 
     private static final String GROUP_DESTINATION = "/topic/group/%s";
+
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final GroupRepository groupRepository;
     private final BotRepository botRepository;
+    private final UserRepository userRepository;
 
     public void sendUserMessage(ChatMessageRequest request, String destination, Long senderId) {
         ChatMessage savedMessage = null;
@@ -76,9 +81,17 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public ChatMessageListResponse getMessages(Long groupId, GroupChatMessageSearch search) {
+    public ChatMessageListResponse getMessages(Long userId, Long groupId, GroupChatMessageSearch search) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
+
+        if (!group.hasMember(user)) {
+            throw new ForbiddenContentException(
+                    "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
+        }
+
         Page<ChatMessage> messages = chatMessageRepository
                 .findByGroupIdOrderByCreatedAtDesc(group.getId(), search.toPageable());
         return ChatMessageListResponse.from(messages);

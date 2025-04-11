@@ -139,8 +139,9 @@ public class GroupController {
             @PathVariable Long groupId,
             @SearchParam @Valid GroupChatMessageSearch groupChatMessageSearch
     ) {
+        Long userId = userPrincipal.userId();
         ChatMessageListResponse response = chatMessageService
-                .getMessages(groupId, groupChatMessageSearch);
+                .getMessages(userId, groupId, groupChatMessageSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }
