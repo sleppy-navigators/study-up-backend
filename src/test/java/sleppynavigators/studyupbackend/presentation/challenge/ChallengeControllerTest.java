@@ -34,7 +34,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.TaskCertificationStatus;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
@@ -149,7 +149,7 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
 
         // when
         ExtractableResponse<?> response = with()
-                .queryParam("status", TaskCertificationStatus.SUCCEED)
+                .queryParam("status", CertificationStatus.SUCCEED)
                 .when().request(GET, "/challenges/{challengeId}/tasks", challengeToQuery.getId())
                 .then()
                 .log().all().extract();
