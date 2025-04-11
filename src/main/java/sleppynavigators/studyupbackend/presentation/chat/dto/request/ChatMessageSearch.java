@@ -1,10 +1,10 @@
-package sleppynavigators.studyupbackend.presentation.group.dto.request;
+package sleppynavigators.studyupbackend.presentation.chat.dto.request;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-public record GroupChatMessageSearch(
+public record ChatMessageSearch(
         Integer pageNum,
         Integer pageSize,
         GroupChatMessageSortType sortBy
@@ -19,7 +19,7 @@ public record GroupChatMessageSearch(
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final GroupChatMessageSortType DEFAULT_SORT_BY = GroupChatMessageSortType.NONE;
 
-    public GroupChatMessageSearch {
+    public ChatMessageSearch {
         if (pageNum == null) {
             pageNum = DEFAULT_PAGE_NUM;
         }
