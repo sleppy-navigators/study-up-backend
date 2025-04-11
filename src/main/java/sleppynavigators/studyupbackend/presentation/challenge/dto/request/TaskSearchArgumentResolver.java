@@ -21,7 +21,7 @@ public class TaskSearchArgumentResolver implements HandlerMethodArgumentResolver
 
     @Override
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
                 .map(Integer::parseInt)
                 .orElse(null);
