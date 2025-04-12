@@ -42,7 +42,7 @@ public record TaskSearch(
         return PageRequest.of(pageNum, pageSize, Sort.unsorted());
     }
 
-    public Specification<Task> toCertificationSpecification() {
+    public Specification<Task> toSpecification() {
         return (root, query, criteriaBuilder) ->
                 switch (status) {
                     case SUCCEED -> criteriaBuilder.isNotNull(root.get("certification").get("certifiedAt"));

@@ -22,7 +22,6 @@ import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 
 @SoftDelete
 @Entity(name = "challenges")
@@ -57,15 +56,6 @@ public class Challenge extends TimeAuditBaseEntity {
 
     public void addTask(String title, LocalDateTime deadline) {
         tasks.add(new Task(title, deadline, this));
-    }
-
-    public List<Task> getTasksForUser(User user) {
-        if (!canAccess(user)) {
-            throw new ForbiddenContentException(
-                    "User cannot access this challenge - userId: " + user.getId() + ", challengeId: " + getId());
-        }
-
-        return tasks;
     }
 
     public boolean isOwner(User user) {

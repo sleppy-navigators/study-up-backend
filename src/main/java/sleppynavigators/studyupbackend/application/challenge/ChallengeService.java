@@ -4,6 +4,8 @@ import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
@@ -90,18 +92,17 @@ public class ChallengeService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
 
-        List<Task> tasks = challenge.getTasksForUser(user).stream()
-                .filter(task ->
-                        switch (search.status()) {
-                            case ALL -> true;
-                            case SUCCEED -> task.isSucceed();
-                            case FAILED -> task.isFailed();
-                            case IN_PROGRESS -> !task.isCompleted();
-                            case COMPLETED -> task.isCompleted();
-                        })
-                .skip((long) search.pageNum() * search.pageSize())
-                .limit(search.pageSize())
-                .toList();
+        if (!challenge.canAccess(user)) {
+            throw new ForbiddenContentException(
+                    "User cannot access this challenge - userId: " + user.getId() + ", challengeId: " + challengeId);
+        }
+
+        Specification<Task> specification = search.toSpecification()
+                .and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get("challenge").get("id"), challengeId));
+        Pageable pageable = search.toPageable();
+
+        List<Task> tasks = taskRepository.findAll(specification, pageable).getContent();
         return TaskListResponse.fromEntities(tasks);
     }
 

@@ -46,7 +46,7 @@ public class UserService {
     }
 
     public UserTaskListResponse getTasks(Long userId, TaskSearch taskSearch) {
-        Specification<Task> specification = taskSearch.toCertificationSpecification()
+        Specification<Task> specification = taskSearch.toSpecification()
                 .and((root, query, criteriaBuilder) ->
                         criteriaBuilder.equal(root.join("challenge").join("owner").get("id"), userId));
         Pageable pageable = taskSearch.toPageable();

@@ -162,7 +162,7 @@ public class GroupService {
         }
 
         Pageable pageable = search.toPageable();
-        Specification<Task> specification = search.toCertificationSpecification()
+        Specification<Task> specification = search.toSpecification()
                 .and((root, query, criteriaBuilder) ->
                         criteriaBuilder.equal(root.join("challenge").join("group").get("id"), groupId));
 
