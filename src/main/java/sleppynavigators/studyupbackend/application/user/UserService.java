@@ -18,6 +18,7 @@ import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
@@ -38,11 +39,13 @@ public class UserService {
         return UserResponse.fromEntity(user);
     }
 
-    public GroupListResponse getGroups(Long userId) {
+    public GroupListResponse getGroups(Long userId, GroupSearch search) {
         List<Group> groups = groupRepository.findAllByMembersUserId(userId);
         List<ChatMessage> chatMessages = chatMessageRepository
                 .findLatestMessagesPerGroupByGroupIds(groups.stream().map(Group::getId).toList());
-        return GroupListResponse.fromEntities(groups, chatMessages);
+
+        List<Group> sortedGroups = search.sort(groups, chatMessages);
+        return GroupListResponse.fromEntities(sortedGroups, chatMessages);
     }
 
     public UserTaskListResponse getTasks(Long userId, TaskSearch taskSearch) {

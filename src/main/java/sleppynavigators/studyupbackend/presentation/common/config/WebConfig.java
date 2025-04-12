@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearchArgumentResolver;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearchArgumentResolver;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
                 List.of(
                         new ChatMessageSearchArgumentResolver(),
                         new TaskSearchArgumentResolver(),
-                        new ChallengeSearchArgumentResolver()));
+                        new ChallengeSearchArgumentResolver(),
+                        new GroupSearchArgumentResolver()));
     }
 }

@@ -16,6 +16,7 @@ import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPr
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
@@ -38,10 +39,10 @@ public class UserController {
     @GetMapping("/me/groups")
     @Operation(summary = "유저의 그룹 목록 조회", description = "유저의 그룹 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<GroupListResponse>> getGroups(
-            // TODO: sort by `Event`(challenge creation and task certification) utilizing `@SortDefault`
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @SearchParam @Valid GroupSearch groupSearch) {
         Long userId = userPrincipal.userId();
-        GroupListResponse response = userService.getGroups(userId);
+        GroupListResponse response = userService.getGroups(userId, groupSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
