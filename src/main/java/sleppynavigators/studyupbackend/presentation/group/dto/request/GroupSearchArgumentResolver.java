@@ -22,11 +22,15 @@ public class GroupSearchArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        GroupSortType sortType = Optional.ofNullable(webRequest.getParameter("sortBy"))
-                .map(GroupSortType::valueOf)
-                .orElse(null);
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        try {
+            GroupSortType sortType = Optional.ofNullable(webRequest.getParameter("sortBy"))
+                    .map(GroupSortType::valueOf)
+                    .orElse(null);
 
-        return new GroupSearch(sortType);
+            return new GroupSearch(sortType);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid search option provided");
+        }
     }
 }

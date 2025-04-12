@@ -21,17 +21,21 @@ public class ChallengeSearchArgumentResolver implements HandlerMethodArgumentRes
 
     @Override
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
-                .map(Integer::parseInt)
-                .orElse(null);
-        Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
-                .map(Integer::parseInt)
-                .orElse(null);
-        ChallengeSortType sortType = Optional.ofNullable(webRequest.getParameter("sortBy"))
-                .map(ChallengeSortType::valueOf)
-                .orElse(null);
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        try {
+            Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
+                    .map(Integer::parseInt)
+                    .orElse(null);
+            Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
+                    .map(Integer::parseInt)
+                    .orElse(null);
+            ChallengeSortType sortType = Optional.ofNullable(webRequest.getParameter("sortBy"))
+                    .map(ChallengeSortType::valueOf)
+                    .orElse(null);
 
-        return new ChallengeSearch(pageNum, pageSize, sortType);
+            return new ChallengeSearch(pageNum, pageSize, sortType);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid search option provided");
+        }
     }
 }

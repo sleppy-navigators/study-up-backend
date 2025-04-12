@@ -22,17 +22,21 @@ public class TaskSearchArgumentResolver implements HandlerMethodArgumentResolver
     @Override
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
-                .map(Integer::parseInt)
-                .orElse(null);
-        Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
-                .map(Integer::parseInt)
-                .orElse(null);
-        CertificationStatus certificationStatus = Optional.ofNullable(
-                        webRequest.getParameter("status"))
-                .map(CertificationStatus::valueOf)
-                .orElse(null);
+        try {
+            Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
+                    .map(Integer::parseInt)
+                    .orElse(null);
+            Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
+                    .map(Integer::parseInt)
+                    .orElse(null);
+            CertificationStatus certificationStatus = Optional.ofNullable(
+                            webRequest.getParameter("status"))
+                    .map(CertificationStatus::valueOf)
+                    .orElse(null);
 
-        return new TaskSearch(pageNum, pageSize, certificationStatus);
+            return new TaskSearch(pageNum, pageSize, certificationStatus);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid search option provided");
+        }
     }
 }

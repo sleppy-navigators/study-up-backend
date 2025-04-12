@@ -22,16 +22,20 @@ public class ChatMessageSearchArgumentResolver implements HandlerMethodArgumentR
     @Override
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
-                .map(Integer::parseInt)
-                .orElse(null);
-        Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
-                .map(Integer::parseInt)
-                .orElse(null);
-        GroupChatMessageSortType sortBy = Optional.ofNullable(webRequest.getParameter("sortBy"))
-                .map(GroupChatMessageSortType::valueOf)
-                .orElse(null);
+        try {
+            Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
+                    .map(Integer::parseInt)
+                    .orElse(null);
+            Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
+                    .map(Integer::parseInt)
+                    .orElse(null);
+            GroupChatMessageSortType sortBy = Optional.ofNullable(webRequest.getParameter("sortBy"))
+                    .map(GroupChatMessageSortType::valueOf)
+                    .orElse(null);
 
-        return new ChatMessageSearch(pageNum, pageSize, sortBy);
+            return new ChatMessageSearch(pageNum, pageSize, sortBy);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid search option provided");
+        }
     }
 }
