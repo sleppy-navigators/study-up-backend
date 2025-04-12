@@ -10,6 +10,8 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 
 import java.time.ZonedDateTime;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,6 +38,8 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch.ChallengeSortType;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;
@@ -428,8 +432,6 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // given
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
 
-        assert challengeRepository.findAllByGroupId(groupToQuery.getId()).isEmpty();
-
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "test challenge",
                 ZonedDateTime.now().plusDays(3),
@@ -547,6 +549,50 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                             .map(GroupChallengeListItem::challengerDetail)
                             .map(ChallengerDTO::currentlyJoined)
                             .containsExactly(true, true, false);
+                });
+    }
+
+    @Test
+    @DisplayName("그룹의 챌린지 목록을 조회한다 - 마지막 인증 순서대로")
+    void getChallenges_Success_OrderedByLastCertification() throws MalformedURLException {
+        // given
+        User anotherUser = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser));
+
+        Challenge myInProgressChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 5, 3, currentUser);
+        Challenge myCompletedChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+        Challenge anotherUserChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 5, 5, anotherUser);
+
+        challengeSupport.callToCertifyTask(currentUser, myInProgressChallenge,
+                myInProgressChallenge.getTasks().get(3).getId(),
+                new TaskCertificationRequest(List.of(new URL("https://blog.com/article1")), List.of()));
+
+        // when
+        groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
+        ExtractableResponse<?> response = with()
+                .queryParam("sortBy", ChallengeSortType.LATEST)
+                .when().request(GET, "/groups/{groupId}/challenges", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupChallengeListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.challenges()).hasSize(3);
+                    assertThat(data.challenges())
+                            .map(GroupChallengeListItem::recentCertification)
+                            .noneMatch(Objects::isNull);
+                    assertThat(data.challenges())
+                            .map(GroupChallengeListItem::isCompleted)
+                            .containsExactly(false, true, true);
+                    assertThat(data.challenges())
+                            .map(GroupChallengeListItem::currentlyJoined)
+                            .containsExactly(true, false, true);
                 });
     }
 

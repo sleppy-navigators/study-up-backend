@@ -3,6 +3,7 @@ package sleppynavigators.studyupbackend.presentation.common.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearchArgumentResolver;
 
@@ -16,6 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.addAll(
                 List.of(
                         new ChatMessageSearchArgumentResolver(),
-                        new TaskSearchArgumentResolver()));
+                        new TaskSearchArgumentResolver(),
+                        new ChallengeSearchArgumentResolver()));
     }
 }

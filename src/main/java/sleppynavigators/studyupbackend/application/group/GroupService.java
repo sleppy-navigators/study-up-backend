@@ -30,6 +30,7 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
@@ -135,7 +136,7 @@ public class GroupService {
         return GroupInvitationResponse.fromEntity(invitation);
     }
 
-    public GroupChallengeListResponse getChallenges(Long userId, Long groupId) {
+    public GroupChallengeListResponse getChallenges(Long userId, Long groupId, ChallengeSearch search) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
         User user = userRepository.findById(userId)
@@ -146,7 +147,12 @@ public class GroupService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        List<Challenge> challenges = challengeRepository.findAllByGroupId(groupId);
+        Specification<Challenge> specification = search.toSpecification()
+                .and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.join("group").get("id"), groupId));
+        Pageable pageable = search.toPageable();
+
+        List<Challenge> challenges = challengeRepository.findAll(specification, pageable).getContent();
         return GroupChallengeListResponse.fromEntities(challenges);
     }
 

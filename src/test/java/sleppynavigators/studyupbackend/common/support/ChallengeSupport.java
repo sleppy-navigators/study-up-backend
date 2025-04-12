@@ -69,4 +69,9 @@ public class ChallengeSupport {
     public void callToCancelChallenge(User user, Challenge challenge) {
         challengeService.cancelChallenge(user.getId(), challenge.getId());
     }
+
+    public void callToCertifyTask(
+            User user, Challenge challenge, Long taskId, TaskCertificationRequest taskCertificationRequest) {
+        challengeService.completeTask(user.getId(), challenge.getId(), taskId, taskCertificationRequest);
+    }
 }

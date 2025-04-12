@@ -18,6 +18,7 @@ import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
@@ -114,11 +115,11 @@ public class GroupController {
     @GetMapping("/{groupId}/challenges")
     @Operation(summary = "그룹 챌린지 목록 조회", description = "그룹의 챌린지 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<GroupChallengeListResponse>> getChallenges(
-            // TODO: sort by `Event`(challenge creation and task certification) utilizing `@SortDefault`
-            @AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long groupId
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long groupId, @SearchParam @Valid ChallengeSearch challengeSearch
     ) {
         Long userId = userPrincipal.userId();
-        GroupChallengeListResponse response = groupService.getChallenges(userId, groupId);
+        GroupChallengeListResponse response = groupService.getChallenges(userId, groupId, challengeSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
