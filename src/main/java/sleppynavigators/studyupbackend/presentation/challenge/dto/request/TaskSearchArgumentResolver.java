@@ -6,10 +6,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
-
-import java.util.Optional;
 
 public class TaskSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -23,20 +22,16 @@ public class TaskSearchArgumentResolver implements HandlerMethodArgumentResolver
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         try {
-            Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
-                    .map(Integer::parseInt)
-                    .orElse(null);
-            Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
-                    .map(Integer::parseInt)
-                    .orElse(null);
-            CertificationStatus certificationStatus = Optional.ofNullable(
-                            webRequest.getParameter("status"))
-                    .map(CertificationStatus::valueOf)
-                    .orElse(null);
+            String pageNum = webRequest.getParameter("pageNum");
+            String pageSize = webRequest.getParameter("pageSize");
+            String certificationStatus = webRequest.getParameter("status");
 
-            return new TaskSearch(pageNum, pageSize, certificationStatus);
+            return new TaskSearch(
+                    pageNum != null ? Integer.parseInt(pageNum) : null,
+                    pageSize != null ? Integer.parseInt(pageSize) : null,
+                    certificationStatus != null ? CertificationStatus.valueOf(certificationStatus) : null);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid search option provided");
+            throw new InvalidApiException("Invalid search option provided");
         }
     }
 }

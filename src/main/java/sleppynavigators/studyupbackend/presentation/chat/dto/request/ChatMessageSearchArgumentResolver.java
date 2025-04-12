@@ -6,10 +6,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearch.GroupChatMessageSortType;
-
-import java.util.Optional;
 
 public class ChatMessageSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -23,19 +22,16 @@ public class ChatMessageSearchArgumentResolver implements HandlerMethodArgumentR
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         try {
-            Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
-                    .map(Integer::parseInt)
-                    .orElse(null);
-            Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
-                    .map(Integer::parseInt)
-                    .orElse(null);
-            GroupChatMessageSortType sortBy = Optional.ofNullable(webRequest.getParameter("sortBy"))
-                    .map(GroupChatMessageSortType::valueOf)
-                    .orElse(null);
+            String pageNum = webRequest.getParameter("pageNum");
+            String pageSize = webRequest.getParameter("pageSize");
+            String sortBy = webRequest.getParameter("sortBy");
 
-            return new ChatMessageSearch(pageNum, pageSize, sortBy);
+            return new ChatMessageSearch(
+                    pageNum != null ? Integer.parseInt(pageNum) : null,
+                    pageSize != null ? Integer.parseInt(pageSize) : null,
+                    sortBy != null ? GroupChatMessageSortType.valueOf(sortBy) : null);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid search option provided");
+            throw new InvalidApiException("Invalid search option provided");
         }
     }
 }

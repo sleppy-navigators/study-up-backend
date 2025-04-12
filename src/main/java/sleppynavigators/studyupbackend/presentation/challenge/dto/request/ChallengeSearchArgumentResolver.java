@@ -6,10 +6,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch.ChallengeSortType;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
-
-import java.util.Optional;
 
 public class ChallengeSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -23,19 +22,16 @@ public class ChallengeSearchArgumentResolver implements HandlerMethodArgumentRes
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         try {
-            Integer pageNum = Optional.ofNullable(webRequest.getParameter("pageNum"))
-                    .map(Integer::parseInt)
-                    .orElse(null);
-            Integer pageSize = Optional.ofNullable(webRequest.getParameter("pageSize"))
-                    .map(Integer::parseInt)
-                    .orElse(null);
-            ChallengeSortType sortType = Optional.ofNullable(webRequest.getParameter("sortBy"))
-                    .map(ChallengeSortType::valueOf)
-                    .orElse(null);
+            String pageNum = webRequest.getParameter("pageNum");
+            String pageSize = webRequest.getParameter("pageSize");
+            String sortType = webRequest.getParameter("sortBy");
 
-            return new ChallengeSearch(pageNum, pageSize, sortType);
+            return new ChallengeSearch(
+                    pageNum != null ? Integer.parseInt(pageNum) : null,
+                    pageSize != null ? Integer.parseInt(pageSize) : null,
+                    sortType != null ? ChallengeSortType.valueOf(sortType) : null);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid search option provided");
+            throw new InvalidApiException("Invalid search option provided");
         }
     }
 }
