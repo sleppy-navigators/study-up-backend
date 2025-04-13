@@ -591,7 +591,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                             .map(GroupChallengeListItem::isCompleted)
                             .containsExactly(false, true, true);
                     assertThat(data.challenges())
-                            .map(GroupChallengeListItem::currentlyJoined)
+                            .map(GroupChallengeListItem::challengerDetail)
+                            .map(ChallengerDTO::currentlyJoined)
                             .containsExactly(true, false, true);
                 });
     }
@@ -669,12 +670,12 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.tasks()).map(GroupTaskListItem::certification)
                             .allMatch(Objects::isNull);
                     assertThat(data.tasks())
-                            .map(GroupTaskListItem::challenge)
-                            .map(GroupTaskChallengeDetail::currentlyJoined)
+                            .map(GroupTaskListItem::challengerDetail)
+                            .map(ChallengerDTO::currentlyJoined)
                             .containsExactly(true, true);
                     assertThat(data.tasks())
-                            .map(GroupTaskListItem::challenge)
-                            .map(GroupTaskChallengeDetail::isCompleted)
+                            .map(GroupTaskListItem::challengeDetail)
+                            .map(TaskChallengeDTO::isCompleted)
                             .containsExactly(false, false);
                 });
     }

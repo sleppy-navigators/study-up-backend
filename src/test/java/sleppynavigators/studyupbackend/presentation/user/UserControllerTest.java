@@ -234,7 +234,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
                     assertThat(data.tasks()).map(UserTaskListItem::certification).allMatch(Objects::isNull);
                     assertThat(data.tasks())
                             .map(UserTaskListItem::groupDetail)
-                            .map(UserTaskGroupDetail::currentlyJoined)
+                            .map(TaskGroupDTO::currentlyJoined)
                             .containsExactly(true, true, true, true, true);
                 });
     }
