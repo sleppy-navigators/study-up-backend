@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.common.support;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
-import sleppynavigators.studyupbackend.presentation.chat.dto.ChatMessageRequest;
+import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
@@ -47,7 +48,7 @@ public class GroupSupport {
         // Invite other users to the group
         GroupInvitationResponse invitationResponse = groupService.makeInvitation(groupResponse.id(), creator.getId());
         for (User member : members) {
-            groupService.acceptInvitation(member.getId(), groupResponse.id(), invitationResponse.invitationId(),
+            groupService.acceptInvitation(member.getId(), groupResponse.id(), invitationResponse.id(),
                     new GroupInvitationAcceptRequest(invitationResponse.invitationKey()));
         }
 
@@ -56,7 +57,7 @@ public class GroupSupport {
 
     public GroupInvitation callToMakeInvitation(Group group, User inviter) {
         GroupInvitationResponse response = groupService.makeInvitation(group.getId(), inviter.getId());
-        return groupInvitationRepository.findById(response.invitationId()).orElseThrow();
+        return groupInvitationRepository.findById(response.id()).orElseThrow();
     }
 
     public void callToLeaveGroup(User user, Long groupId) {

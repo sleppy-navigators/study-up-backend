@@ -9,11 +9,12 @@ import java.util.List;
 
 public record ChatMessageListResponse(
         @NotNull @Valid List<ChatMessageDto> messages,
-        int currentPage,
-        int totalPages,
-        long totalElements
+        @NotNull Integer currentPage,
+        @NotNull Integer pageCount,
+        @NotNull Long chatMessageCount
 ) {
     public static ChatMessageListResponse from(Page<ChatMessage> messagePage) {
+
         List<ChatMessageDto> messages = messagePage.getContent().stream()
                 .map(ChatMessageDto::from)
                 .toList();
