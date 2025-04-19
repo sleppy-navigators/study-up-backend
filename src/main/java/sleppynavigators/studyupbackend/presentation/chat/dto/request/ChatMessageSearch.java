@@ -1,8 +1,10 @@
 package sleppynavigators.studyupbackend.presentation.chat.dto.request;
 
+import org.hibernate.validator.constraints.Range;
+
 public record ChatMessageSearch(
-        Long pageNum,
-        Integer pageSize
+        @Range Long pageNum,
+        @Range Integer pageSize
 ) {
 
     private static final long DEFAULT_PAGE_NUM = 0L;

@@ -1,10 +1,11 @@
 package sleppynavigators.studyupbackend.presentation.challenge.dto.request;
 
+import org.hibernate.validator.constraints.Range;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
 
 public record ChallengeSearch(
-        Long pageNum,
-        Integer pageSize,
+        @Range Long pageNum,
+        @Range Integer pageSize,
         ChallengeSortType sortBy
 ) {
 
