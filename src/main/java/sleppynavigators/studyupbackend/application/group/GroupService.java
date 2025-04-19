@@ -2,6 +2,8 @@ package sleppynavigators.studyupbackend.application.group;
 
 import java.util.List;
 
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
+import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupMemberRepository;
@@ -147,12 +150,11 @@ public class GroupService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        Specification<Challenge> specification = search.toSpecification()
-                .and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.join("group").get("id"), groupId));
-        Pageable pageable = search.toPageable();
+        BooleanExpression predicate = ChallengeQueryOptions.getGroupPredicate(groupId);
+        OrderSpecifier<?> orderSpecifier = ChallengeQueryOptions.getOrderSpecifier(search.sortBy());
 
-        List<Challenge> challenges = challengeRepository.findAll(specification, pageable).getContent();
+        List<Challenge> challenges = challengeRepository
+                .findAll(predicate, orderSpecifier, search.pageNum(), search.pageSize());
         return GroupChallengeListResponse.fromEntities(challenges);
     }
 

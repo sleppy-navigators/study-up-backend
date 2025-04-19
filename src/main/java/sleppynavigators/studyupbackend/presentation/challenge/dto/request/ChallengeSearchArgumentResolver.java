@@ -7,7 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch.ChallengeSortType;
+import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
 
 public class ChallengeSearchArgumentResolver implements HandlerMethodArgumentResolver {
@@ -27,7 +27,7 @@ public class ChallengeSearchArgumentResolver implements HandlerMethodArgumentRes
             String sortType = webRequest.getParameter("sortBy");
 
             return new ChallengeSearch(
-                    pageNum != null ? Integer.parseInt(pageNum) : null,
+                    pageNum != null ? Long.parseLong(pageNum) : null,
                     pageSize != null ? Integer.parseInt(pageSize) : null,
                     sortType != null ? ChallengeSortType.valueOf(sortType) : null);
         } catch (IllegalArgumentException e) {

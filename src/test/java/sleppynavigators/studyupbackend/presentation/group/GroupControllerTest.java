@@ -38,7 +38,7 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch.ChallengeSortType;
+import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
@@ -573,7 +573,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // when
         groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
         ExtractableResponse<?> response = with()
-                .queryParam("sortBy", ChallengeSortType.LATEST)
+                .queryParam("sortBy", ChallengeSortType.LATEST_CERTIFICATION)
                 .when().request(GET, "/groups/{groupId}/challenges", groupToQuery.getId())
                 .then()
                 .log().all().extract();
