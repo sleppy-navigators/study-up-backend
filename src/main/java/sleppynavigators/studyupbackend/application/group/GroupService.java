@@ -2,7 +2,6 @@ package sleppynavigators.studyupbackend.application.group;
 
 import java.util.List;
 
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -151,10 +150,12 @@ public class GroupService {
         }
 
         BooleanExpression predicate = ChallengeQueryOptions.getGroupPredicate(groupId);
-        OrderSpecifier<?> orderSpecifier = ChallengeQueryOptions.getOrderSpecifier(search.sortBy());
-
-        List<Challenge> challenges = challengeRepository
-                .findAll(predicate, orderSpecifier, search.pageNum(), search.pageSize());
+        List<Challenge> challenges = switch (search.sortBy()) {
+            case LATEST_CERTIFICATION -> challengeRepository
+                    .findAllSortedByCertificationDate(predicate, search.pageNum(), search.pageSize());
+            case NONE -> challengeRepository
+                    .findAll(predicate, search.pageNum(), search.pageSize());
+        };
         return GroupChallengeListResponse.fromEntities(challenges);
     }
 
