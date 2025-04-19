@@ -18,7 +18,7 @@ import sleppynavigators.studyupbackend.common.support.BotSupport;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
@@ -77,7 +77,9 @@ class ChallengeServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new ChallengeCreateEvent(testUser.getUserProfile().username(), "testChallenge", testGroup.getId())
+                new ChallengeCreateEvent(testUser.getUserProfile().getUsername(),
+                        "testChallenge",
+                        testGroup.getId())
         );
     }
 
@@ -99,7 +101,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(new ChallengeCompleteEvent(
-                testUser.getUserProfile().username(), challenge.getDetail().title(), testGroup.getId()));
+                testUser.getUserProfile().getUsername(), challenge.getDetail().getTitle(), testGroup.getId()));
     }
 
     @Test
@@ -115,14 +117,14 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         // then
         verify(systemEventListener).handleSystemEvent(
                 new ChallengeCreateEvent(
-                        testUser.getUserProfile().username(),
-                        challenge.getDetail().title(),
+                        testUser.getUserProfile().getUsername(),
+                        challenge.getDetail().getTitle(),
                         testGroup.getId())
         );
         verify(systemEventListener).handleSystemEvent(
                 new ChallengeCancelEvent(
-                        testUser.getUserProfile().username(),
-                        challenge.getDetail().title(),
+                        testUser.getUserProfile().getUsername(),
+                        challenge.getDetail().getTitle(),
                         testGroup.getId())
         );
     }

@@ -2,18 +2,36 @@ package sleppynavigators.studyupbackend.domain.group.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Embeddable
-public record GroupDetail(@Column(nullable = false) String name,
-                          @Column(nullable = false) String description,
-                          @Column String thumbnailUrl) {
+@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter(AccessLevel.PROTECTED)
+public class GroupDetail {
 
     private static final int MAX_NAME_LENGTH = 20;
     private static final int MAX_DESCRIPTION_LENGTH = 200;
 
-    public GroupDetail {
+    @Column(nullable = false)
+    String name;
+
+    @Column(nullable = false)
+    String description;
+
+    @Column
+    String thumbnailUrl;
+
+    public GroupDetail(String name, String description, String thumbnailUrl) {
         validateName(name);
         validateDescription(description);
+
+        this.name = name;
+        this.description = description;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     private void validateName(String name) {

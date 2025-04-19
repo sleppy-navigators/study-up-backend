@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.presentation.authentication.filter;
 
 import java.util.Collection;
 import java.util.List;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -45,6 +46,6 @@ public class UserAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return principal.userProfile().username();
+        return principal.userProfile().getUsername();
     }
 }

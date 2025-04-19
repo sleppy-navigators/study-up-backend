@@ -11,7 +11,7 @@ public record UserResponse(@NotNull Long id,
     public static UserResponse fromEntity(User user) {
         return new UserResponse(
                 user.getId(),
-                user.getUserProfile().username(),
-                user.getUserProfile().email());
+                user.getUserProfile().getUsername(),
+                user.getUserProfile().getEmail());
     }
 }

@@ -24,8 +24,8 @@ public class AccessToken {
     public AccessToken(Long userId, UserProfile userProfile, List<String> authorities,
                        AccessTokenProperties properties) {
         String subject = String.valueOf(userId);
-        String username = userProfile.username();
-        String userEmail = userProfile.email();
+        String username = userProfile.getUsername();
+        String userEmail = userProfile.getEmail();
         Long expirationInMilliseconds = properties.expirationInMilliseconds();
 
         Claims claims = makeClaims(subject, username, userEmail, authorities, expirationInMilliseconds);

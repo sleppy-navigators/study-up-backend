@@ -11,7 +11,7 @@ public record TaskGroupDTO(@NotNull Long groupId,
     public static TaskGroupDTO fromEntity(Task task) {
         return new TaskGroupDTO(
                 task.getChallenge().getGroup().getId(),
-                task.getChallenge().getGroup().getGroupDetail().name(),
+                task.getChallenge().getGroup().getGroupDetail().getName(),
                 task.getChallenge().getGroup().hasMember(task.getChallenge().getOwner()));
     }
 }

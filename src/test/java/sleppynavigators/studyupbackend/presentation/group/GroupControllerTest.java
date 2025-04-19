@@ -10,6 +10,8 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 
 import java.time.ZonedDateTime;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,12 +32,14 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
-import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
+import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
@@ -58,9 +62,6 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
     @Autowired
     private GroupInvitationRepository groupInvitationRepository;
-
-    @Autowired
-    private ChallengeRepository challengeRepository;
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
@@ -427,8 +428,6 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // given
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
 
-        assert challengeRepository.findAllByGroupId(groupToQuery.getId()).isEmpty();
-
         ChallengeCreationRequest request = new ChallengeCreationRequest(
                 "test challenge",
                 ZonedDateTime.now().plusDays(3),
@@ -550,6 +549,51 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
+    @DisplayName("그룹의 챌린지 목록을 조회한다 - 마지막 인증 순서대로")
+    void getChallenges_Success_OrderedByLastCertification() throws MalformedURLException {
+        // given
+        User anotherUser = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser));
+
+        Challenge myInProgressChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 5, 3, currentUser);
+        Challenge myCompletedChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+        Challenge anotherUserChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 5, 5, anotherUser);
+
+        challengeSupport.callToCertifyTask(currentUser, myInProgressChallenge,
+                myInProgressChallenge.getTasks().get(3).getId(),
+                new TaskCertificationRequest(List.of(new URL("https://blog.com/article1")), List.of()));
+
+        // when
+        groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
+        ExtractableResponse<?> response = with()
+                .queryParam("sortBy", ChallengeSortType.LATEST_CERTIFICATION)
+                .when().request(GET, "/groups/{groupId}/challenges", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupChallengeListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.challenges()).hasSize(3);
+                    assertThat(data.challenges())
+                            .map(GroupChallengeListItem::recentCertification)
+                            .noneMatch(Objects::isNull);
+                    assertThat(data.challenges())
+                            .map(GroupChallengeListItem::isCompleted)
+                            .containsExactly(false, true, true);
+                    assertThat(data.challenges())
+                            .map(GroupChallengeListItem::challengerDetail)
+                            .map(ChallengerDTO::currentlyJoined)
+                            .containsExactly(true, false, true);
+                });
+    }
+
+    @Test
     @DisplayName("그룹의 테스크 목록을 조회한다")
     void getTasks_Success() {
         // given
@@ -592,6 +636,47 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
+    @DisplayName("그룹의 테스크 목록을 조회한다 - 진행중인 테스크만")
+    void getTasks_InProgress_Success() {
+        // given
+        User anotherUser = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser));
+
+        Challenge myInProgressChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 3, 1, currentUser);
+        Challenge myCompletedChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+        Challenge anotherUserChallenge = challengeSupport
+                .callToMakeChallengesWithTasks(groupToQuery, 2, 2, anotherUser);
+
+        // when
+        groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
+        ExtractableResponse<?> response = with()
+                .queryParam("status", TaskCertificationStatus.IN_PROGRESS)
+                .when().request(GET, "/groups/{groupId}/tasks", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupTaskListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.tasks()).hasSize(2);
+                    assertThat(data.tasks()).map(GroupTaskListItem::certification)
+                            .allMatch(Objects::isNull);
+                    assertThat(data.tasks())
+                            .map(GroupTaskListItem::challengerDetail)
+                            .map(ChallengerDTO::currentlyJoined)
+                            .containsExactly(true, true);
+                    assertThat(data.tasks())
+                            .map(GroupTaskListItem::challengeDetail)
+                            .map(TaskChallengeDTO::isCompleted)
+                            .containsExactly(false, false);
+                });
+    }
+
+    @Test
     @DisplayName("그룹의 채팅 메시지를 페이지네이션하여 조회한다")
     void getMessages_Success() {
         // given
@@ -603,8 +688,9 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
         // when
         ExtractableResponse<?> response = with()
-                .queryParam("page", pageNumber)
-                .queryParam("size", pageSize)
+                .queryParam("pageNum", pageNumber)
+                .queryParam("pageSize", pageSize)
+                .queryParam("sortBy", "LATEST")
                 .when().request(GET, "/groups/{groupId}/messages", groupToQuery.getId())
                 .then()
                 .log().all().extract();

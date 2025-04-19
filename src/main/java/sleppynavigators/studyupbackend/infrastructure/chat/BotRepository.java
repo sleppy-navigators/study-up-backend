@@ -1,7 +1,7 @@
-package sleppynavigators.studyupbackend.infrastructure.bot;
+package sleppynavigators.studyupbackend.infrastructure.chat;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.chat.Bot;
 
 import java.util.Optional;
 

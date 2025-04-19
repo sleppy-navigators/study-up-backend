@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ class UserSessionManagerTest extends IntegrationBaseTest {
         // then
         assertThat(userSession.getRefreshToken()).isNotBlank();
         AccessToken issuedAccessToken = AccessToken.deserialize(userSession.getAccessToken(), accessTokenProperties);
-        assertThat(issuedAccessToken.getUserProfile().username()).isEqualTo("test-user");
+        assertThat(issuedAccessToken.getUserProfile().getUsername()).isEqualTo("test-user");
         assertThat(userSession.isAlive()).isTrue();
     }
 

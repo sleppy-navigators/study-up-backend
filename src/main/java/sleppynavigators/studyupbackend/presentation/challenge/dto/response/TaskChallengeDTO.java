@@ -11,7 +11,7 @@ public record TaskChallengeDTO(@NotNull Long challengeId,
     public static TaskChallengeDTO fromEntity(Task task) {
         return new TaskChallengeDTO(
                 task.getChallenge().getId(),
-                task.getChallenge().getDetail().title(),
+                task.getChallenge().getDetail().getTitle(),
                 task.getChallenge().isCompleted());
     }
 }

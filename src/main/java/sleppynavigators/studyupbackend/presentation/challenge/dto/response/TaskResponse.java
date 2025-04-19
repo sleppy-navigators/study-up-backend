@@ -20,8 +20,8 @@ public record TaskResponse(@NotNull Long id,
 
         return new TaskResponse(
                 task.getId(),
-                task.getDetail().title(),
-                task.getDetail().deadline().atZone(ZoneId.systemDefault()),
+                task.getDetail().getTitle(),
+                task.getDetail().getDeadline().atZone(ZoneId.systemDefault()),
                 (taskCertification.isCertified())
                         ? TaskCertificationDTO.fromEntity(task.getCertification())
                         : null

@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.application.challenge;
 
 import java.util.List;
 
+import com.querydsl.core.types.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,13 @@ import sleppynavigators.studyupbackend.exception.business.ForbiddenContentExcept
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
+import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
@@ -54,8 +57,8 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
         SystemEvent event = new ChallengeCreateEvent(
-                user.getUserProfile().username(),
-                challenge.getDetail().title(),
+                user.getUserProfile().getUsername(),
+                challenge.getDetail().getTitle(),
                 groupId);
         systemEventPublisher.publish(event);
 
@@ -75,22 +78,28 @@ public class ChallengeService {
         }
 
         SystemEvent event = new ChallengeCancelEvent(
-                user.getUserProfile().username(),
-                challenge.getDetail().title(),
+                user.getUserProfile().getUsername(),
+                challenge.getDetail().getTitle(),
                 challenge.getGroup().getId());
         systemEventPublisher.publish(event);
 
         challengeRepository.deleteById(challengeId);
     }
 
-    public TaskListResponse getTasks(Long userId, Long challengeId) {
+    public TaskListResponse getTasks(Long userId, Long challengeId, TaskSearch search) {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
 
-        // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
-        List<Task> tasks = challenge.getTasksForUser(user);
+        if (!challenge.canAccess(user)) {
+            throw new ForbiddenContentException(
+                    "User cannot access this challenge - userId: " + user.getId() + ", challengeId: " + challengeId);
+        }
+
+        Predicate predicate = TaskQueryOptions.getChallengePredicate(challengeId)
+                .and(TaskQueryOptions.getStatusPredicate(search.status()));
+        List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return TaskListResponse.fromEntities(tasks);
     }
 
@@ -106,8 +115,8 @@ public class ChallengeService {
 
             if (task.getChallenge().isAllTasksCompleted()) {
                 SystemEvent event = new ChallengeCompleteEvent(
-                        user.getUserProfile().username(),
-                        task.getChallenge().getDetail().title(),
+                        user.getUserProfile().getUsername(),
+                        task.getChallenge().getDetail().getTitle(),
                         task.getChallenge().getGroup().getId()
                 );
                 systemEventPublisher.publish(event);
