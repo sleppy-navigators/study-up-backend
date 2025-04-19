@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.infrastructure.scheduler;
+package sleppynavigators.studyupbackend.infrastructure.challenge.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
