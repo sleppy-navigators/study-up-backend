@@ -12,6 +12,8 @@ plugins {
 group = "sleppy-navigators"
 version = "0.0.1-SNAPSHOT"
 
+def querydslDir = "${layout.buildDirectory.get()}/generated/querydsl"
+
 //////////////////////////// CONFIGURATION ////////////////////////////
 
 java {
@@ -22,6 +24,10 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+sourceSets {
+    main.java.srcDirs += [querydslDir]
 }
 
 configurations {
@@ -45,6 +51,7 @@ ext {
     springAwsVersion = "3.0.0"
     okHttpVersion = "5.0.0-alpha.12"
     jjwtVersion = "0.12.3"
+    queryDslVersion = "5.1.0"
     springDocVersion = "2.8.1"
     restAssuredVersion = "5.4.0"
     assertJVersion = "3.25.3"
@@ -84,6 +91,10 @@ dependencies {
     // Database
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-data-mongodb"
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     runtimeOnly "com.h2database:h2"
     runtimeOnly "com.mysql:mysql-connector-j"
 
@@ -113,5 +124,15 @@ tasks.named("test") {
 tasks.named("jacocoTestReport") {
     reports {
         xml.required = true
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.generatedSourceOutputDirectory = file(querydslDir)
+}
+
+tasks.named("clean") {
+    doLast {
+        delete file(querydslDir)
     }
 }
