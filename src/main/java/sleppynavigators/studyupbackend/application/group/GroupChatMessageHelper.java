@@ -13,8 +13,7 @@ import java.util.stream.Collectors;
 public class GroupChatMessageHelper {
 
     /**
-     * Aggregates the first matching chat message for each group. The results are <b>unpredictable</b> when there are
-     * multiple chat messages from the same group, as they are merged with the first message found.
+     * Aggregates a list of groups with their latest chat message based on the creation date.
      *
      * @param groups       The list of groups to aggregate.
      * @param chatMessages The list of chat messages to filter.
@@ -27,7 +26,7 @@ public class GroupChatMessageHelper {
                         Function.identity(),
                         group -> chatMessages.stream()
                                 .filter(message -> message.isBelongTo(group.getId()))
-                                .findFirst()
+                                .max(Comparator.comparing(ChatMessage::getCreatedAt))
                                 .orElseThrow(() -> new IllegalArgumentException(
                                         "No chat message found for group - groupId " + group.getId()))
                 ));

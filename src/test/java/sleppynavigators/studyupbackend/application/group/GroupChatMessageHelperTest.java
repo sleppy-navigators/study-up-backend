@@ -37,7 +37,7 @@ public class GroupChatMessageHelperTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("그룹과 챗 메시지를 조합할 수 있다.")
+    @DisplayName("그룹과 최신 챗 메시지를 조합할 수 있다.")
     void aggregateGroupAndChatMessage() {
         // given
         List<Group> groupList = IntStream.range(0, 5)
@@ -60,12 +60,12 @@ public class GroupChatMessageHelperTest extends ApplicationBaseTest {
             assertThat(lastChatMessage).isNotNull();
             assertThat(lastChatMessage.getGroupId()).isEqualTo(group.getId());
             assertThat(lastChatMessage.getSenderId()).isEqualTo(testUser.getId());
-            assertThat(lastChatMessage.getContent()).startsWith("test");
+            assertThat(lastChatMessage.getContent()).startsWith("test2");
         }
     }
 
     @Test
-    @DisplayName("그룹과 챗 메시지를 조합할 수 있다. - 챗 메시지가 없는 경우")
+    @DisplayName("그룹과 최신 챗 메시지를 조합할 수 있다. - 챗 메시지가 없는 경우")
     void aggregateGroupAndChatMessageWithoutChatMessage() {
         // given
         List<Group> groupList = IntStream.range(0, 5)
