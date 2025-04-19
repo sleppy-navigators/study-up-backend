@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.infrastructure.challenge;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.domain.challenge.QTask;
 
@@ -18,7 +19,7 @@ public class TaskQueryOptions {
                     .and(task.detail.deadline.gt(LocalDateTime.now()));
             case COMPLETED -> task.certification.certifiedAt.isNotNull()
                     .or(task.detail.deadline.loe(LocalDateTime.now()));
-            case ALL -> null;
+            case ALL -> Expressions.asBoolean(true).isTrue();
         };
     }
 
