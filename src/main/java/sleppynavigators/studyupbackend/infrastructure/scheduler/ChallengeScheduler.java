@@ -30,9 +30,9 @@ public class ChallengeScheduler {
 
         for (Challenge challenge : completedChallenges) {
             ChallengeCompleteEvent event = new ChallengeCompleteEvent(
-                challenge.getOwner().getUserProfile().username(),
-                challenge.getDetail().title(),
-                challenge.getGroup().getId()
+                    challenge.getOwner().getUserProfile().username(),
+                    challenge.getDetail().getTitle(),
+                    challenge.getGroup().getId()
             );
             systemEventPublisher.publish(event);
         }

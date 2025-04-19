@@ -58,7 +58,7 @@ public class ChallengeService {
 
         SystemEvent event = new ChallengeCreateEvent(
                 user.getUserProfile().username(),
-                challenge.getDetail().title(),
+                challenge.getDetail().getTitle(),
                 groupId);
         systemEventPublisher.publish(event);
 
@@ -79,7 +79,7 @@ public class ChallengeService {
 
         SystemEvent event = new ChallengeCancelEvent(
                 user.getUserProfile().username(),
-                challenge.getDetail().title(),
+                challenge.getDetail().getTitle(),
                 challenge.getGroup().getId());
         systemEventPublisher.publish(event);
 
@@ -119,7 +119,7 @@ public class ChallengeService {
             if (task.getChallenge().isAllTasksCompleted()) {
                 SystemEvent event = new ChallengeCompleteEvent(
                         user.getUserProfile().username(),
-                        task.getChallenge().getDetail().title(),
+                        task.getChallenge().getDetail().getTitle(),
                         task.getChallenge().getGroup().getId()
                 );
                 systemEventPublisher.publish(event);

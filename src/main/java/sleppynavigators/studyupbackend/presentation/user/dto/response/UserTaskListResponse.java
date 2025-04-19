@@ -29,8 +29,8 @@ public record UserTaskListResponse(@NotNull @Valid List<UserTaskListItem> tasks)
 
             return new UserTaskListItem(
                     task.getId(),
-                    task.getDetail().title(),
-                    task.getDetail().deadline().atZone(ZoneId.systemDefault()),
+                    task.getDetail().getTitle(),
+                    task.getDetail().getDeadline().atZone(ZoneId.systemDefault()),
                     (taskCertification.isCertified())
                             ? TaskCertificationDTO.fromEntity(task.getCertification())
                             : null,

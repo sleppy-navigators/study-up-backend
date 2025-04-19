@@ -23,8 +23,8 @@ public record TaskListResponse(@NotNull @Valid List<TaskListItem> tasks) {
 
             return new TaskListItem(
                     task.getId(),
-                    task.getDetail().title(),
-                    task.getDetail().deadline().atZone(ZoneId.systemDefault()),
+                    task.getDetail().getTitle(),
+                    task.getDetail().getDeadline().atZone(ZoneId.systemDefault()),
                     (certification.isCertified())
                             ? TaskCertificationDTO.fromEntity(task.getCertification())
                             : null

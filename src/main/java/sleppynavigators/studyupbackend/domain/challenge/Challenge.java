@@ -75,7 +75,7 @@ public class Challenge extends TimeAuditBaseEntity {
     public Task getRecentCertifiedTask() {
         return tasks.stream()
                 .filter(Task::isSucceed)
-                .max(Comparator.comparing(task -> task.getCertification().certifiedAt()))
+                .max(Comparator.comparing(task -> task.getCertification().getCertifiedAt()))
                 .orElse(null);
     }
 

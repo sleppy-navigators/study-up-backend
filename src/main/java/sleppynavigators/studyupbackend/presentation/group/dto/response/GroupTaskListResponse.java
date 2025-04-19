@@ -28,8 +28,8 @@ public record GroupTaskListResponse(@NotNull @Valid List<GroupTaskListItem> task
 
             return new GroupTaskListItem(
                     task.getId(),
-                    task.getDetail().title(),
-                    task.getDetail().deadline().atZone(ZoneId.systemDefault()),
+                    task.getDetail().getTitle(),
+                    task.getDetail().getDeadline().atZone(ZoneId.systemDefault()),
                     TaskChallengeDTO.fromEntity(task),
                     ChallengerDTO.fromEntity(task.getChallenge()),
                     (taskCertification.isCertified()) ?
