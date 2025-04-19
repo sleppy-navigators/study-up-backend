@@ -32,13 +32,13 @@ public class TaskCertification {
     private LocalDateTime certifiedAt;
 
     public TaskCertification(List<URL> externalLinks, List<URL> imageUrls, LocalDateTime certifiedAt) {
-        if (isCertified() && noCertificationProvided()) {
-            throw new IllegalArgumentException("At least one external link or image URL must be provided");
-        }
-
         this.externalLinks = externalLinks;
         this.imageUrls = imageUrls;
         this.certifiedAt = certifiedAt;
+
+        if (isCertified() && noCertificationProvided()) {
+            throw new IllegalArgumentException("At least one external link or image URL must be provided");
+        }
     }
 
     public boolean isCertified() {
