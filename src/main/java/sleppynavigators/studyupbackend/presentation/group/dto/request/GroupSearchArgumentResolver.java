@@ -8,7 +8,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
-import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch.GroupSortType;
+import sleppynavigators.studyupbackend.application.group.GroupSortType;
 
 public class GroupSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -23,8 +23,8 @@ public class GroupSearchArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         try {
-            String sortType = webRequest.getParameter("sortBy");
-            return new GroupSearch(sortType != null ? GroupSortType.valueOf(sortType) : null);
+            String sortBy = webRequest.getParameter("sortBy");
+            return new GroupSearch(sortBy != null ? GroupSortType.valueOf(sortBy) : null);
         } catch (IllegalArgumentException e) {
             throw new InvalidApiException("Invalid search option provided");
         }

@@ -26,9 +26,9 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskGroupDTO;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
-import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch.GroupSortType;
+import sleppynavigators.studyupbackend.application.group.GroupSortType;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupDTO;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskListItem;
@@ -111,9 +111,9 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.groups()).hasSize(3);
-                    assertThat(data.groups()).map(GroupListItem::numOfMembers)
+                    assertThat(data.groups()).map(GroupDTO::numOfMembers)
                             .containsExactly(1, 2, 3);
-                    assertThat(data.groups()).map(GroupListItem::lastChatMessage)
+                    assertThat(data.groups()).map(GroupDTO::lastChatMessage)
                             .containsExactly(
                                     "test-user님이 'test-challenge' 챌린지를 취소했습니다.",
                                     "test-user님이 'test-challenge' 챌린지를 생성했습니다.",
@@ -140,7 +140,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
 
         // when
         ExtractableResponse<?> response = with()
-                .queryParam("sortBy", GroupSortType.LATEST)
+                .queryParam("sortBy", GroupSortType.LATEST_CHAT)
                 .when().request(GET, "/users/me/groups")
                 .then()
                 .log().all().extract();
@@ -151,9 +151,9 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.groups()).hasSize(3);
-                    assertThat(data.groups()).map(GroupListItem::numOfMembers)
+                    assertThat(data.groups()).map(GroupDTO::numOfMembers)
                             .containsExactly(2, 1, 3);
-                    assertThat(data.groups()).map(GroupListItem::lastChatMessage)
+                    assertThat(data.groups()).map(GroupDTO::lastChatMessage)
                             .containsExactly(
                                     "test-user님이 'test-challenge' 챌린지를 생성했습니다.",
                                     "test-user님이 'test-challenge' 챌린지를 생성했습니다.",
