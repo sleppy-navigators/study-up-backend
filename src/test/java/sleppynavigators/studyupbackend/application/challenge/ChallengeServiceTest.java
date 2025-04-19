@@ -77,7 +77,9 @@ class ChallengeServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new ChallengeCreateEvent(testUser.getUserProfile().username(), "testChallenge", testGroup.getId())
+                new ChallengeCreateEvent(testUser.getUserProfile().getUsername(),
+                        "testChallenge",
+                        testGroup.getId())
         );
     }
 
@@ -99,7 +101,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(new ChallengeCompleteEvent(
-                testUser.getUserProfile().username(), challenge.getDetail().getTitle(), testGroup.getId()));
+                testUser.getUserProfile().getUsername(), challenge.getDetail().getTitle(), testGroup.getId()));
     }
 
     @Test
@@ -115,13 +117,13 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         // then
         verify(systemEventListener).handleSystemEvent(
                 new ChallengeCreateEvent(
-                        testUser.getUserProfile().username(),
+                        testUser.getUserProfile().getUsername(),
                         challenge.getDetail().getTitle(),
                         testGroup.getId())
         );
         verify(systemEventListener).handleSystemEvent(
                 new ChallengeCancelEvent(
-                        testUser.getUserProfile().username(),
+                        testUser.getUserProfile().getUsername(),
                         challenge.getDetail().getTitle(),
                         testGroup.getId())
         );

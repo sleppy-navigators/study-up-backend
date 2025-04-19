@@ -69,7 +69,7 @@ public class GroupService {
         botRepository.save(bot);
 
         SystemEvent event = new GroupCreateEvent(
-                creator.getUserProfile().username(),
+                creator.getUserProfile().getUsername(),
                 savedGroup.getGroupDetail().getName(),
                 savedGroup.getId());
         systemEventPublisher.publish(event);
@@ -88,7 +88,7 @@ public class GroupService {
                 botRepository.findByGroupId(groupId).ifPresent(botRepository::delete);
                 groupRepository.delete(group);
             } else {
-                SystemEvent event = new UserLeaveEvent(user.getUserProfile().username(), groupId);
+                SystemEvent event = new UserLeaveEvent(user.getUserProfile().getUsername(), groupId);
                 systemEventPublisher.publish(event);
             }
         });
@@ -130,7 +130,7 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         invitation.getGroup().addMember(user);
 
-        SystemEvent event = new UserJoinEvent(user.getUserProfile().username(), groupId);
+        SystemEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
         systemEventPublisher.publish(event);
 
         return GroupInvitationResponse.fromEntity(invitation);

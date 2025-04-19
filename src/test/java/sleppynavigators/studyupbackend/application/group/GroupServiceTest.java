@@ -3,6 +3,7 @@ package sleppynavigators.studyupbackend.application.group;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ class GroupServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new GroupCreateEvent(creator.getUserProfile().username(), "스터디하기", response.id())
+                new GroupCreateEvent(creator.getUserProfile().getUsername(), "스터디하기", response.id())
         );
     }
 
@@ -84,7 +85,7 @@ class GroupServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new UserJoinEvent(testUser.getUserProfile().username(), testGroup.getId())
+                new UserJoinEvent(testUser.getUserProfile().getUsername(), testGroup.getId())
         );
     }
 
@@ -101,7 +102,7 @@ class GroupServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new UserLeaveEvent(testUser.getUserProfile().username(), groupToLeave.getId())
+                new UserLeaveEvent(testUser.getUserProfile().getUsername(), groupToLeave.getId())
         );
     }
 }

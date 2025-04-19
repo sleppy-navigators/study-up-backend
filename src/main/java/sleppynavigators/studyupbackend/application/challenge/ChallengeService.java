@@ -57,7 +57,7 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
         SystemEvent event = new ChallengeCreateEvent(
-                user.getUserProfile().username(),
+                user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
                 groupId);
         systemEventPublisher.publish(event);
@@ -78,7 +78,7 @@ public class ChallengeService {
         }
 
         SystemEvent event = new ChallengeCancelEvent(
-                user.getUserProfile().username(),
+                user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
                 challenge.getGroup().getId());
         systemEventPublisher.publish(event);
@@ -118,7 +118,7 @@ public class ChallengeService {
 
             if (task.getChallenge().isAllTasksCompleted()) {
                 SystemEvent event = new ChallengeCompleteEvent(
-                        user.getUserProfile().username(),
+                        user.getUserProfile().getUsername(),
                         task.getChallenge().getDetail().getTitle(),
                         task.getChallenge().getGroup().getId()
                 );
