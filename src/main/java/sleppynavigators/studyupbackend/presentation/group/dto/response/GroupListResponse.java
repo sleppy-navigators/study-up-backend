@@ -21,8 +21,8 @@ public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
         public static GroupListItem fromEntity(Group group, ChatMessage chatMessage) {
             return new GroupListItem(
                     group.getId(),
-                    group.getGroupDetail().name(),
-                    group.getGroupDetail().thumbnailUrl(),
+                    group.getGroupDetail().getName(),
+                    group.getGroupDetail().getThumbnailUrl(),
                     group.getNumOfMembers(),
                     chatMessage.getContent()
             );

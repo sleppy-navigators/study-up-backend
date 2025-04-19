@@ -70,7 +70,7 @@ public class GroupService {
 
         SystemEvent event = new GroupCreateEvent(
                 creator.getUserProfile().username(),
-                savedGroup.getGroupDetail().name(),
+                savedGroup.getGroupDetail().getName(),
                 savedGroup.getId());
         systemEventPublisher.publish(event);
 
