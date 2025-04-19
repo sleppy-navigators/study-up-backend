@@ -8,7 +8,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
-import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearch.GroupChatMessageSortType;
 
 public class ChatMessageSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -24,12 +23,10 @@ public class ChatMessageSearchArgumentResolver implements HandlerMethodArgumentR
         try {
             String pageNum = webRequest.getParameter("pageNum");
             String pageSize = webRequest.getParameter("pageSize");
-            String sortBy = webRequest.getParameter("sortBy");
 
             return new ChatMessageSearch(
-                    pageNum != null ? Integer.parseInt(pageNum) : null,
-                    pageSize != null ? Integer.parseInt(pageSize) : null,
-                    sortBy != null ? GroupChatMessageSortType.valueOf(sortBy) : null);
+                    pageNum != null ? Long.parseLong(pageNum) : null,
+                    pageSize != null ? Integer.parseInt(pageSize) : null);
         } catch (IllegalArgumentException e) {
             throw new InvalidApiException("Invalid search option provided");
         }

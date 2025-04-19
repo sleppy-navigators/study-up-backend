@@ -92,10 +92,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         // then
         verify(messagingTemplate).convertAndSend(eq(destination), any(SuccessResponse.class));
 
-        ChatMessage savedMessage = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(
-                        1L,
-                        PageRequest.of(0, 1)
-                )
+        ChatMessage savedMessage = chatMessageRepository
+                .findGroupMessages(1L, PageRequest.of(0, 1))
                 .getContent()
                 .get(0);
 
@@ -161,10 +159,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
                 any(SuccessResponse.class)
         );
 
-        ChatMessage savedMessage = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(
-                        groupId,
-                        PageRequest.of(0, 1)
-                )
+        ChatMessage savedMessage = chatMessageRepository
+                .findGroupMessages(groupId, PageRequest.of(0, 1))
                 .getContent()
                 .get(0);
 

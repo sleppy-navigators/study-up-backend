@@ -42,7 +42,7 @@ public class UserService {
     public GroupListResponse getGroups(Long userId, GroupSearch search) {
         List<Group> groups = groupRepository.findAllByMembersUserId(userId);
         List<ChatMessage> chatMessages = chatMessageRepository
-                .findLatestMessagesPerGroupByGroupIds(groups.stream().map(Group::getId).toList());
+                .findLatestGroupMessages(groups.stream().map(Group::getId).toList());
 
         List<Group> sortedGroups = search.sort(groups, chatMessages);
         return GroupListResponse.fromEntities(sortedGroups, chatMessages);

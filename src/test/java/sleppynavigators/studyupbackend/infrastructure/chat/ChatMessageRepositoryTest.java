@@ -35,7 +35,7 @@ class ChatMessageRepositoryTest extends ApplicationBaseTest {
 
     @Test
     @DisplayName("그룹별로 최신 메시지부터 조회할 수 있다")
-    void findByGroupIdOrderByCreatedAtDesc() {
+    void findByGroupIdOrderByCreatedAtDescLatest() {
         // given
         Long groupId = 1L;
         for (int i = 1; i <= 5; i++) {
@@ -43,8 +43,8 @@ class ChatMessageRepositoryTest extends ApplicationBaseTest {
         }
 
         // when
-        Page<ChatMessage> messages = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(
-                groupId, PageRequest.of(0, 10));
+        Page<ChatMessage> messages = chatMessageRepository
+                .findGroupMessages(groupId, PageRequest.of(0, 10));
 
         // then
         assertThat(messages).isNotEmpty();

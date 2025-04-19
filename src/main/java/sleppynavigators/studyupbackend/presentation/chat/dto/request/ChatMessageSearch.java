@@ -1,23 +1,12 @@
 package sleppynavigators.studyupbackend.presentation.chat.dto.request;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
 public record ChatMessageSearch(
-        Integer pageNum,
-        Integer pageSize,
-        GroupChatMessageSortType sortBy
+        Long pageNum,
+        Integer pageSize
 ) {
 
-    public enum GroupChatMessageSortType {
-        LATEST,
-        NONE,
-    }
-
-    private static final int DEFAULT_PAGE_NUM = 0;
+    private static final long DEFAULT_PAGE_NUM = 0L;
     private static final int DEFAULT_PAGE_SIZE = 20;
-    private static final GroupChatMessageSortType DEFAULT_SORT_BY = GroupChatMessageSortType.NONE;
 
     public ChatMessageSearch {
         if (pageNum == null) {
@@ -26,19 +15,5 @@ public record ChatMessageSearch(
         if (pageSize == null) {
             pageSize = DEFAULT_PAGE_SIZE;
         }
-        if (sortBy == null) {
-            sortBy = DEFAULT_SORT_BY;
-        }
-    }
-
-    public Pageable toPageable() {
-        return PageRequest.of(pageNum, pageSize, toSort());
-    }
-
-    private Sort toSort() {
-        return switch (sortBy) {
-            case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
-            case NONE -> Sort.unsorted();
-        };
     }
 }

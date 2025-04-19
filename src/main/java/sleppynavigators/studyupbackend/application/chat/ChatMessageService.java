@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,8 +94,8 @@ public class ChatMessageService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        Page<ChatMessage> messages = chatMessageRepository
-                .findByGroupIdOrderByCreatedAtDesc(group.getId(), search.toPageable());
+        Pageable pageable = PageRequest.of(search.pageNum().intValue(), search.pageSize());
+        Page<ChatMessage> messages = chatMessageRepository.findGroupMessages(group.getId(), pageable);
         return ChatMessageListResponse.from(messages);
     }
 }
