@@ -2,11 +2,10 @@ package sleppynavigators.studyupbackend.application.group;
 
 import java.util.List;
 
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
@@ -26,6 +25,7 @@ import sleppynavigators.studyupbackend.exception.business.InvalidPayloadExceptio
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
+import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupMemberRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
@@ -170,12 +170,9 @@ public class GroupService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        Pageable pageable = search.toPageable();
-        Specification<Task> specification = search.toSpecification()
-                .and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.join("challenge").join("group").get("id"), groupId));
-
-        List<Task> tasks = taskRepository.findAll(specification, pageable).getContent();
+        Predicate specification = TaskQueryOptions.getGroupPredicate(groupId)
+                .and(TaskQueryOptions.getStatusPredicate(search.status()));
+        List<Task> tasks = taskRepository.findAll(specification, search.pageNum(), search.pageSize());
         return GroupTaskListResponse.fromEntities(tasks);
     }
 }

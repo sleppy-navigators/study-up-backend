@@ -7,7 +7,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.presentation.common.SearchParam;
 
 public class TaskSearchArgumentResolver implements HandlerMethodArgumentResolver {
@@ -27,9 +27,9 @@ public class TaskSearchArgumentResolver implements HandlerMethodArgumentResolver
             String certificationStatus = webRequest.getParameter("status");
 
             return new TaskSearch(
-                    pageNum != null ? Integer.parseInt(pageNum) : null,
+                    pageNum != null ? Long.parseLong(pageNum) : null,
                     pageSize != null ? Integer.parseInt(pageSize) : null,
-                    certificationStatus != null ? CertificationStatus.valueOf(certificationStatus) : null);
+                    certificationStatus != null ? TaskCertificationStatus.valueOf(certificationStatus) : null);
         } catch (IllegalArgumentException e) {
             throw new InvalidApiException("Invalid search option provided");
         }

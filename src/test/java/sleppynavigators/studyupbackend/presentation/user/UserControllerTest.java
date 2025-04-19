@@ -25,7 +25,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskGroupDTO;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch.GroupSortType;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
@@ -220,7 +220,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
         // when
         groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());
         ExtractableResponse<?> response = with()
-                .queryParam("status", CertificationStatus.IN_PROGRESS)
+                .queryParam("status", TaskCertificationStatus.IN_PROGRESS)
                 .when().request(GET, "/users/me/tasks")
                 .then()
                 .log().all().extract();

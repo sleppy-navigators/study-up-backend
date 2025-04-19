@@ -2,10 +2,9 @@ package sleppynavigators.studyupbackend.application.user;
 
 import java.util.List;
 
+import com.querydsl.core.types.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
@@ -13,6 +12,7 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
+import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
@@ -48,12 +48,10 @@ public class UserService {
         return GroupListResponse.fromEntities(sortedGroups, chatMessages);
     }
 
-    public UserTaskListResponse getTasks(Long userId, TaskSearch taskSearch) {
-        Specification<Task> specification = taskSearch.toSpecification()
-                .and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.join("challenge").join("owner").get("id"), userId));
-        Pageable pageable = taskSearch.toPageable();
-        List<Task> tasks = taskRepository.findAll(specification, pageable).getContent();
+    public UserTaskListResponse getTasks(Long userId, TaskSearch search) {
+        Predicate predicate = TaskQueryOptions.getOwnerPredicate(userId)
+                .and(TaskQueryOptions.getStatusPredicate(search.status()));
+        List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return UserTaskListResponse.fromEntities(tasks);
     }
 }

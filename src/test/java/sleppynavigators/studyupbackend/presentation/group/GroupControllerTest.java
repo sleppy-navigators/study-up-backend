@@ -32,7 +32,6 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
-import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
@@ -40,7 +39,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
@@ -63,9 +62,6 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
     @Autowired
     private GroupInvitationRepository groupInvitationRepository;
-
-    @Autowired
-    private ChallengeRepository challengeRepository;
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
@@ -656,7 +652,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // when
         groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
         ExtractableResponse<?> response = with()
-                .queryParam("status", CertificationStatus.IN_PROGRESS)
+                .queryParam("status", TaskCertificationStatus.IN_PROGRESS)
                 .when().request(GET, "/groups/{groupId}/tasks", groupToQuery.getId())
                 .then()
                 .log().all().extract();

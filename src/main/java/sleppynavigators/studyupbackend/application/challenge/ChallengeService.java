@@ -2,10 +2,9 @@ package sleppynavigators.studyupbackend.application.challenge;
 
 import java.util.List;
 
+import com.querydsl.core.types.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
@@ -21,6 +20,7 @@ import sleppynavigators.studyupbackend.exception.business.ForbiddenContentExcept
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
+import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
@@ -97,12 +97,9 @@ public class ChallengeService {
                     "User cannot access this challenge - userId: " + user.getId() + ", challengeId: " + challengeId);
         }
 
-        Specification<Task> specification = search.toSpecification()
-                .and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.get("challenge").get("id"), challengeId));
-        Pageable pageable = search.toPageable();
-
-        List<Task> tasks = taskRepository.findAll(specification, pageable).getContent();
+        Predicate predicate = TaskQueryOptions.getChallengePredicate(challengeId)
+                .and(TaskQueryOptions.getStatusPredicate(search.status()));
+        List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return TaskListResponse.fromEntities(tasks);
     }
 

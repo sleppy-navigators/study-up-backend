@@ -18,7 +18,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch.CertificationStatus;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
 
@@ -50,7 +50,7 @@ public class ChallengeSupport {
 
         // Complete the tasks
         try {
-            TaskSearch taskSearch = new TaskSearch(0, 20, CertificationStatus.ALL);
+            TaskSearch taskSearch = new TaskSearch(0L, 20, TaskCertificationStatus.ALL);
             List<TaskListItem> tasks = challengeService
                     .getTasks(challenger.getId(), challengeResponse.id(), taskSearch)
                     .tasks();
