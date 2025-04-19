@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.domain.bot;
+package sleppynavigators.studyupbackend.domain.chat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

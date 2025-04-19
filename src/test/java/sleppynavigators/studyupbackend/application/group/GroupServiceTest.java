@@ -14,7 +14,7 @@ import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.BotSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;

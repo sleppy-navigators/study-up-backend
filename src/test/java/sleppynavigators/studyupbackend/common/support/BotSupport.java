@@ -3,9 +3,9 @@ package sleppynavigators.studyupbackend.common.support;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
+import sleppynavigators.studyupbackend.infrastructure.chat.BotRepository;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 

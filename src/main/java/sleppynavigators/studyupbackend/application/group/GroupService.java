@@ -15,7 +15,7 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
@@ -31,7 +31,7 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupMemberRepositor
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
+import sleppynavigators.studyupbackend.infrastructure.chat.BotRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;

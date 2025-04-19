@@ -23,7 +23,7 @@ import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.BotSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
