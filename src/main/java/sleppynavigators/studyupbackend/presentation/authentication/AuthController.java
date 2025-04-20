@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.authentication.AuthProvider;
 import sleppynavigators.studyupbackend.application.authentication.AuthService;
-import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
@@ -33,13 +32,12 @@ public class AuthController {
     @Operation(summary = "로그인", description = "사용자 로그인합니다.")
     public ResponseEntity<SuccessResponse<TokenResponse>> login(
             @RequestParam AuthProvider provider, @RequestBody @Valid SignInRequest signInRequest) {
-        switch (provider) {
-            case GOOGLE:
+        return switch (provider) {
+            case GOOGLE -> {
                 TokenResponse response = authService.googleSignIn(signInRequest);
-                return SuccessResponse.toResponseEntity(response);
-            default:
-                throw new InvalidCredentialException("Invalid provider");
-        }
+                yield SuccessResponse.toResponseEntity(response);
+            }
+        };
     }
 
     @PublicAPI
