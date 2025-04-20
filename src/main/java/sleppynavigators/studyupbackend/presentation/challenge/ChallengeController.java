@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
+import sleppynavigators.studyupbackend.presentation.common.SearchParam;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @Tag(name = "Challenge", description = "챌린지 관련 API")
@@ -44,11 +46,11 @@ public class ChallengeController {
     @Operation(summary = "챌린지 테스크 목록 조회", description = "챌린지의 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<TaskListResponse>> getTasks(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable Long challengeId
+            @PathVariable Long challengeId,
+            @SearchParam @Valid TaskSearch taskSearch
     ) {
-        // TODO: filter by certification status utilizing `RSQL` or `QueryDSL Web Support`
         Long userId = userPrincipal.userId();
-        TaskListResponse response = challengeService.getTasks(userId, challengeId);
+        TaskListResponse response = challengeService.getTasks(userId, challengeId, taskSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 

@@ -28,9 +28,9 @@ public record GroupChallengeListResponse(@NotNull @Valid List<GroupChallengeList
 
             return new GroupChallengeListItem(
                     challenge.getId(),
-                    challenge.getDetail().title(),
-                    challenge.getDetail().deadline().atZone(ZoneId.systemDefault()),
-                    challenge.getDetail().description(),
+                    challenge.getDetail().getTitle(),
+                    challenge.getDetail().getDeadline().atZone(ZoneId.systemDefault()),
+                    challenge.getDetail().getDescription(),
                     challenge.isCompleted(),
                     ChallengerDTO.fromEntity(challenge),
                     (recentCertifiedTask != null) ?

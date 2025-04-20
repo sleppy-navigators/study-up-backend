@@ -23,7 +23,7 @@ import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.BotSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
@@ -92,10 +92,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         // then
         verify(messagingTemplate).convertAndSend(eq(destination), any(SuccessResponse.class));
 
-        ChatMessage savedMessage = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(
-                        1L,
-                        PageRequest.of(0, 1)
-                )
+        ChatMessage savedMessage = chatMessageRepository
+                .findGroupMessages(1L, PageRequest.of(0, 1))
                 .getContent()
                 .get(0);
 
@@ -161,10 +159,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
                 any(SuccessResponse.class)
         );
 
-        ChatMessage savedMessage = chatMessageRepository.findByGroupIdOrderByCreatedAtDesc(
-                        groupId,
-                        PageRequest.of(0, 1)
-                )
+        ChatMessage savedMessage = chatMessageRepository
+                .findGroupMessages(groupId, PageRequest.of(0, 1))
                 .getContent()
                 .get(0);
 

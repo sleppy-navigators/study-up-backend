@@ -11,7 +11,7 @@ public record ChallengerDTO(@NotNull Long challengerId,
     public static ChallengerDTO fromEntity(Challenge challenge) {
         return new ChallengerDTO(
                 challenge.getOwner().getId(),
-                challenge.getOwner().getUserProfile().username(),
+                challenge.getOwner().getUserProfile().getUsername(),
                 challenge.getGroup().hasMember(challenge.getOwner()));
     }
 }

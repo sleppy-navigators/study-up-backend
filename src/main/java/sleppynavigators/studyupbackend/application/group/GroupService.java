@@ -2,6 +2,8 @@ package sleppynavigators.studyupbackend.application.group;
 
 import java.util.List;
 
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,7 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.bot.Bot;
+import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
@@ -21,13 +23,17 @@ import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
+import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
+import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupMemberRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.invitation.GroupInvitationRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.infrastructure.bot.BotRepository;
+import sleppynavigators.studyupbackend.infrastructure.chat.BotRepository;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
@@ -65,8 +71,8 @@ public class GroupService {
         botRepository.save(bot);
 
         SystemEvent event = new GroupCreateEvent(
-                creator.getUserProfile().username(),
-                savedGroup.getGroupDetail().name(),
+                creator.getUserProfile().getUsername(),
+                savedGroup.getGroupDetail().getName(),
                 savedGroup.getId());
         systemEventPublisher.publish(event);
 
@@ -84,7 +90,7 @@ public class GroupService {
                 botRepository.findByGroupId(groupId).ifPresent(botRepository::delete);
                 groupRepository.delete(group);
             } else {
-                SystemEvent event = new UserLeaveEvent(user.getUserProfile().username(), groupId);
+                SystemEvent event = new UserLeaveEvent(user.getUserProfile().getUsername(), groupId);
                 systemEventPublisher.publish(event);
             }
         });
@@ -126,13 +132,13 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         invitation.getGroup().addMember(user);
 
-        SystemEvent event = new UserJoinEvent(user.getUserProfile().username(), groupId);
+        SystemEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
         systemEventPublisher.publish(event);
 
         return GroupInvitationResponse.fromEntity(invitation);
     }
 
-    public GroupChallengeListResponse getChallenges(Long userId, Long groupId) {
+    public GroupChallengeListResponse getChallenges(Long userId, Long groupId, ChallengeSearch search) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
         User user = userRepository.findById(userId)
@@ -143,11 +149,17 @@ public class GroupService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        List<Challenge> challenges = challengeRepository.findAllByGroupId(groupId);
+        BooleanExpression predicate = ChallengeQueryOptions.getGroupPredicate(groupId);
+        List<Challenge> challenges = switch (search.sortBy()) {
+            case LATEST_CERTIFICATION -> challengeRepository
+                    .findAllSortedByCertificationDate(predicate, search.pageNum(), search.pageSize());
+            case NONE -> challengeRepository
+                    .findAll(predicate, search.pageNum(), search.pageSize());
+        };
         return GroupChallengeListResponse.fromEntities(challenges);
     }
 
-    public GroupTaskListResponse getTasks(Long userId, Long groupId) {
+    public GroupTaskListResponse getTasks(Long userId, Long groupId, TaskSearch search) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
         User user = userRepository.findById(userId)
@@ -158,7 +170,9 @@ public class GroupService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        List<Task> tasks = taskRepository.findAllByChallengeGroupId(groupId);
+        Predicate predicate = TaskQueryOptions.getGroupPredicate(groupId)
+                .and(TaskQueryOptions.getStatusPredicate(search.status()));
+        List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return GroupTaskListResponse.fromEntities(tasks);
     }
 }

@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.presentation.user;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.user.UserService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
+import sleppynavigators.studyupbackend.presentation.common.SearchParam;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
@@ -35,21 +39,21 @@ public class UserController {
     @GetMapping("/me/groups")
     @Operation(summary = "유저의 그룹 목록 조회", description = "유저의 그룹 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<GroupListResponse>> getGroups(
-            // TODO: sort by `Event`(challenge creation and task certification) utilizing `@SortDefault`
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @SearchParam @Valid GroupSearch groupSearch) {
         Long userId = userPrincipal.userId();
-        GroupListResponse response = userService.getGroups(userId);
+        GroupListResponse response = userService.getGroups(userId, groupSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
     @GetMapping("/me/tasks")
     @Operation(summary = "유저의 테스크 목록 조회", description = "유저의 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<UserTaskListResponse>> getTasks(
-            // TODO: filter by deadline utilizing `RSQL` or `QueryDSL Web Support`
-            @AuthenticationPrincipal UserPrincipal userPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @SearchParam @Valid TaskSearch taskSearch
     ) {
         Long userId = userPrincipal.userId();
-        UserTaskListResponse response = userService.getTasks(userId);
+        UserTaskListResponse response = userService.getTasks(userId, taskSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }

@@ -1,16 +1,34 @@
 package sleppynavigators.studyupbackend.domain.challenge.vo;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
-public record TaskDetail(@Column(nullable = false) String title,
-                         @Column(nullable = false) LocalDateTime deadline) {
+@Embeddable
+@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter(AccessLevel.PROTECTED)
+public class TaskDetail {
 
     private static final int MAX_LENGTH = 20;
 
-    public TaskDetail {
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private LocalDateTime deadline;
+
+    public TaskDetail(String title, LocalDateTime deadline) {
         validateTitle(title);
         validateDeadline(deadline);
+
+        this.title = title;
+        this.deadline = deadline;
     }
 
     public boolean isOverdue() {

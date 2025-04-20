@@ -16,9 +16,9 @@ public record ChallengeResponse(@NotNull Long id,
     public static ChallengeResponse fromEntity(Challenge challenge) {
         return new ChallengeResponse(
                 challenge.getId(),
-                challenge.getDetail().title(),
-                challenge.getDetail().deadline().atZone(ZoneId.systemDefault()),
-                challenge.getDetail().description()
+                challenge.getDetail().getTitle(),
+                challenge.getDetail().getDeadline().atZone(ZoneId.systemDefault()),
+                challenge.getDetail().getDescription()
         );
     }
 }

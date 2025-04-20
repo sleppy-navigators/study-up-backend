@@ -25,6 +25,8 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskGroupDTO;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
+import sleppynavigators.studyupbackend.application.group.GroupSortType;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
@@ -120,6 +122,46 @@ public class UserControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
+    @DisplayName("사용자가 그룹 목록 조회 - 시스템 메시지 순 정렬")
+    void getGroups_Success_SortBySystemMessage() {
+        // given
+        User anotherUser1 = userSupport.registerUserToDB();
+        User anotherUser2 = userSupport.registerUserToDB();
+        User anotherUser3 = userSupport.registerUserToDB();
+
+        Group group1 = groupSupport.callToMakeGroup(List.of(currentUser));
+        Group group2 = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser1));
+        Group group3 = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser2, anotherUser3));
+
+        Challenge challenge1 = challengeSupport
+                .callToMakeChallengesWithTasks(group1, 3, 2, currentUser);
+        Challenge challenge2 = challengeSupport
+                .callToMakeChallengesWithTasks(group2, 4, 0, currentUser);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .queryParam("sortBy", GroupSortType.LATEST_CHAT)
+                .when().request(GET, "/users/me/groups")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.groups()).hasSize(3);
+                    assertThat(data.groups()).map(GroupListItem::numOfMembers)
+                            .containsExactly(2, 1, 3);
+                    assertThat(data.groups()).map(GroupListItem::lastChatMessage)
+                            .containsExactly(
+                                    "test-user님이 'test-challenge' 챌린지를 생성했습니다.",
+                                    "test-user님이 'test-challenge' 챌린지를 생성했습니다.",
+                                    "test-user님이 그룹에 참여했습니다.");
+                });
+    }
+
+    @Test
     @DisplayName("사용자가 테스크 목록 조회에 성공한다")
     void getTasks_Success() {
         // given
@@ -155,6 +197,45 @@ public class UserControllerTest extends RestAssuredBaseTest {
                             .map(UserTaskListItem::groupDetail)
                             .map(TaskGroupDTO::currentlyJoined)
                             .containsExactly(true, true, true, true, true, true, true, false, false);
+                });
+    }
+
+    @Test
+    @DisplayName("사용자가 테스크 목록 조회 - 진행중인 테스크만")
+    void getTasks_Certified_Success() {
+        // given
+        User anotherUser1 = userSupport.registerUserToDB();
+        User anotherUser2 = userSupport.registerUserToDB();
+
+        Group groupCurrentlyJoined = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser1));
+        Group groupWillNotJoined = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser2));
+
+        Challenge challenge1 = challengeSupport
+                .callToMakeChallengesWithTasks(groupCurrentlyJoined, 3, 2, currentUser);
+        Challenge challenge2 = challengeSupport
+                .callToMakeChallengesWithTasks(groupCurrentlyJoined, 4, 0, currentUser);
+        Challenge challenge3 = challengeSupport
+                .callToMakeChallengesWithTasks(groupWillNotJoined, 2, 2, currentUser);
+
+        // when
+        groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());
+        ExtractableResponse<?> response = with()
+                .queryParam("status", TaskCertificationStatus.IN_PROGRESS)
+                .when().request(GET, "/users/me/tasks")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", UserTaskListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.tasks()).hasSize(5);
+                    assertThat(data.tasks()).map(UserTaskListItem::certification).allMatch(Objects::isNull);
+                    assertThat(data.tasks())
+                            .map(UserTaskListItem::groupDetail)
+                            .map(TaskGroupDTO::currentlyJoined)
+                            .containsExactly(true, true, true, true, true);
                 });
     }
 }

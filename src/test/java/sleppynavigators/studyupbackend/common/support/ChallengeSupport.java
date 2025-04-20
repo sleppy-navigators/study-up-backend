@@ -17,6 +17,8 @@ import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeReposit
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
 
@@ -48,7 +50,10 @@ public class ChallengeSupport {
 
         // Complete the tasks
         try {
-            List<TaskListItem> tasks = challengeService.getTasks(challenger.getId(), challengeResponse.id()).tasks();
+            TaskSearch taskSearch = new TaskSearch(0L, 20, TaskCertificationStatus.ALL);
+            List<TaskListItem> tasks = challengeService
+                    .getTasks(challenger.getId(), challengeResponse.id(), taskSearch)
+                    .tasks();
             for (int ti = 0; ti < numOfCertifiedTasks; ti++) {
                 challengeService.completeTask(
                         challenger.getId(), challengeResponse.id(), tasks.get(ti).id(),
@@ -63,5 +68,10 @@ public class ChallengeSupport {
 
     public void callToCancelChallenge(User user, Challenge challenge) {
         challengeService.cancelChallenge(user.getId(), challenge.getId());
+    }
+
+    public void callToCertifyTask(
+            User user, Challenge challenge, Long taskId, TaskCertificationRequest taskCertificationRequest) {
+        challengeService.completeTask(user.getId(), challenge.getId(), taskId, taskCertificationRequest);
     }
 }

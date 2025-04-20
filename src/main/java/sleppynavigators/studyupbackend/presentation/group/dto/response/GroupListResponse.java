@@ -3,12 +3,11 @@ package sleppynavigators.studyupbackend.presentation.group.dto.response;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.List;
-import java.util.function.Function;
-
+import sleppynavigators.studyupbackend.application.group.GroupWithLastChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
+
+import java.util.List;
 
 public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
 
@@ -18,32 +17,23 @@ public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
                                 @NotNull Integer numOfMembers,
                                 @NotBlank String lastChatMessage) {
 
-        public static GroupListItem fromEntity(Group group, ChatMessage chatMessage) {
+        public static GroupListItem fromEntity(GroupWithLastChatMessage groupWithLastChatMessage) {
+            Group group = groupWithLastChatMessage.group();
+            ChatMessage chatMessage = groupWithLastChatMessage.lastChatMessage();
+
             return new GroupListItem(
                     group.getId(),
-                    group.getGroupDetail().name(),
-                    group.getGroupDetail().thumbnailUrl(),
+                    group.getGroupDetail().getName(),
+                    group.getGroupDetail().getThumbnailUrl(),
                     group.getNumOfMembers(),
                     chatMessage.getContent()
             );
         }
     }
 
-    public static GroupListResponse fromEntities(List<Group> groups, List<ChatMessage> chatMessages) {
-
-        Function<Group, GroupListItem> aggregateToListItem = group -> {
-            ChatMessage lastChatMessage = chatMessages.stream()
-                    .filter(message -> message.isBelongTo(group.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "No chat message found for group - groupId " + group.getId()));
-            return GroupListItem.fromEntity(group, lastChatMessage);
-        };
-
-        return new GroupListResponse(
-                groups.stream()
-                        .map(aggregateToListItem)
-                        .toList()
-        );
+    public static GroupListResponse fromEntities(List<GroupWithLastChatMessage> groups) {
+        return new GroupListResponse(groups.stream()
+                .map(GroupListItem::fromEntity)
+                .toList());
     }
 }

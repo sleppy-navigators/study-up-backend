@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.infrastructure.scheduler;
+package sleppynavigators.studyupbackend.infrastructure.challenge.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,9 +30,9 @@ public class ChallengeScheduler {
 
         for (Challenge challenge : completedChallenges) {
             ChallengeCompleteEvent event = new ChallengeCompleteEvent(
-                challenge.getOwner().getUserProfile().username(),
-                challenge.getDetail().title(),
-                challenge.getGroup().getId()
+                    challenge.getOwner().getUserProfile().getUsername(),
+                    challenge.getDetail().getTitle(),
+                    challenge.getGroup().getId()
             );
             systemEventPublisher.publish(event);
         }

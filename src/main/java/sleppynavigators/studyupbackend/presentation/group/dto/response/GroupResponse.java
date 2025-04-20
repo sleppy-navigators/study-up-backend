@@ -13,6 +13,9 @@ public record GroupResponse(@NotNull Long id,
     public static GroupResponse fromEntity(Group group) {
         GroupDetail groupDetail = group.getGroupDetail();
         return new GroupResponse(
-                group.getId(), groupDetail.name(), groupDetail.description(), groupDetail.thumbnailUrl());
+                group.getId(),
+                groupDetail.getName(),
+                groupDetail.getDescription(),
+                groupDetail.getThumbnailUrl());
     }
 }

@@ -15,9 +15,9 @@ public record TaskCertificationDTO(@NotNull List<URL> externalLinks,
 
     public static TaskCertificationDTO fromEntity(TaskCertification taskCertification) {
         return new TaskCertificationDTO(
-                taskCertification.externalLinks(),
-                taskCertification.imageUrls(),
-                taskCertification.certifiedAt().atZone(ZoneId.systemDefault())
+                taskCertification.getExternalLinks(),
+                taskCertification.getImageUrls(),
+                taskCertification.getCertifiedAt().atZone(ZoneId.systemDefault())
         );
     }
 }
