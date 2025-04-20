@@ -17,6 +17,7 @@ import sleppynavigators.studyupbackend.exception.network.InvalidCredentialExcept
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
+import sleppynavigators.studyupbackend.presentation.common.PublicAPI;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @Tag(name = "Auth", description = "인증 관련 API")
@@ -27,6 +28,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @PublicAPI
     @PostMapping("/sign-in")
     @Operation(summary = "로그인", description = "사용자 로그인합니다.")
     public ResponseEntity<SuccessResponse<TokenResponse>> login(
@@ -40,6 +42,7 @@ public class AuthController {
         }
     }
 
+    @PublicAPI
     @PostMapping("/refresh")
     @Operation(summary = "토큰 갱신", description = "사용자 토큰을 갱신합니다.")
     public ResponseEntity<SuccessResponse<TokenResponse>> refresh(

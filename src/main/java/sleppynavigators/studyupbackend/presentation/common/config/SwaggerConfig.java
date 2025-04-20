@@ -6,15 +6,22 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+
+import java.util.Collections;
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import sleppynavigators.studyupbackend.presentation.common.PublicAPI;
 
 @Configuration
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SwaggerConfig {
+
+    private final String SECURITY_KEY_BEARER = "bearer-key";
 
     @Bean
     public OpenAPI openAPI() {
@@ -25,6 +32,16 @@ public class SwaggerConfig {
                 .servers(servers());
     }
 
+    @Bean
+    public OperationCustomizer customGlobalHeaderOperation() {
+        return (operation, handlerMethod) -> {
+            if (handlerMethod.getMethodAnnotation(PublicAPI.class) != null) {
+                operation.setSecurity(Collections.emptyList());
+            }
+            return operation;
+        };
+    }
+
     private Info apiInfo() {
         return new Info()
                 .title("StudyUp API")
@@ -33,7 +50,7 @@ public class SwaggerConfig {
     }
 
     private SecurityRequirement securityRequirement() {
-        return new SecurityRequirement().addList("bearer-key");
+        return new SecurityRequirement().addList(SECURITY_KEY_BEARER);
     }
 
     private Components securitySchemeComponents() {
@@ -42,7 +59,7 @@ public class SwaggerConfig {
                 .in(SecurityScheme.In.HEADER)
                 .scheme("bearer")
                 .bearerFormat("JWT");
-        return new Components().addSecuritySchemes("bearer-key", securityScheme);
+        return new Components().addSecuritySchemes(SECURITY_KEY_BEARER, securityScheme);
     }
 
     private List<Server> servers() {
