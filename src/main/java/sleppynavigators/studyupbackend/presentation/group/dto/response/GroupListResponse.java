@@ -5,5 +5,5 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record GroupListResponse(@NotNull @Valid List<GroupDTO> groups) {
+public record GroupListResponse(@NotNull @Valid List<GroupLastChatMessageDTO> groups) {
 }

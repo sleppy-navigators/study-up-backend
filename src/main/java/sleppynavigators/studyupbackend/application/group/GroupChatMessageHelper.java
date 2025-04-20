@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.application.group;
 
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupDTO;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupLastChatMessageDTO;
 
 import java.util.Comparator;
 import java.util.List;
@@ -39,7 +39,7 @@ public class GroupChatMessageHelper {
      * @param sortType               The type of sorting to apply
      * @return A list of GroupDTOs sorted by the specified sort type
      */
-    public static List<GroupDTO> convertAndSortToGroupDTOs(
+    public static List<GroupLastChatMessageDTO> convertAndSortToGroupDTOs(
             Map<Group, ChatMessage> groupToLastChatMessage, GroupSortType sortType) {
         Comparator<Group> comparator = switch (sortType) {
             case LATEST_CHAT -> (group1, group2) -> {
@@ -52,7 +52,7 @@ public class GroupChatMessageHelper {
 
         return groupToLastChatMessage.keySet().stream()
                 .sorted(comparator)
-                .map(group -> GroupDTO.fromEntity(group, groupToLastChatMessage.get(group)))
+                .map(group -> GroupLastChatMessageDTO.fromEntity(group, groupToLastChatMessage.get(group)))
                 .toList();
     }
 }

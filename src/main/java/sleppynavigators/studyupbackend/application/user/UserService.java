@@ -21,7 +21,7 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupDTO;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupLastChatMessageDTO;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
@@ -49,9 +49,9 @@ public class UserService {
 
         Map<Group, ChatMessage> groupToLastChatMessage = GroupChatMessageHelper
                 .aggregateGroupWithFirstChatMessage(groups, chatMessages);
-        List<GroupDTO> groupDTOs = GroupChatMessageHelper
+        List<GroupLastChatMessageDTO> groupLastChatMessageDTOs = GroupChatMessageHelper
                 .convertAndSortToGroupDTOs(groupToLastChatMessage, search.sortBy());
-        return new GroupListResponse(groupDTOs);
+        return new GroupListResponse(groupLastChatMessageDTOs);
     }
 
     public UserTaskListResponse getTasks(Long userId, TaskSearch search) {

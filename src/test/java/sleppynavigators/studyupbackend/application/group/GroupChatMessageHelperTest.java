@@ -10,7 +10,7 @@ import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupDTO;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupLastChatMessageDTO;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -97,7 +97,7 @@ public class GroupChatMessageHelperTest extends ApplicationBaseTest {
                 .aggregateGroupWithFirstChatMessage(groupList, chatMessageList);
 
         // when
-        List<GroupDTO> actual = GroupChatMessageHelper
+        List<GroupLastChatMessageDTO> actual = GroupChatMessageHelper
                 .convertAndSortToGroupDTOs(groupToLastChatMessage, GroupSortType.NONE);
 
         // then
@@ -122,11 +122,11 @@ public class GroupChatMessageHelperTest extends ApplicationBaseTest {
                 .aggregateGroupWithFirstChatMessage(groupList, chatMessageList);
 
         // when
-        List<GroupDTO> actual = GroupChatMessageHelper
+        List<GroupLastChatMessageDTO> actual = GroupChatMessageHelper
                 .convertAndSortToGroupDTOs(groupToLastChatMessage, GroupSortType.LATEST_CHAT);
 
         // then
         assertThat(actual).hasSize(groupList.size());
-        assertThat(actual).isSortedAccordingTo(Comparator.comparing(GroupDTO::id).reversed());
+        assertThat(actual).isSortedAccordingTo(Comparator.comparing(GroupLastChatMessageDTO::id).reversed());
     }
 }
