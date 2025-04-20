@@ -170,9 +170,9 @@ public class GroupService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        Predicate specification = TaskQueryOptions.getGroupPredicate(groupId)
+        Predicate predicate = TaskQueryOptions.getGroupPredicate(groupId)
                 .and(TaskQueryOptions.getStatusPredicate(search.status()));
-        List<Task> tasks = taskRepository.findAll(specification, search.pageNum(), search.pageSize());
+        List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return GroupTaskListResponse.fromEntities(tasks);
     }
 }

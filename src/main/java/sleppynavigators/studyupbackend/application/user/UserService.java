@@ -1,14 +1,14 @@
 package sleppynavigators.studyupbackend.application.user;
 
 import java.util.List;
-import java.util.Map;
 
 import com.querydsl.core.types.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.application.group.GroupChatMessageHelper;
+import sleppynavigators.studyupbackend.application.group.GroupChatMessageAggregator;
+import sleppynavigators.studyupbackend.application.group.GroupWithLastChatMessage;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
@@ -21,7 +21,6 @@ import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupLastChatMessageDTO;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
@@ -35,6 +34,7 @@ public class UserService {
     private final GroupRepository groupRepository;
     private final TaskRepository taskRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final GroupChatMessageAggregator groupChatMessageAggregator;
 
     public UserResponse getUser(Long userId) {
         User user = userRepository.findById(userId)
@@ -47,11 +47,9 @@ public class UserService {
         List<ChatMessage> chatMessages = chatMessageRepository
                 .findLatestGroupMessages(groups.stream().map(Group::getId).toList());
 
-        Map<Group, ChatMessage> groupToLastChatMessage = GroupChatMessageHelper
-                .aggregateGroupWithFirstChatMessage(groups, chatMessages);
-        List<GroupLastChatMessageDTO> groupLastChatMessageDTOs = GroupChatMessageHelper
-                .convertAndSortToGroupDTOs(groupToLastChatMessage, search.sortBy());
-        return new GroupListResponse(groupLastChatMessageDTOs);
+        List<GroupWithLastChatMessage> groupWithLastChatMessages = groupChatMessageAggregator
+                .aggregateWithLastChatMessage(groups, chatMessages, search.sortBy());
+        return GroupListResponse.fromEntities(groupWithLastChatMessages);
     }
 
     public UserTaskListResponse getTasks(Long userId, TaskSearch search) {
