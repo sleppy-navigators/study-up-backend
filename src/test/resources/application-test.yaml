@@ -16,6 +16,16 @@ spring:
     hibernate:
       ddl-auto: create
     database-platform: org.hibernate.dialect.H2Dialect
+  cloud:
+    aws:
+      credentials:
+        access-key: accesskey
+        secret-key: secretkey
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: studyup-stage
+        expiration-in-minutes: 5
 
 authentication:
   refresh-token:
