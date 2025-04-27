@@ -62,3 +62,4 @@ jobs:
           script: |
             cd /home/ubuntu/application/study-up/backend
             docker-compose up --build -d
+      # TODO: If there's a problem running the new version, should revert to the previous version
