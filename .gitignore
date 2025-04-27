@@ -6,7 +6,6 @@ build/
 !**/src/test/**/build/
 .env
 **/cache
-Dockerfile
 
 ### STS ###
 .apt_generated

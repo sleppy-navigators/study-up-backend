@@ -46,11 +46,9 @@ public class SwaggerConfig {
     }
 
     private List<Server> servers() {
+        Server productionServer = new Server().url("https://api.study-up.site").description("Production server");
         Server localServer = new Server().url("http://localhost:8080").description("Local server");
 
-        // TODO: change the URL of the staging server to the actual URL of the staging server.
-        Server stagingServer = new Server().url("https://whitepiano-codeserver.pe.kr").description("Staging server");
-
-        return List.of(stagingServer, localServer);
+        return List.of(productionServer, localServer);
     }
 }
