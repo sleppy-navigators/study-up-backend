@@ -111,7 +111,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.groups()).hasSize(3);
-                    assertThat(data.groups()).map(GroupListItem::numOfMembers)
+                    assertThat(data.groups()).map(GroupListItem::memberCount)
                             .containsExactly(1, 2, 3);
                     assertThat(data.groups()).map(GroupListItem::lastChatMessage)
                             .containsExactly(
@@ -151,7 +151,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.groups()).hasSize(3);
-                    assertThat(data.groups()).map(GroupListItem::numOfMembers)
+                    assertThat(data.groups()).map(GroupListItem::memberCount)
                             .containsExactly(2, 1, 3);
                     assertThat(data.groups()).map(GroupListItem::lastChatMessage)
                             .containsExactly(
