@@ -3,12 +3,11 @@ package sleppynavigators.studyupbackend.application.event;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 
 @Slf4j
 @Component
@@ -17,7 +16,7 @@ public class SystemEventListener {
     private final ChatMessageService chatMessageService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleSystemEvent(SystemEvent event) {
+    public void handleSystemEvent(SystemMessageEvent event) {
         try {
             chatMessageService.sendSystemMessage(event);
         } catch (Exception e) {

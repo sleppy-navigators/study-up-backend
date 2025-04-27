@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.chat.SystemMessageTemplate;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
+import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGeneratorFactory;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
@@ -35,6 +35,7 @@ public class ChatMessageService {
 
     private static final String GROUP_DESTINATION = "/topic/group/%s";
 
+    private final SystemMessageGeneratorFactory systemMessageGeneratorFactory;
     private final SimpMessageSendingOperations messagingTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final GroupRepository groupRepository;
@@ -56,10 +57,10 @@ public class ChatMessageService {
         }
     }
 
-    public void sendSystemMessage(SystemEvent event) {
+    public void sendSystemMessage(SystemMessageEvent event) {
         ChatMessage savedMessage = null;
         try {
-            String content = SystemMessageTemplate.generateMessage(event);
+            String content = systemMessageGeneratorFactory.generateMessage(event);
             Long groupId = event.getGroupId();
             Bot bot = botRepository.findByGroupId(groupId)
                     .orElseThrow(() -> new EntityNotFoundException("Bot not found - groupId: " + groupId));

@@ -12,7 +12,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
@@ -56,7 +56,7 @@ public class ChallengeService {
 
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
-        SystemEvent event = new ChallengeCreateEvent(
+        SystemMessageEvent event = new ChallengeCreateEvent(
                 user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
                 groupId);
@@ -77,7 +77,7 @@ public class ChallengeService {
                     "User cannot modify this challenge - userId: " + userId + ", challengeId: " + challengeId);
         }
 
-        SystemEvent event = new ChallengeCancelEvent(
+        SystemMessageEvent event = new ChallengeCancelEvent(
                 user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
                 challenge.getGroup().getId());
@@ -114,7 +114,7 @@ public class ChallengeService {
             task.certify(request.externalLinks(), request.imageUrls(), user);
 
             if (task.getChallenge().isAllTasksCompleted()) {
-                SystemEvent event = new ChallengeCompleteEvent(
+                SystemMessageEvent event = new ChallengeCompleteEvent(
                         user.getUserProfile().getUsername(),
                         task.getChallenge().getDetail().getTitle(),
                         task.getChallenge().getGroup().getId()

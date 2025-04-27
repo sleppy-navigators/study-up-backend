@@ -1,5 +1,8 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public interface Event {
+public interface SystemMessageEvent {
+
     EventType getType();
+
+    Long getGroupId();
 }

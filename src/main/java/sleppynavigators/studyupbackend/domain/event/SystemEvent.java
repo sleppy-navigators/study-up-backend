@@ -1,4 +1,0 @@
-package sleppynavigators.studyupbackend.domain.event;
-
-public interface SystemEvent extends Event {
-}

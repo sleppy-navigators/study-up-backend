@@ -31,7 +31,7 @@ import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessage
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -148,7 +148,7 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         // given
         Long groupId = 1L;
         String username = "testUser";
-        SystemEvent event = new UserJoinEvent(username, groupId);
+        SystemMessageEvent event = new UserJoinEvent(username, groupId);
 
         // when
         chatMessageService.sendSystemMessage(event);
@@ -173,7 +173,7 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         // given
         Long groupId = 1L;
         String username = "testUser";
-        SystemEvent event = new UserJoinEvent(username, groupId);
+        SystemMessageEvent event = new UserJoinEvent(username, groupId);
 
         doThrow(new RuntimeException("메시지 전송 실패"))
                 .when(messagingTemplate)

@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.domain.message;
+package sleppynavigators.studyupbackend.domain.chat.systemmessage;
 
 import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;

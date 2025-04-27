@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.application.group.GroupService;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -86,7 +86,7 @@ public class GroupSupport {
     /**
      * <b>Caution!</b> This method do directly access the database. There's no consideration about side effects.
      *
-     * @see ChatMessageService#sendSystemMessage(SystemEvent)
+     * @see ChatMessageService#sendSystemMessage(SystemMessageEvent)
      * @see ChatMessageService#sendUserMessage(ChatMessageRequest, String, Long)
      */
     public List<ChatMessage> registerChatMessagesToDB(Group group, User sender, List<String> contents) {
