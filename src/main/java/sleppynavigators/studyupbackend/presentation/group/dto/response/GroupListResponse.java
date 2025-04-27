@@ -14,7 +14,7 @@ public record GroupListResponse(@NotNull @Valid List<GroupListItem> groups) {
     public record GroupListItem(@NotNull Long id,
                                 @NotBlank String name,
                                 String thumbnailUrl,
-                                @NotNull Integer numOfMembers,
+                                @NotNull Integer memberCount,
                                 @NotBlank String lastChatMessage) {
 
         public static GroupListItem fromEntity(GroupWithLastChatMessage groupWithLastChatMessage) {
