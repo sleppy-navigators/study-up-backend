@@ -1,8 +1,10 @@
 package sleppynavigators.studyupbackend.domain.message;
 
+import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 
+@Component
 public class UserJoinSystemMessageGenerator implements SystemMessageGenerator<UserJoinEvent> {
     private static final String MESSAGE_FORMAT = "%s님이 그룹에 참여했습니다.";
     
@@ -10,9 +12,9 @@ public class UserJoinSystemMessageGenerator implements SystemMessageGenerator<Us
     public String generate(UserJoinEvent event) {
         return String.format(MESSAGE_FORMAT, event.userName());
     }
-    
+
     @Override
-    public boolean supports(UserJoinEvent event) {
-        return event.getType() == EventType.USER_JOIN;
+    public EventType getEventType() {
+        return EventType.USER_JOIN;
     }
 }
