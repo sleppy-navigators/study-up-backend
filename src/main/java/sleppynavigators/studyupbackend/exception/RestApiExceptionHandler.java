@@ -37,8 +37,8 @@ public class RestApiExceptionHandler {
             MethodArgumentNotValidException.class,
             HandlerMethodValidationException.class})
     public ResponseEntity<ErrorResponse> handleDefault4xxExceptions(
-            HttpServletRequest request, Exception ignored) {
-        return ErrorResponse.toResponseEntity(new InvalidApiException(), request.getRequestURI());
+            HttpServletRequest request, Exception ex) {
+        return ErrorResponse.toResponseEntity(new InvalidApiException(ex.getMessage()), request.getRequestURI());
     }
 
     @ExceptionHandler(NetworkBaseException.class)
