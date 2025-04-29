@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.challenge.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,12 +15,27 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 
-public record ChallengeCreationRequest(@NotBlank String title,
-                                       @NotNull ZonedDateTime deadline,
-                                       String description,
-                                       @NotEmpty @Valid List<TaskRequest> tasks) {
+@Schema(description = "챌린지 생성 요청")
+public record ChallengeCreationRequest(
+        @Schema(description = "챌린지 제목", example = "스터디 챌린지")
+        @NotBlank String title,
 
-    public record TaskRequest(@NotBlank String title, @NotNull ZonedDateTime deadline) {
+        @Schema(description = "챌린지 마감일", example = "2023-10-01T10:00:00Z")
+        @NotNull ZonedDateTime deadline,
+
+        @Schema(description = "챌린지 설명", example = "아무튼 공부하는 스터디")
+        String description,
+
+        @Schema(description = "챌린지 태스크 목록")
+        @NotEmpty @Valid List<TaskRequest> tasks) {
+
+    @Schema(description = "챌린지 태스크 정보")
+    public record TaskRequest(
+            @Schema(description = "태스크 제목", example = "과제 제출하기")
+            @NotBlank String title,
+
+            @Schema(description = "태스크 마감일", example = "2023-10-01T10:00:00Z")
+            @NotNull ZonedDateTime deadline) {
     }
 
     public Challenge toEntity(User owner, Group group) {

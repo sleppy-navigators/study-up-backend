@@ -1,11 +1,18 @@
 package sleppynavigators.studyupbackend.presentation.challenge.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Range;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
 
+@Schema(description = "챌린지 검색 조건")
 public record ChallengeSearch(
+        @Schema(description = "페이지 번호", example = "0")
         @Range Long pageNum,
+
+        @Schema(description = "페이지 크기", example = "20")
         @Range Integer pageSize,
+
+        @Schema(description = "정렬 조건", example = "LATEST_CERTIFICATION")
         ChallengeSortType sortBy
 ) {
 
