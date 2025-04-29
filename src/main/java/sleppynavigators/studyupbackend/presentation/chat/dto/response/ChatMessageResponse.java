@@ -14,7 +14,7 @@ import sleppynavigators.studyupbackend.domain.chat.SenderType;
 @Schema(description = "채팅 메시지 응답")
 public record ChatMessageResponse(
         @Schema(description = "메시지 ID", example = "1")
-        @NotNull String id,
+        @NotBlank String id,
 
         @Schema(description = "그룹 ID", example = "1")
         @NotNull Long groupId,

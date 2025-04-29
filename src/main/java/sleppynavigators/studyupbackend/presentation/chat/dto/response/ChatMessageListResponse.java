@@ -11,7 +11,7 @@ import java.util.List;
 @Schema(description = "채팅 메시지 목록 응답")
 public record ChatMessageListResponse(
         @Schema(description = "채팅 메시지 목록")
-        @NotNull @Valid List<ChatMessageDto> messages,
+        @NotNull @Valid List<ChatMessageDTO> messages,
 
         @Schema(description = "현재 페이지 번호", example = "1")
         @NotNull Integer currentPage,
@@ -24,8 +24,8 @@ public record ChatMessageListResponse(
 ) {
     public static ChatMessageListResponse from(Page<ChatMessage> messagePage) {
 
-        List<ChatMessageDto> messages = messagePage.getContent().stream()
-                .map(ChatMessageDto::from)
+        List<ChatMessageDTO> messages = messagePage.getContent().stream()
+                .map(ChatMessageDTO::from)
                 .toList();
 
         return new ChatMessageListResponse(

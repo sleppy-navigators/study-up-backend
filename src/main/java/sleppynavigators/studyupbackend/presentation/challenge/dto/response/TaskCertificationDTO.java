@@ -12,10 +12,10 @@ import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 
 @Schema(description = "테스크 인증")
 public record TaskCertificationDTO(
-        @Schema(description = "인증 자료 목록 - 외부 링크")
+        @Schema(description = "인증 자료 목록 - 외부 링크", example = "[https://example.com/article]")
         @NotNull List<URL> externalLinks,
 
-        @Schema(description = "인증 자료 목록 - 이미지")
+        @Schema(description = "인증 자료 목록 - 이미지", example = "[https://example.com/image]")
         @NotNull List<URL> imageUrls,
 
         @Schema(description = "인증 제출 시간", example = "2023-10-01T10:00:00Z")

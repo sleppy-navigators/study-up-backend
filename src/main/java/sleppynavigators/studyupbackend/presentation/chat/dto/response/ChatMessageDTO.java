@@ -10,9 +10,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Schema(description = "채팅 메시지")
-public record ChatMessageDto(
+public record ChatMessageDTO(
         @Schema(description = "메시지 ID", example = "1")
-        @NotNull String id,
+        @NotBlank String id,
 
         @Schema(description = "보낸 사람 ID", example = "1")
         @NotNull Long senderId,
@@ -26,8 +26,8 @@ public record ChatMessageDto(
         @Schema(description = "메시지 생성 시간", example = "2023-10-01T12:00:00Z")
         @NotNull ZonedDateTime createdAt
 ) {
-    public static ChatMessageDto from(ChatMessage message) {
-        return new ChatMessageDto(
+    public static ChatMessageDTO from(ChatMessage message) {
+        return new ChatMessageDTO(
                 message.getId().toString(),
                 message.getSenderId(),
                 message.getSenderType(),

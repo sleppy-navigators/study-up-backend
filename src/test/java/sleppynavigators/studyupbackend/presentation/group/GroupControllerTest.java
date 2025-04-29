@@ -43,7 +43,7 @@ import sleppynavigators.studyupbackend.application.challenge.TaskCertificationSt
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
-import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageDto;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageDTO;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
@@ -704,7 +704,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.currentPage()).isEqualTo(0);
                     assertThat(data.pageCount()).isEqualTo(2);
                     assertThat(data.chatMessageCount()).isEqualTo(3);
-                    assertThat(data.messages().stream().map(ChatMessageDto::content).toList())
+                    assertThat(data.messages().stream().map(ChatMessageDTO::content).toList())
                             .containsExactly("세 번째 메시지", "두 번째 메시지"); // 최신순 정렬 확인
                 });
     }
