@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.presentation.user.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 import sleppynavigators.studyupbackend.domain.user.User;
 
 @Schema(description = "사용자 정보 응답")

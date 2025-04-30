@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.presentation.challenge.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 
 @Schema(description = "챌린저")

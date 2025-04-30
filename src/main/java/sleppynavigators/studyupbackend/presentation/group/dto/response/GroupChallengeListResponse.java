@@ -3,12 +3,12 @@ package sleppynavigators.studyupbackend.presentation.group.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;

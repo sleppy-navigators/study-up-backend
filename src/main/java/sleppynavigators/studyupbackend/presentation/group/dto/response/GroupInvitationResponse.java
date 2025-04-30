@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.presentation.group.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 
 @Schema(description = "그룹 초대 응답")

@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.presentation.chat.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 

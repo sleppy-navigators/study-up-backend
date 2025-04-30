@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
-import org.jetbrains.annotations.NotNull;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.SenderType;
 
