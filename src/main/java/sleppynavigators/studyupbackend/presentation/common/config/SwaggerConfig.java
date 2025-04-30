@@ -13,9 +13,11 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.customizers.OperationCustomizer;
+import org.springdoc.core.customizers.ParameterCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import sleppynavigators.studyupbackend.presentation.common.PublicAPI;
+import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 
 @Configuration
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,6 +41,16 @@ public class SwaggerConfig {
                 operation.setSecurity(Collections.emptyList());
             }
             return operation;
+        };
+    }
+
+    @Bean
+    public ParameterCustomizer searchParamCustomizer() {
+        return (parameterBuilder, methodParameter) -> {
+            if (methodParameter.hasParameterAnnotation(SearchParam.class)) {
+                parameterBuilder.required(false);
+            }
+            return parameterBuilder;
         };
     }
 
