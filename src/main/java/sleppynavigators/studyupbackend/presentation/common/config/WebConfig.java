@@ -3,10 +3,10 @@ package sleppynavigators.studyupbackend.presentation.common.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearchArgumentResolver;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearchArgumentResolver;
-import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearchArgumentResolver;
-import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearchArgumentResolver;
+import sleppynavigators.studyupbackend.presentation.common.argument.ChallengeSearchArgumentResolver;
+import sleppynavigators.studyupbackend.presentation.common.argument.TaskSearchArgumentResolver;
+import sleppynavigators.studyupbackend.presentation.common.argument.ChatMessageSearchArgumentResolver;
+import sleppynavigators.studyupbackend.presentation.common.argument.GroupSearchArgumentResolver;
 
 import java.util.List;
 

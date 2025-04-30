@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.common;
+package sleppynavigators.studyupbackend.presentation.common.argument;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

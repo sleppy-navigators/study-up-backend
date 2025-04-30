@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.chat.dto.request;
+package sleppynavigators.studyupbackend.presentation.common.argument;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
@@ -7,14 +7,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
-import sleppynavigators.studyupbackend.presentation.common.SearchParam;
+import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch;
 
-public class ChatMessageSearchArgumentResolver implements HandlerMethodArgumentResolver {
+public class ChallengeSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return (parameter.hasParameterAnnotation(SearchParam.class) &&
-                parameter.nestedIfOptional().getParameterType().equals(ChatMessageSearch.class));
+                parameter.nestedIfOptional().getParameterType().equals(ChallengeSearch.class));
     }
 
     @Override
@@ -23,10 +24,12 @@ public class ChatMessageSearchArgumentResolver implements HandlerMethodArgumentR
         try {
             String pageNum = webRequest.getParameter("pageNum");
             String pageSize = webRequest.getParameter("pageSize");
+            String sortType = webRequest.getParameter("sortBy");
 
-            return new ChatMessageSearch(
+            return new ChallengeSearch(
                     pageNum != null ? Long.parseLong(pageNum) : null,
-                    pageSize != null ? Integer.parseInt(pageSize) : null);
+                    pageSize != null ? Integer.parseInt(pageSize) : null,
+                    sortType != null ? ChallengeSortType.valueOf(sortType) : null);
         } catch (IllegalArgumentException e) {
             throw new InvalidApiException("Invalid search option provided");
         }
