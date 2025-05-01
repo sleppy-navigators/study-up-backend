@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.challenge.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -8,10 +9,19 @@ import java.time.ZonedDateTime;
 
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 
-public record ChallengeResponse(@NotNull Long id,
-                                @NotBlank String title,
-                                @NotNull ZonedDateTime deadline,
-                                String description) {
+@Schema(description = "챌린지 응답")
+public record ChallengeResponse(
+        @Schema(description = "챌린지 ID", example = "1")
+        @NotNull Long id,
+
+        @Schema(description = "챌린지 제목", example = "매일 30분 독서하기")
+        @NotBlank String title,
+
+        @Schema(description = "챌린지 마감일", example = "2023-10-01T12:00:00Z")
+        @NotNull ZonedDateTime deadline,
+
+        @Schema(description = "챌린지 설명", example = "매일 30분 독서하기 챌린지")
+        String description) {
 
     public static ChallengeResponse fromEntity(Challenge challenge) {
         return new ChallengeResponse(

@@ -1,5 +1,7 @@
 package sleppynavigators.studyupbackend.exception;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,10 @@ import sleppynavigators.studyupbackend.exception.database.DatabaseBaseException;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.exception.network.NetworkBaseException;
 
+// According to the Open API v3 specification, a status code can only have one description,
+// so for the sake of ease and uniformity of global error documentation,
+// we'll only specify response schemes, etc. for the broadest fallback of Exception.
+// See https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#patterned-fields-1
 @Slf4j
 @RestControllerAdvice
 public class RestApiExceptionHandler {
@@ -31,8 +37,8 @@ public class RestApiExceptionHandler {
             MethodArgumentNotValidException.class,
             HandlerMethodValidationException.class})
     public ResponseEntity<ErrorResponse> handleDefault4xxExceptions(
-            HttpServletRequest request, Exception ignored) {
-        return ErrorResponse.toResponseEntity(new InvalidApiException(), request.getRequestURI());
+            HttpServletRequest request, Exception ex) {
+        return ErrorResponse.toResponseEntity(new InvalidApiException(ex.getMessage()), request.getRequestURI());
     }
 
     @ExceptionHandler(NetworkBaseException.class)
@@ -63,6 +69,13 @@ public class RestApiExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "잘못된 요청", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "401", description = "인증 오류", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "403", description = "권한 오류", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "404", description = "리소스 오류", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류", useReturnTypeSchema = true)
+    })
     public ResponseEntity<ErrorResponse> handleException(HttpServletRequest request, Exception exception) {
         log.error("Unexpected exception : {}", exception.getMessage(), exception);
         return ErrorResponse.toResponseEntity(new UnknownException(), request.getRequestURI());

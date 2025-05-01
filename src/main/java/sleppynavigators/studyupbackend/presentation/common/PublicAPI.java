@@ -7,11 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to mark a method parameter as a search parameter. This annotation can be used to indicate that the
- * parameter should be treated as a search parameter in the context of a web request(query string).
+ * Annotation to mark a method as a public API. This annotation can be used to indicate that the API marked with this
+ * annotation should not require authentication.
  */
-@Target(ElementType.PARAMETER)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface SearchParam {
+public @interface PublicAPI {
 }

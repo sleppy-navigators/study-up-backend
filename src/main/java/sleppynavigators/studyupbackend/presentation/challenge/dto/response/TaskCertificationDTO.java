@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.challenge.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
 import java.net.URL;
@@ -9,9 +10,16 @@ import java.util.List;
 
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 
-public record TaskCertificationDTO(@NotNull List<URL> externalLinks,
-                                   @NotNull List<URL> imageUrls,
-                                   ZonedDateTime certificatedAt) {
+@Schema(description = "테스크 인증")
+public record TaskCertificationDTO(
+        @Schema(description = "인증 자료 목록 - 외부 링크", example = "[https://example.com/article]")
+        @NotNull List<URL> externalLinks,
+
+        @Schema(description = "인증 자료 목록 - 이미지", example = "[https://example.com/image]")
+        @NotNull List<URL> imageUrls,
+
+        @Schema(description = "인증 제출 시간", example = "2023-10-01T10:00:00Z")
+        ZonedDateTime certificatedAt) {
 
     public static TaskCertificationDTO fromEntity(TaskCertification taskCertification) {
         return new TaskCertificationDTO(

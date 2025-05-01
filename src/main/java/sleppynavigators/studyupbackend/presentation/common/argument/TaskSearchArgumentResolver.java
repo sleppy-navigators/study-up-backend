@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.challenge.dto.request;
+package sleppynavigators.studyupbackend.presentation.common.argument;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
@@ -8,7 +8,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
-import sleppynavigators.studyupbackend.presentation.common.SearchParam;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 
 public class TaskSearchArgumentResolver implements HandlerMethodArgumentResolver {
 

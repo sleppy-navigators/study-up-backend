@@ -22,7 +22,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
-import sleppynavigators.studyupbackend.presentation.common.SearchParam;
+import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;

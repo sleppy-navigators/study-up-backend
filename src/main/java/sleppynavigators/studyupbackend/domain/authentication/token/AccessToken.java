@@ -44,7 +44,7 @@ public class AccessToken {
                     .getPayload();
 
             return new AccessToken(claims);
-        } catch (JwtException ex) {
+        } catch (JwtException | IllegalArgumentException ex) {
             throw new InvalidCredentialException("Invalid access token", ex);
         }
     }

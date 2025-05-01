@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.user.UserService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
-import sleppynavigators.studyupbackend.presentation.common.SearchParam;
+import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;

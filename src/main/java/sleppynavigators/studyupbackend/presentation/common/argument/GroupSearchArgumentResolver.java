@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.group.dto.request;
+package sleppynavigators.studyupbackend.presentation.common.argument;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.MethodParameter;
@@ -7,8 +7,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
-import sleppynavigators.studyupbackend.presentation.common.SearchParam;
 import sleppynavigators.studyupbackend.application.group.GroupSortType;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 
 public class GroupSearchArgumentResolver implements HandlerMethodArgumentResolver {
 
