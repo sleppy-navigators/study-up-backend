@@ -14,7 +14,7 @@ public class UserJoinSystemMessageGenerator implements SystemMessageGenerator<Us
     }
 
     @Override
-    public EventType getEventType() {
+    public EventType supportedEventType() {
         return EventType.USER_JOIN;
     }
 }

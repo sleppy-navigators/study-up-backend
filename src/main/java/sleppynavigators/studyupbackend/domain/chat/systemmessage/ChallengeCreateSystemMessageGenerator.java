@@ -14,7 +14,7 @@ public class ChallengeCreateSystemMessageGenerator implements SystemMessageGener
     }
 
     @Override
-    public EventType getEventType() {
+    public EventType supportedEventType() {
         return EventType.CHALLENGE_CREATE;
     }
 }

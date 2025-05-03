@@ -14,7 +14,7 @@ public class UserLeaveSystemMessageGenerator implements SystemMessageGenerator<U
     }
 
     @Override
-    public EventType getEventType() {
+    public EventType supportedEventType() {
         return EventType.USER_LEAVE;
     }
 }

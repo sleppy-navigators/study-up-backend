@@ -13,7 +13,7 @@ class UserLeaveSystemMessageGeneratorTest {
     @Test
     void getEventType_ShouldReturnUserLeave() {
         // when
-        EventType eventType = generator.getEventType();
+        EventType eventType = generator.supportedEventType();
         
         // then
         assertThat(eventType).isEqualTo(EventType.USER_LEAVE);

@@ -14,7 +14,7 @@ public class ChallengeCancelSystemMessageGenerator implements SystemMessageGener
     }
 
     @Override
-    public EventType getEventType() {
+    public EventType supportedEventType() {
         return EventType.CHALLENGE_CANCEL;
     }
 }

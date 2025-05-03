@@ -15,7 +15,7 @@ public class SystemMessageGeneratorFactory {
     public SystemMessageGeneratorFactory(List<SystemMessageGenerator<? extends SystemEvent>> generators) {
         this.generatorMap = generators.stream()
                 .collect(Collectors.toMap(
-                        SystemMessageGenerator::getEventType,
+                        SystemMessageGenerator::supportedEventType,
                         generator -> generator
                 ));
     }

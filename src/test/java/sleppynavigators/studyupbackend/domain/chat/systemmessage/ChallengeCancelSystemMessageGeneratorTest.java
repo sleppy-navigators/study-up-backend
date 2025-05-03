@@ -13,7 +13,7 @@ class ChallengeCancelSystemMessageGeneratorTest {
     @Test
     void getEventType_ShouldReturnChallengeCancel() {
         // when
-        EventType eventType = generator.getEventType();
+        EventType eventType = generator.supportedEventType();
         
         // then
         assertThat(eventType).isEqualTo(EventType.CHALLENGE_CANCEL);

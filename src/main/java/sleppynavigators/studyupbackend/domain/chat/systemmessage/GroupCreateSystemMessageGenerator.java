@@ -14,7 +14,7 @@ public class GroupCreateSystemMessageGenerator implements SystemMessageGenerator
     }
 
     @Override
-    public EventType getEventType() {
+    public EventType supportedEventType() {
         return EventType.GROUP_CREATE;
     }
 }
