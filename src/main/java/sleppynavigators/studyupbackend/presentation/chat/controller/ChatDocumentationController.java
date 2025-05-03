@@ -24,7 +24,7 @@ public class ChatDocumentationController {
                     STOMP 설정:
                     - 메시지 발행 prefix: /app
                     - 구독 prefix: /topic
-                    
+                                        
                     연결 예시 (SockJS):
                     ```javascript
                     const socket = new SockJS('/ws');

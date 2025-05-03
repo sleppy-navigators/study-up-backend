@@ -4,11 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengerDTO;
@@ -18,6 +16,14 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskC
 public record GroupChallengeListResponse(
         @Schema(description = "그룹 챌린지 목록")
         @NotNull @Valid List<GroupChallengeListItem> challenges) {
+
+    public static GroupChallengeListResponse fromEntities(List<Challenge> challenges) {
+        return new GroupChallengeListResponse(
+                challenges.stream()
+                        .map(GroupChallengeListItem::fromEntity)
+                        .toList()
+        );
+    }
 
     @Schema(description = "그룹 챌린지")
     public record GroupChallengeListItem(
@@ -57,13 +63,5 @@ public record GroupChallengeListResponse(
                             : null
             );
         }
-    }
-
-    public static GroupChallengeListResponse fromEntities(List<Challenge> challenges) {
-        return new GroupChallengeListResponse(
-                challenges.stream()
-                        .map(GroupChallengeListItem::fromEntity)
-                        .toList()
-        );
     }
 }

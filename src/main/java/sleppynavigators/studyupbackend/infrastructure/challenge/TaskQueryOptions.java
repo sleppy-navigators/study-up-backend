@@ -2,10 +2,9 @@ package sleppynavigators.studyupbackend.infrastructure.challenge;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import java.time.LocalDateTime;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.domain.challenge.QTask;
-
-import java.time.LocalDateTime;
 
 public class TaskQueryOptions {
 

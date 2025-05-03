@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.presentation.chat.interceptor;
 
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
@@ -17,8 +18,6 @@ import sleppynavigators.studyupbackend.exception.network.InvalidCredentialExcept
 import sleppynavigators.studyupbackend.exception.network.UnAuthorizedException;
 import sleppynavigators.studyupbackend.presentation.common.util.AuthenticationConverter;
 import sleppynavigators.studyupbackend.presentation.common.util.BearerTokenExtractor;
-
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)

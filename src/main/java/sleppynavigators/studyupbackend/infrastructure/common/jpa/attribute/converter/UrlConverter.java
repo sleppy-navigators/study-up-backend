@@ -1,11 +1,11 @@
 package sleppynavigators.studyupbackend.infrastructure.common.jpa.attribute.converter;
 
 import ch.qos.logback.core.util.StringUtil;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;

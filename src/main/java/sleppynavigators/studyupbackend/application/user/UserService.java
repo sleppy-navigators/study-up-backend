@@ -1,8 +1,7 @@
 package sleppynavigators.studyupbackend.application.user;
 
-import java.util.List;
-
 import com.querydsl.core.types.Predicate;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

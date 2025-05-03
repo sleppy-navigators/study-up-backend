@@ -3,11 +3,10 @@ package sleppynavigators.studyupbackend.presentation.chat.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.chat.SenderType;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.chat.SenderType;
 
 @Schema(description = "채팅 메시지")
 public record ChatMessageDTO(

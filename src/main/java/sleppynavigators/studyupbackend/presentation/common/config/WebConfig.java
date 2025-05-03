@@ -1,14 +1,13 @@
 package sleppynavigators.studyupbackend.presentation.common.config;
 
+import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import sleppynavigators.studyupbackend.presentation.common.argument.ChallengeSearchArgumentResolver;
-import sleppynavigators.studyupbackend.presentation.common.argument.TaskSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.common.argument.ChatMessageSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.common.argument.GroupSearchArgumentResolver;
-
-import java.util.List;
+import sleppynavigators.studyupbackend.presentation.common.argument.TaskSearchArgumentResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

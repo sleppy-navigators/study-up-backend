@@ -3,10 +3,8 @@ package sleppynavigators.studyupbackend.presentation.challenge.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 
 @Schema(description = "챌린지 응답")

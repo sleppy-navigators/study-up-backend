@@ -1,9 +1,8 @@
 package sleppynavigators.studyupbackend.infrastructure.challenge;
 
 import com.querydsl.core.types.Predicate;
-import sleppynavigators.studyupbackend.domain.challenge.Task;
-
 import java.util.List;
+import sleppynavigators.studyupbackend.domain.challenge.Task;
 
 public interface TaskQueryRepository {
 

@@ -2,12 +2,10 @@ package sleppynavigators.studyupbackend.presentation.challenge.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-
 import java.net.URL;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 
 @Schema(description = "테스크 인증")
