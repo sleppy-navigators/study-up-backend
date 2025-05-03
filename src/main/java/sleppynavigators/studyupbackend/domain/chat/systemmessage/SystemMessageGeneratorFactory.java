@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.domain.chat.systemmessage;
 
+import jakarta.annotation.Nullable;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 import org.springframework.stereotype.Component;
@@ -21,13 +22,13 @@ public class SystemMessageGeneratorFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SystemMessageEvent> String generateMessage(T event) {
-        SystemMessageGenerator<T> generator = (SystemMessageGenerator<T>) generatorMap.get(event.getType());
+    public <T extends SystemMessageEvent> SystemMessageGenerator<T> get(T event) {
+        SystemMessageGenerator<?> generator = generatorMap.get(event.getType());
 
         if (generator == null) {
-            throw new IllegalArgumentException("No message generator found for event type: " + event.getType());
+            throw new IllegalArgumentException("No generator found for event type: " + event.getType());
         }
 
-        return generator.generate(event);
+        return (SystemMessageGenerator<T>) generator;
     }
 }

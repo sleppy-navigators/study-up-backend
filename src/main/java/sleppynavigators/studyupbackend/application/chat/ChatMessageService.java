@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGenerator;
 import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGeneratorFactory;
@@ -57,10 +58,12 @@ public class ChatMessageService {
         }
     }
 
-    public void sendSystemMessage(SystemMessageEvent event) {
+    public <T extends SystemMessageEvent> void sendSystemMessage(T event) {
         ChatMessage savedMessage = null;
         try {
-            String content = systemMessageGeneratorFactory.generateMessage(event);
+            SystemMessageGenerator<T> systemMessageGenerator = systemMessageGeneratorFactory.get(event);
+            String content = systemMessageGenerator.generate(event);
+
             Long groupId = event.getGroupId();
             Bot bot = botRepository.findByGroupId(groupId)
                     .orElseThrow(() -> new EntityNotFoundException("Bot not found - groupId: " + groupId));
