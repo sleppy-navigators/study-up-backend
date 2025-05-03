@@ -1,8 +1,7 @@
 package sleppynavigators.studyupbackend.domain.chat.systemmessage;
 
-import jakarta.annotation.Nullable;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 public class SystemMessageGeneratorFactory {
     private final Map<EventType, SystemMessageGenerator<?>> generatorMap;
 
-    public SystemMessageGeneratorFactory(List<SystemMessageGenerator<? extends SystemMessageEvent>> generators) {
+    public SystemMessageGeneratorFactory(List<SystemMessageGenerator<? extends SystemEvent>> generators) {
         this.generatorMap = generators.stream()
                 .collect(Collectors.toMap(
                         SystemMessageGenerator::getEventType,
@@ -22,7 +21,7 @@ public class SystemMessageGeneratorFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SystemMessageEvent> SystemMessageGenerator<T> get(T event) {
+    public <T extends SystemEvent> SystemMessageGenerator<T> get(T event) {
         SystemMessageGenerator<?> generator = generatorMap.get(event.getType());
 
         if (generator == null) {

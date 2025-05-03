@@ -4,14 +4,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SystemEventPublisher {
     private final ApplicationEventPublisher publisher;
 
-    public void publish(SystemMessageEvent event) {
+    public void publish(SystemEvent event) {
         publisher.publishEvent(event);
     }
 }

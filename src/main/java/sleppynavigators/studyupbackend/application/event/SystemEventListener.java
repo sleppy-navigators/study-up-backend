@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
-import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 
 @Slf4j
 @Component
@@ -16,7 +16,7 @@ public class SystemEventListener {
     private final ChatMessageService chatMessageService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleSystemEvent(SystemMessageEvent event) {
+    public void handleSystemEvent(SystemEvent event) {
         try {
             chatMessageService.sendSystemMessage(event);
         } catch (Exception e) {

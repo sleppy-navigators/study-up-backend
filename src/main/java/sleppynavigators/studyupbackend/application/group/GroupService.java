@@ -16,7 +16,7 @@ import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
-import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
 import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
@@ -70,7 +70,7 @@ public class GroupService {
         Bot bot = new Bot(savedGroup);
         botRepository.save(bot);
 
-        SystemMessageEvent event = new GroupCreateEvent(
+        SystemEvent event = new GroupCreateEvent(
                 creator.getUserProfile().getUsername(),
                 savedGroup.getGroupDetail().getName(),
                 savedGroup.getId());
@@ -90,7 +90,7 @@ public class GroupService {
                 botRepository.findByGroupId(groupId).ifPresent(botRepository::delete);
                 groupRepository.delete(group);
             } else {
-                SystemMessageEvent event = new UserLeaveEvent(user.getUserProfile().getUsername(), groupId);
+                SystemEvent event = new UserLeaveEvent(user.getUserProfile().getUsername(), groupId);
                 systemEventPublisher.publish(event);
             }
         });
@@ -132,7 +132,7 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         invitation.getGroup().addMember(user);
 
-        SystemMessageEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
+        SystemEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
         systemEventPublisher.publish(event);
 
         return GroupInvitationResponse.fromEntity(invitation);

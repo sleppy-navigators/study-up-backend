@@ -1,6 +1,6 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public interface SystemMessageEvent {
+public interface SystemEvent {
 
     EventType getType();
 
