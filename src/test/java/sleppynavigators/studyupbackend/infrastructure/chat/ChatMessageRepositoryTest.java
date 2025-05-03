@@ -1,5 +1,7 @@
 package sleppynavigators.studyupbackend.infrastructure.chat;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("ChatMessageRepository 테스트")
 class ChatMessageRepositoryTest extends ApplicationBaseTest {

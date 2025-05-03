@@ -36,9 +36,8 @@ public class WebSocketTestSupport {
     private final WebSocketStompClient stompClient;
     private final String url;
     private final String accessToken;
-
-    private StompSession stompSession;
     private final ObjectMapper objectMapper;
+    private StompSession stompSession;
 
     public WebSocketTestSupport(String url, ObjectMapper objectMapper, String accessToken) {
         this.url = url;

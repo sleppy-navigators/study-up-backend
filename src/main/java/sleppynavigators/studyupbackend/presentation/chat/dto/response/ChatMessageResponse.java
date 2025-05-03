@@ -1,11 +1,10 @@
 package sleppynavigators.studyupbackend.presentation.chat.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.SenderType;

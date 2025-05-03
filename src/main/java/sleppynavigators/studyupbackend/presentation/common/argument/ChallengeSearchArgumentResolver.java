@@ -6,8 +6,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
+import sleppynavigators.studyupbackend.exception.network.InvalidApiException;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch;
 
 public class ChallengeSearchArgumentResolver implements HandlerMethodArgumentResolver {

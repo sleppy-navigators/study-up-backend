@@ -1,12 +1,11 @@
 package sleppynavigators.studyupbackend.domain.chat.systemmessage;
 
-import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
+import sleppynavigators.studyupbackend.domain.event.EventType;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 
 @Component
 public class SystemMessageGeneratorFactory {

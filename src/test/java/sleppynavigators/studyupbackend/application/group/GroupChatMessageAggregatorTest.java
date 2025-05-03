@@ -1,5 +1,12 @@
 package sleppynavigators.studyupbackend.application.group;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,14 +17,6 @@ import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class GroupChatMessageAggregatorTest extends ApplicationBaseTest {
 

@@ -2,13 +2,12 @@ package sleppynavigators.studyupbackend.infrastructure.challenge;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.QChallenge;
 import sleppynavigators.studyupbackend.domain.challenge.QTask;
-
-import java.util.List;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChallengeQueryRepositoryImpl implements ChallengeQueryRepository {

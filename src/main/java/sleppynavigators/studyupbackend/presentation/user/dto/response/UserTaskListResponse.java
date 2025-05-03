@@ -4,19 +4,25 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
-import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskCertificationDTO;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskGroupDTO;
 
 @Schema(description = "유저의 테스크 목록 응답")
 public record UserTaskListResponse(@NotNull @Valid List<UserTaskListItem> tasks) {
+
+    public static UserTaskListResponse fromEntities(List<Task> tasks) {
+        return new UserTaskListResponse(
+                tasks.stream()
+                        .map(UserTaskListItem::fromEntity)
+                        .toList()
+        );
+    }
 
     @Schema(description = "유저 테스크")
     public record UserTaskListItem(
@@ -52,13 +58,5 @@ public record UserTaskListResponse(@NotNull @Valid List<UserTaskListItem> tasks)
                     TaskGroupDTO.fromEntity(task)
             );
         }
-    }
-
-    public static UserTaskListResponse fromEntities(List<Task> tasks) {
-        return new UserTaskListResponse(
-                tasks.stream()
-                        .map(UserTaskListItem::fromEntity)
-                        .toList()
-        );
     }
 }

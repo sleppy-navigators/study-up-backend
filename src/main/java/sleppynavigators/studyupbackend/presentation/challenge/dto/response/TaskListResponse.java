@@ -4,11 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 
@@ -16,6 +14,14 @@ import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 public record TaskListResponse(
         @Schema(description = "테스크 목록")
         @NotNull @Valid List<TaskListItem> tasks) {
+
+    public static TaskListResponse fromEntities(List<Task> tasks) {
+        return new TaskListResponse(
+                tasks.stream()
+                        .map(TaskListItem::fromEntity)
+                        .toList()
+        );
+    }
 
     @Schema(description = "테스크 정보")
     public record TaskListItem(
@@ -43,13 +49,5 @@ public record TaskListResponse(
                             : null
             );
         }
-    }
-
-    public static TaskListResponse fromEntities(List<Task> tasks) {
-        return new TaskListResponse(
-                tasks.stream()
-                        .map(TaskListItem::fromEntity)
-                        .toList()
-        );
     }
 }

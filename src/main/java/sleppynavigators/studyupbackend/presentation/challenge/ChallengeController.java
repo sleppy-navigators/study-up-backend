@@ -20,8 +20,8 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
-import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
+import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 
 @Tag(name = "Challenge", description = "챌린지 관련 API")
 @RestController

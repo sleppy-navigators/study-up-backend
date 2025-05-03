@@ -7,7 +7,7 @@ import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
 @Component
 public class UserLeaveSystemMessageGenerator implements SystemMessageGenerator<UserLeaveEvent> {
     private static final String MESSAGE_FORMAT = "%s님이 그룹을 나갔습니다.";
-    
+
     @Override
     public String generate(UserLeaveEvent event) {
         return String.format(MESSAGE_FORMAT, event.userName());

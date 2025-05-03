@@ -3,10 +3,9 @@ package sleppynavigators.studyupbackend.presentation.chat.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-
-import java.util.List;
 
 @Schema(description = "채팅 메시지 목록 응답")
 public record ChatMessageListResponse(

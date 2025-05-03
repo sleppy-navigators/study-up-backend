@@ -21,13 +21,13 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
-import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
-import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearch;
-import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
+import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;

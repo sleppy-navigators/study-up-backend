@@ -5,16 +5,14 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
-import sleppynavigators.studyupbackend.domain.common.UserAndTimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
+import sleppynavigators.studyupbackend.domain.common.UserAndTimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.vo.GroupDetail;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ActionRequiredBeforeException;

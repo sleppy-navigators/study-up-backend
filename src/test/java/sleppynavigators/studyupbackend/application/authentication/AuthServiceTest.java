@@ -39,16 +39,6 @@ class AuthServiceTest extends ApplicationBaseTest {
     @MockitoBean
     private GoogleOidcClient googleOidcClient;
 
-    @TestConfiguration
-    static class TestConfig {
-
-        @Primary
-        @Bean
-        public GoogleOidcClient googleOidcClient() {
-            return Mockito.mock(GoogleOidcClient.class);
-        }
-    }
-
     @Test
     @DisplayName("기존 회원의 구글 로그인을 성공적으로 수행한다")
     void memberGoogleSignIn_Success() {
@@ -109,5 +99,15 @@ class AuthServiceTest extends ApplicationBaseTest {
         // when & then
         assertThatThrownBy(() -> authService.googleSignIn(request))
                 .isInstanceOf(InvalidCredentialException.class);
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Primary
+        @Bean
+        public GoogleOidcClient googleOidcClient() {
+            return Mockito.mock(GoogleOidcClient.class);
+        }
     }
 }

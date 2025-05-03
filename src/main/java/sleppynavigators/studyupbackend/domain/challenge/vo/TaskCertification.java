@@ -3,11 +3,9 @@ package sleppynavigators.studyupbackend.domain.challenge.vo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
-
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;

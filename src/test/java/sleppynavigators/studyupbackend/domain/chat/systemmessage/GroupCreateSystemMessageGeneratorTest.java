@@ -1,10 +1,10 @@
 package sleppynavigators.studyupbackend.domain.chat.systemmessage;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class GroupCreateSystemMessageGeneratorTest {
 
@@ -14,7 +14,7 @@ class GroupCreateSystemMessageGeneratorTest {
     void getEventType_ShouldReturnGroupCreate() {
         // when
         EventType eventType = generator.supportedEventType();
-        
+
         // then
         assertThat(eventType).isEqualTo(EventType.GROUP_CREATE);
     }
@@ -26,10 +26,10 @@ class GroupCreateSystemMessageGeneratorTest {
         String groupName = "알고리즘 스터디";
         Long groupId = 1L;
         GroupCreateEvent event = new GroupCreateEvent(userName, groupName, groupId);
-        
+
         // when
         String message = generator.generate(event);
-        
+
         // then
         assertThat(message).isEqualTo("홍길동님이 '알고리즘 스터디' 그룹을 생성했습니다.");
     }

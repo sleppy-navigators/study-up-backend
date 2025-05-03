@@ -7,15 +7,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
-
 import java.util.List;
 import java.util.Objects;
-
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
+import sleppynavigators.studyupbackend.application.group.GroupSortType;
 import sleppynavigators.studyupbackend.common.RestAssuredBaseTest;
 import sleppynavigators.studyupbackend.common.support.AuthSupport;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
@@ -25,8 +25,6 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskGroupDTO;
-import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
-import sleppynavigators.studyupbackend.application.group.GroupSortType;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;

@@ -1,12 +1,14 @@
 package sleppynavigators.studyupbackend.application.chat;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,18 +27,14 @@ import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
+import sleppynavigators.studyupbackend.domain.group.Group;
+import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
-import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
 
 @DisplayName("ChatService 통합 테스트")
 class ChatMessageServiceTest extends ApplicationBaseTest {
@@ -66,16 +64,6 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         User creator = userSupport.registerUserToDB();
         Group group = groupSupport.registerGroupToDB(List.of(creator));
         Bot bot = botSupport.registerBotToDB(group);
-    }
-
-    @TestConfiguration
-    static class TestConfig {
-
-        @Primary
-        @Bean
-        public SimpMessageSendingOperations messagingTemplate() {
-            return Mockito.mock(SimpMessageSendingOperations.class);
-        }
     }
 
     @Test
@@ -183,5 +171,15 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         assertThatThrownBy(() -> chatMessageService.sendSystemMessage(event))
                 .isInstanceOf(ChatMessageException.class)
                 .hasMessageContaining("메시지 처리 중 오류가 발생했습니다");
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        @Primary
+        @Bean
+        public SimpMessageSendingOperations messagingTemplate() {
+            return Mockito.mock(SimpMessageSendingOperations.class);
+        }
     }
 }

@@ -4,11 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,13 +20,13 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.AuthSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
+import sleppynavigators.studyupbackend.common.support.WebSocketTestSupport;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.exception.ErrorResponse;
 import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
-import sleppynavigators.studyupbackend.common.support.WebSocketTestSupport;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @DisplayName("ChatMessageHandler 통합 테스트")

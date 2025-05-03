@@ -5,11 +5,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -29,15 +27,6 @@ public record ChallengeCreationRequest(
         @Schema(description = "챌린지 태스크 목록")
         @NotEmpty @Valid List<TaskRequest> tasks) {
 
-    @Schema(description = "챌린지 태스크 정보")
-    public record TaskRequest(
-            @Schema(description = "태스크 제목", example = "과제 제출하기")
-            @NotBlank String title,
-
-            @Schema(description = "태스크 마감일", example = "2023-10-01T10:00:00Z")
-            @NotNull ZonedDateTime deadline) {
-    }
-
     public Challenge toEntity(User owner, Group group) {
         try {
             Challenge challenge = Challenge.builder()
@@ -55,5 +44,14 @@ public record ChallengeCreationRequest(
         } catch (IllegalArgumentException ex) {
             throw new InvalidPayloadException(ex);
         }
+    }
+
+    @Schema(description = "챌린지 태스크 정보")
+    public record TaskRequest(
+            @Schema(description = "태스크 제목", example = "과제 제출하기")
+            @NotBlank String title,
+
+            @Schema(description = "태스크 마감일", example = "2023-10-01T10:00:00Z")
+            @NotNull ZonedDateTime deadline) {
     }
 }

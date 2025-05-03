@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGenerator;
+import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGeneratorFactory;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGeneratorFactory;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
@@ -24,10 +24,10 @@ import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
-import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
-import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
-import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageSearch;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
+import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
 @Slf4j
 @Service

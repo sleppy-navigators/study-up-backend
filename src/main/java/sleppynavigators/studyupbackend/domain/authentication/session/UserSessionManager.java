@@ -2,7 +2,6 @@ package sleppynavigators.studyupbackend.domain.authentication.session;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

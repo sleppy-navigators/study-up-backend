@@ -3,9 +3,9 @@ package sleppynavigators.studyupbackend.common.support;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import sleppynavigators.studyupbackend.application.authentication.AuthService;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.application.authentication.AuthService;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 
 @Transactional
