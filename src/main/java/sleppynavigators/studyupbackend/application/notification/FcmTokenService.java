@@ -45,7 +45,7 @@ public class FcmTokenService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        List<FcmToken> tokens = fcmTokenRepository.findByUser(user);
+        List<FcmToken> tokens = fcmTokenRepository.findAllByUser(user);
         fcmTokenRepository.deleteAll(tokens);
     }
 }
