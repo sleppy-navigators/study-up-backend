@@ -66,6 +66,10 @@ dependencies {
     developmentOnly "org.springframework.boot:spring-boot-devtools"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
+    // Monitoring
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "io.micrometer:micrometer-registry-prometheus"
+
     // Validation
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"

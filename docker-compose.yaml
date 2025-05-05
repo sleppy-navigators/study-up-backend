@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   web-application-server:
     container_name: web-application-server
@@ -8,3 +7,7 @@ services:
     ports:
       - "8080:8080"
     network_mode: "host"
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://monitor.study-up.site:3100/loki/api/v1/push"
