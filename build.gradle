@@ -57,6 +57,7 @@ ext {
     assertJVersion = "3.25.3"
     awaitilityVersion = "4.2.0"
     flappdoodleVersion = "4.11.0"
+    firebaseAdminVersion = "9.2.0"
 }
 
 dependencies {
@@ -85,6 +86,9 @@ dependencies {
 
     // Socket
     implementation "org.springframework.boot:spring-boot-starter-websocket"
+
+    // Firebase
+    implementation "com.google.firebase:firebase-admin:${firebaseAdminVersion}"
 
     // Security
     implementation "org.springframework.boot:spring-boot-starter-security"
