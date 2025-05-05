@@ -35,14 +35,4 @@ public class FcmTokenService {
                     return fcmTokenRepository.save(newToken);
                 });
     }
-
-    @Transactional(readOnly = true)
-    public List<String> getTokenStringsByUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        
-        return fcmTokenRepository.findByUser(user).stream()
-                .map(FcmToken::getToken)
-                .collect(Collectors.toList());
-    }
 }
