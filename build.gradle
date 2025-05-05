@@ -47,7 +47,8 @@ sonar {
 ///////////////////////////// DEPENDENCIES /////////////////////////////
 
 ext {
-    apacheCommonsVersion = "3.14.0"
+    apacheCommonsLangVersion = "3.14.0"
+    apacheCommonsCollectionsVersion = "4.4"
     springAwsVersion = "3.0.0"
     okHttpVersion = "5.0.0-alpha.12"
     jjwtVersion = "0.12.3"
@@ -74,7 +75,8 @@ dependencies {
     // Validation
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    implementation "org.apache.commons:commons-lang3:${apacheCommonsVersion}"
+    implementation "org.apache.commons:commons-lang3:${apacheCommonsLangVersion}"
+    implementation "org.apache.commons:commons-collections4:${apacheCommonsCollectionsVersion}"
 
     // AWS
     implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:${springAwsVersion}")
