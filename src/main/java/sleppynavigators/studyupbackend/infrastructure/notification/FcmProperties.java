@@ -1,13 +1,15 @@
 package sleppynavigators.studyupbackend.infrastructure.notification;
 
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "fcm")
-@Getter
+@Data
 public class FcmProperties {
 
     private String serviceAccountKeyPath;

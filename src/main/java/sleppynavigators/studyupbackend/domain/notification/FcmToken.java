@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.User;
 
-@Entity
-@Table(name = "fcm_tokens")
+@Entity(name = "fcm_tokens")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FcmToken extends TimeAuditBaseEntity {
@@ -23,7 +22,7 @@ public class FcmToken extends TimeAuditBaseEntity {
     @Enumerated(EnumType.STRING)
     private DeviceType deviceType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
