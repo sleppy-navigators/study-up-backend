@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.notification;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,9 +9,6 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,10 +19,10 @@ public class FcmTokenService {
     private final UserRepository userRepository;
 
     @Transactional
-    public FcmToken registerToken(Long userId, String token, String deviceId, FcmToken.DeviceType deviceType) {
+    public FcmToken upsertToken(Long userId, String token, String deviceId, FcmToken.DeviceType deviceType) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        
+
         return fcmTokenRepository.findByDeviceId(deviceId)
                 .map(existingToken -> {
                     existingToken.updateToken(token);
@@ -37,20 +35,16 @@ public class FcmTokenService {
     }
 
     @Transactional
-    public void deleteTokenByDeviceId(Long userId, String deviceId) {
+    public void deleteTokenByDeviceId(String deviceId) {
         fcmTokenRepository.findByDeviceId(deviceId)
-                .ifPresent(token -> {
-                    if (token.getUser().getId().equals(userId)) {
-                        fcmTokenRepository.delete(token);
-                    }
-                });
+                .ifPresent(fcmTokenRepository::delete);
     }
 
     @Transactional
     public void deleteAllTokensByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        
+
         List<FcmToken> tokens = fcmTokenRepository.findByUser(user);
         fcmTokenRepository.deleteAll(tokens);
     }

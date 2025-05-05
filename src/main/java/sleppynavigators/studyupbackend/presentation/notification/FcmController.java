@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,14 +28,14 @@ public class FcmController {
 
     private final FcmTokenService fcmTokenService;
 
-    @PostMapping("/tokens")
+    @PutMapping("/tokens")
     @Operation(summary = "FCM 토큰 등록/갱신", description = "FCM 토큰을 등록하거나 갱신합니다. 디바이스 ID가 이미 존재하는 경우 토큰을 갱신합니다.")
-    public ResponseEntity<FcmTokenResponse> registerToken(
+    public ResponseEntity<FcmTokenResponse> upsertToken(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FcmTokenRequest request
     ) {
 
-        FcmToken fcmToken = fcmTokenService.registerToken(
+        FcmToken fcmToken = fcmTokenService.upsertToken(
                 userPrincipal.userId(),
                 request.token(),
                 request.deviceId(),
@@ -51,7 +52,7 @@ public class FcmController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FcmTokenDeleteRequest request
     ) {
-        fcmTokenService.deleteTokenByDeviceId(userPrincipal.userId(), request.deviceId());
+        fcmTokenService.deleteTokenByDeviceId(request.deviceId());
         return ResponseEntity.noContent().build();
     }
 
