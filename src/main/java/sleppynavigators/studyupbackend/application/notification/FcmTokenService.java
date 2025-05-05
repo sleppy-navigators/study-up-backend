@@ -35,4 +35,23 @@ public class FcmTokenService {
                     return fcmTokenRepository.save(newToken);
                 });
     }
+
+    @Transactional
+    public void deleteTokenByDeviceId(Long userId, String deviceId) {
+        fcmTokenRepository.findByDeviceId(deviceId)
+                .ifPresent(token -> {
+                    if (token.getUser().getId().equals(userId)) {
+                        fcmTokenRepository.delete(token);
+                    }
+                });
+    }
+
+    @Transactional
+    public void deleteAllTokensByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        
+        List<FcmToken> tokens = fcmTokenRepository.findByUser(user);
+        fcmTokenRepository.deleteAll(tokens);
+    }
 }
