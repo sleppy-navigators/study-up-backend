@@ -52,6 +52,6 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/application/study-up/backend
-            docker-compose up --build -d
+            docker-compose up --build -d --remove-orphans
 
       # TODO: If there's a problem running the new version, should revert to the previous version
