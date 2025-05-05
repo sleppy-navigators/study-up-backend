@@ -1,6 +1,6 @@
 services:
   app-core:
-    container_name: web-application-server
+    container_name: app-core
     build:
       context: .
       dockerfile: Dockerfile
