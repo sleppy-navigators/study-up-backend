@@ -52,7 +52,7 @@ import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResp
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskListItem;
 
-@DisplayName("GroupController API 테스트")
+@DisplayName("[프레젠테이션] GroupController API 테스트")
 public class GroupControllerTest extends RestAssuredBaseTest {
 
     @Autowired
@@ -88,11 +88,11 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("사용자가 그룹 생성에 성공한다")
-    void memberGroupCreation_Success() {
+    @DisplayName("그룹 생성 - 성공")
+    void createGroup_Success() {
         // given
-        GroupCreationRequest request =
-                new GroupCreationRequest("test group", "test description", "https://test.com");
+        GroupCreationRequest request = new GroupCreationRequest("test group", "test description",
+                "https://test.com");
 
         assert groupRepository.findAll().isEmpty();
 
@@ -116,8 +116,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹 조회에 성공한다")
-    void memberGroupQuery_Success() {
+    @DisplayName("그룹 조회 - 성공")
+    void getGroup_Success() {
         // given
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
 
@@ -137,8 +137,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("사용자가 그룹에서 탈퇴에 성공한다")
-    void memberLeaveGroup_Success() {
+    @DisplayName("그룹 탈퇴 - 성공")
+    void leaveGroup_Success() {
         // given
         User anotherMember = userSupport.registerUserToDB();
         Group groupToLeave = groupSupport.callToMakeGroup(List.of(currentUser, anotherMember));
@@ -156,8 +156,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("유일한 사용자가 그룹에서 탈퇴한다 (그룹이 삭제된다)")
-    void uniqueMemberLeaveGroup_Success() {
+    @DisplayName("그룹 탈퇴 (유일한 멤버) - 성공")
+    void leaveGroup_UniqueMember_Success() {
         // given
         Group groupToLeave = groupSupport.callToMakeGroup(List.of(currentUser));
 
@@ -174,8 +174,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 그룹, 멤버에 탈퇴를 요청해도 정상 응답한다")
-    void leaveGroup_NotFound() {
+    @DisplayName("그룹 탈퇴 - 존재하지 않는 그룹")
+    void leaveGroup_NotFound_Fail() {
         // given
         Long groupIdThatDoesNotExist = 1L;
         assert groupRepository.findAll().isEmpty();
@@ -192,8 +192,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("챌린저가 그룹 탈퇴를 요청하면 실패한다.")
-    void challengerLeaveGroup_Fail() {
+    @DisplayName("그룹 탈퇴 - 챌린저")
+    void leaveGroup_Challenger_Fail() {
         // given
         Group groupToLeave = groupSupport.callToMakeGroup(List.of(currentUser));
         Challenge progressingChallenge = challengeSupport
@@ -213,7 +213,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹 초대를 생성한다")
+    @DisplayName("그룹 초대 생성 - 성공")
     void createGroupInvitation_Success() {
         // given
         Group groupToInvite = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -231,8 +231,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 그룹에 초대를 생성하면 오류로 응답한다")
-    void createGroupInvitation_NotFound() {
+    @DisplayName("그룹 초대 생성 - 존재하지 않는 그룹")
+    void createGroupInvitation_NotFound_Fail() {
         // given
         Long groupIdThatDoesNotExist = 1L;
         assert groupRepository.findAll().isEmpty();
@@ -251,8 +251,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹 초대를 조회한다")
-    void getGroupInvitations_Success() {
+    @DisplayName("그룹 초대 조회 - 성공")
+    void getGroupInvitation_Success() {
         // given
         Group groupToInvite = groupSupport.callToMakeGroup(List.of(currentUser));
         GroupInvitation invitation = groupSupport.callToMakeInvitation(groupToInvite, currentUser);
@@ -275,8 +275,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 그룹 초대를 조회하면 오류로 응답한다")
-    void getGroupInvitations_NotFound() {
+    @DisplayName("그룹 초대 조회 - 존재하지 않는 초대")
+    void getGroupInvitation_NotFound_Fail() {
         // given
         Long groupIdThatDoesNotExist = 1L;
         Long invitationIdThatDoesNotExist = 1L;
@@ -297,7 +297,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹 초대를 수락한다")
+    @DisplayName("그룹 초대 수락 - 성공")
     void acceptGroupInvitation_Success() {
         // given
         Group groupToInvite = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -321,7 +321,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("동일한 그룹에 대해 복수의 초대를 생성할 수 있다")
+    @DisplayName("그룹 초대 수락 - 동일한 그룹 복수 생성")
     void createGroupInvitation_Multiple_Success() {
         // given
         Group groupToInvite = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -345,14 +345,15 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 그룹 초대를 수락하면 오류로 응답한다")
+    @DisplayName("그룹 초대 수락 - 존재하지 않는 그룹")
     void acceptGroupInvitation_NotFound() {
         // given
         Long groupIdThatDoesNotExist = 1L;
         Long invitationIdThatDoesNotExist = 1L;
         assert groupRepository.findAll().isEmpty();
 
-        GroupInvitationAcceptRequest request = new GroupInvitationAcceptRequest("invitation_key_that_not_exist");
+        GroupInvitationAcceptRequest request = new GroupInvitationAcceptRequest(
+                "invitation_key_that_not_exist");
 
         // when
         ExtractableResponse<?> response = with()
@@ -370,8 +371,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹 초대 수락 시 초대 키가 일치하지 않으면 오류로 응답한다")
-    void acceptGroupInvitation_InvalidKey() {
+    @DisplayName("그룹 초대 수락 - 유효하지 않은 키")
+    void acceptGroupInvitation_InvalidKey_Fail() {
         // given
         Group groupToInvite = groupSupport.callToMakeGroup(List.of(currentUser));
         GroupInvitation invitation = groupSupport.callToMakeInvitation(groupToInvite, currentUser);
@@ -396,7 +397,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹 초대 수락 시 주어진 그룹과 일치하지 않으면 오류로 응답한다")
+    @DisplayName("그룹 초대 수락 - 유효하지 않은 그룹")
     void acceptGroupInvitation_InvalidGroup() {
         // given
         Group groupToInvite = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -421,7 +422,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹에 챌린지를 등록한다")
+    @DisplayName("챌린지 등록 - 성공")
     void addChallengeToGroup_Success() {
         // given
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -451,7 +452,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹에 챌린지를 등록할 때 마감일이 현재 시각보다 이전이면 오류로 응답한다")
+    @DisplayName("챌린지 등록 - 과거 마감일")
     void addChallengeToGroup_PastDeadline() {
         // given
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -472,11 +473,12 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(ErrorCode.INVALID_PAYLOAD.getDefaultMessage());
     }
 
     @Test
-    @DisplayName("그룹에 챌린지를 등록할 때 마감일이 현재 시각보다 이전인 테스크가 있으면 오류로 응답한다")
+    @DisplayName("챌린지 등록 - 과거 테스크 마감일")
     void addChallengeToGroup_PastTaskDeadline() {
         // given
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -497,11 +499,12 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(ErrorCode.INVALID_PAYLOAD.getDefaultMessage());
     }
 
     @Test
-    @DisplayName("그룹의 챌린지 목록을 조회한다")
+    @DisplayName("챌린지 목록 조회 - 성공")
     void getChallenges_Success() {
         // given
         User anotherUser = userSupport.registerUserToDB();
@@ -541,7 +544,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹의 챌린지 목록을 조회한다 - 마지막 인증 순서대로")
+    @DisplayName("챌린지 목록 조회 (마지막 인증 순) - 성공")
     void getChallenges_Success_OrderedByLastCertification() throws MalformedURLException {
         // given
         User anotherUser = userSupport.registerUserToDB();
@@ -586,7 +589,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹의 테스크 목록을 조회한다")
+    @DisplayName("테스크 목록 조회 - 성공")
     void getTasks_Success() {
         // given
         User anotherUser = userSupport.registerUserToDB();
@@ -619,16 +622,18 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.tasks())
                             .map(GroupTaskListItem::challengerDetail)
                             .map(ChallengerDTO::currentlyJoined)
-                            .containsExactly(true, true, true, true, true, true, true, false, false);
+                            .containsExactly(true, true, true, true, true, true, true,
+                                    false, false);
                     assertThat(data.tasks())
                             .map(GroupTaskListItem::challengeDetail)
                             .map(TaskChallengeDTO::isCompleted)
-                            .containsExactly(false, false, false, true, true, true, true, true, true);
+                            .containsExactly(false, false, false, true, true, true, true,
+                                    true, true);
                 });
     }
 
     @Test
-    @DisplayName("그룹의 테스크 목록을 조회한다 - 진행중인 테스크만")
+    @DisplayName("테스크 목록 조회 (진행중인 테스크) - 성공")
     void getTasks_InProgress_Success() {
         // given
         User anotherUser = userSupport.registerUserToDB();
@@ -669,7 +674,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹의 채팅 메시지를 페이지네이션하여 조회한다")
+    @DisplayName("채팅 메시지 조회 - 성공")
     void getMessages_Success() {
         // given
         Group groupToQuery = groupSupport.registerGroupToDB(List.of(currentUser));
@@ -702,7 +707,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 그룹의 채팅 메시지를 조회하면 오류로 응답한다")
+    @DisplayName("채팅 메시지 조회 - 존재하지 않는 그룹")
     void getMessages_EmptyGroup() {
         // given
         Long groupIdThatDoesNotExist = 1L;
@@ -723,7 +728,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("채팅 메시지가 없는 그룹을 조회하면 빈 목록을 반환한다")
+    @DisplayName("채팅 메시지 조회 - 빈 메시지")
     void getMessages_EmptyMessages() {
         // given
         Group groupToQuery = groupSupport.registerGroupToDB(List.of(currentUser));

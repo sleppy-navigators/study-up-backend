@@ -10,14 +10,14 @@ import org.springframework.data.domain.PageRequest;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 
-@DisplayName("ChatMessageRepository 테스트")
+@DisplayName("[인프라] ChatMessageRepository 테스트")
 class ChatMessageRepositoryTest extends ApplicationBaseTest {
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
     @Test
-    @DisplayName("채팅 메시지를 저장하고 조회할 수 있다")
+    @DisplayName("채팅 메시지 저장 및 조회 - 성공")
     void saveChatMessage() {
         // given
         ChatMessage chatMessage = ChatMessage.fromUser(1L, 1L, "테스트 메시지");
@@ -34,7 +34,7 @@ class ChatMessageRepositoryTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("그룹별로 최신 메시지부터 조회할 수 있다")
+    @DisplayName("그룹별 최신 메시지 조회 - 성공")
     void findByGroupIdOrderByCreatedAtDescLatest() {
         // given
         Long groupId = 1L;

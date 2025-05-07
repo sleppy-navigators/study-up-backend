@@ -18,6 +18,7 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 
+@DisplayName("[애플리케이션] GroupChatMessageAggregator 테스트")
 public class GroupChatMessageAggregatorTest extends ApplicationBaseTest {
 
     @Autowired
@@ -37,15 +38,16 @@ public class GroupChatMessageAggregatorTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("그룹과 최신 챗 메시지를 조합할 수 있다.")
-    void aggregateGroupAndChatMessage() {
+    @DisplayName("그룹과 최신 챗 메시지 조합 - 성공")
+    void aggregateGroupAndChatMessage_Success() {
         // given
         List<Group> groupList = IntStream.range(0, 5)
                 .mapToObj((ignored) -> groupSupport.registerGroupToDB(List.of(testUser)))
                 .toList();
         List<ChatMessage> chatMessageList = IntStream.range(0, 5)
                 .mapToObj((idx) -> groupSupport
-                        .registerChatMessagesToDB(groupList.get(idx), testUser, List.of("test1", "test2")))
+                        .registerChatMessagesToDB(groupList.get(idx), testUser,
+                                List.of("test1", "test2")))
                 .flatMap(Collection::stream)
                 .toList();
 
@@ -55,22 +57,23 @@ public class GroupChatMessageAggregatorTest extends ApplicationBaseTest {
 
         // then
         assertThat(actual).hasSize(5);
-        assertThat(actual).allMatch(groupWithLastChatMessage ->
-                groupWithLastChatMessage.lastChatMessage().getContent().startsWith("test2"));
+        assertThat(actual).allMatch(groupWithLastChatMessage -> groupWithLastChatMessage.lastChatMessage()
+                .getContent().startsWith("test2"));
         assertThat(actual).isSortedAccordingTo(
                 Comparator.comparing(g -> g.group().getId()));
     }
 
     @Test
-    @DisplayName("그룹과 최신 챗 메시지를 조합할 수 있다. - 정렬 기준 : 최신 챗 메시지")
-    void aggregateGroupAndChatMessageWithLatestChatMessage() {
+    @DisplayName("그룹과 최신 챗 메시지 조합 (최신 챗 메시지 기준 정렬) - 성공")
+    void aggregateGroupAndChatMessage_WithLatestChatMessage_Success() {
         // given
         List<Group> groupList = IntStream.range(0, 5)
                 .mapToObj((ignored) -> groupSupport.registerGroupToDB(List.of(testUser)))
                 .toList();
         List<ChatMessage> chatMessageList = IntStream.range(0, 5)
                 .mapToObj((idx) -> groupSupport
-                        .registerChatMessagesToDB(groupList.get(idx), testUser, List.of("test1", "test2")))
+                        .registerChatMessagesToDB(groupList.get(idx), testUser,
+                                List.of("test1", "test2")))
                 .flatMap(Collection::stream)
                 .toList();
 
@@ -80,16 +83,15 @@ public class GroupChatMessageAggregatorTest extends ApplicationBaseTest {
 
         // then
         assertThat(actual).hasSize(5);
-        assertThat(actual).allMatch(groupWithLastChatMessage ->
-                groupWithLastChatMessage.lastChatMessage().getContent().equals("test2"));
-        assertThat(actual).isSortedAccordingTo((g1, g2) ->
-                g2.lastChatMessage().getCreatedAt()
-                        .compareTo(g1.lastChatMessage().getCreatedAt()));
+        assertThat(actual).allMatch(groupWithLastChatMessage -> groupWithLastChatMessage.lastChatMessage()
+                .getContent().equals("test2"));
+        assertThat(actual).isSortedAccordingTo((g1, g2) -> g2.lastChatMessage().getCreatedAt()
+                .compareTo(g1.lastChatMessage().getCreatedAt()));
     }
 
     @Test
-    @DisplayName("그룹과 챗 메시지를 조합할 수 있다. - 챗 메시지가 없는 경우")
-    void aggregateGroupAndChatMessageWithoutChatMessage() {
+    @DisplayName("그룹과 챗 메시지 조합 (챗 메시지 없음) - 실패")
+    void aggregateGroupAndChatMessage_WithoutChatMessage_Fail() {
         // given
         List<Group> groupList = IntStream.range(0, 5)
                 .mapToObj((ignored) -> groupSupport.registerGroupToDB(List.of(testUser)))

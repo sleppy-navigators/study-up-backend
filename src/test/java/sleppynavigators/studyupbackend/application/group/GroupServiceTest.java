@@ -24,7 +24,7 @@ import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreat
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 
-@DisplayName("GroupService 테스트")
+@DisplayName("[애플리케이션] GroupService 테스트")
 class GroupServiceTest extends ApplicationBaseTest {
 
     @Autowired
@@ -57,7 +57,7 @@ class GroupServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("그룹 생성 시 GroupCreateEvent가 발행된다")
+    @DisplayName("그룹 생성 이벤트 발행 - 성공")
     void createGroup_PublishesGroupCreateEvent() {
         // given
         User creator = userSupport.registerUserToDB();
@@ -68,8 +68,7 @@ class GroupServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new GroupCreateEvent(creator.getUserProfile().getUsername(), "스터디하기", response.id())
-        );
+                new GroupCreateEvent(creator.getUserProfile().getUsername(), "스터디하기", response.id()));
     }
 
     @Test
@@ -84,8 +83,7 @@ class GroupServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new UserJoinEvent(testUser.getUserProfile().getUsername(), testGroup.getId())
-        );
+                new UserJoinEvent(testUser.getUserProfile().getUsername(), testGroup.getId()));
     }
 
     @Test
@@ -101,7 +99,6 @@ class GroupServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new UserLeaveEvent(testUser.getUserProfile().getUsername(), groupToLeave.getId())
-        );
+                new UserLeaveEvent(testUser.getUserProfile().getUsername(), groupToLeave.getId()));
     }
 }

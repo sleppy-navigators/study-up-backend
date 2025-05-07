@@ -29,7 +29,7 @@ import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessage
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
-@DisplayName("ChatMessageHandler 통합 테스트")
+@DisplayName("[프레젠테이션] ChatMessageHandler 통합 테스트")
 class ChatMessageHandlerTest extends ApplicationBaseTest {
 
     @LocalServerPort
@@ -70,16 +70,15 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("채팅 메시지를 성공적으로 전송하고 수신하며 저장한다")
-    void whenValidMessage_thenMessageIsDeliveredAndStored() throws Exception {
+    @DisplayName("채팅 메시지 전송 및 저장 - 성공")
+    void sendMessage_Success() throws Exception {
         // given
         Long groupId = 1L;
         String destination = webSocketTestSupport.getGroupDestination(groupId);
         CompletableFuture<SuccessResponse<ChatMessageResponse>> future = webSocketTestSupport.subscribeAndReceive(
                 destination,
                 new ParameterizedTypeReference<>() {
-                }
-        );
+                });
 
         ChatMessageRequest request = ChatMessageRequest.builder()
                 .groupId(groupId)
@@ -107,8 +106,8 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("메시지 내용이 없는 경우 예외가 발생한다")
-    void whenEmptyContent_thenThrowsException() throws Exception {
+    @DisplayName("메시지 전송 - 빈 내용")
+    void sendMessage_EmptyContent_Fail() throws Exception {
         // given
         CompletableFuture<ErrorResponse> errorFuture = webSocketTestSupport.subscribeToErrors();
 
@@ -126,8 +125,8 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("메시지 길이가 제한을 초과하면 예외가 발생한다")
-    void whenContentTooLong_thenThrowsException() throws Exception {
+    @DisplayName("메시지 전송 - 길이 초과")
+    void sendMessage_ContentTooLong_Fail() throws Exception {
         // given
         CompletableFuture<ErrorResponse> errorFuture = webSocketTestSupport.subscribeToErrors();
 
@@ -146,14 +145,13 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("JWT 토큰 없이 연결을 시도하면 실패한다")
-    void whenConnectWithoutToken_thenFails() {
+    @DisplayName("WebSocket 연결 - JWT 토큰 없음")
+    void connect_NoJwtToken_Fail() {
         // given
         WebSocketTestSupport invalidWebSocketSupport = new WebSocketTestSupport(
                 String.format("ws://localhost:%d/ws", port),
                 objectMapper,
-                null
-        );
+                null);
 
         // when & then
         assertThatThrownBy(invalidWebSocketSupport::connect)
@@ -162,14 +160,13 @@ class ChatMessageHandlerTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("유효하지 않은 JWT 토큰으로 연결을 시도하면 실패한다")
-    void whenConnectWithInvalidToken_thenFails() {
+    @DisplayName("WebSocket 연결 - 유효하지 않은 JWT 토큰")
+    void connect_InvalidJwtToken_Fail() {
         // given
         WebSocketTestSupport invalidWebSocketSupport = new WebSocketTestSupport(
                 String.format("ws://localhost:%d/ws", port),
                 objectMapper,
-                "invalid.jwt.token"
-        );
+                "invalid.jwt.token");
 
         // when & then
         assertThatThrownBy(invalidWebSocketSupport::connect)

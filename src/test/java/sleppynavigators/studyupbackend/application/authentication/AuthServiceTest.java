@@ -24,7 +24,7 @@ import sleppynavigators.studyupbackend.infrastructure.authentication.oidc.Google
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.SignInRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
 
-@DisplayName("AuthService 테스트")
+@DisplayName("[애플리케이션] AuthService 테스트")
 class AuthServiceTest extends ApplicationBaseTest {
 
     @Autowired
@@ -40,8 +40,8 @@ class AuthServiceTest extends ApplicationBaseTest {
     private GoogleOidcClient googleOidcClient;
 
     @Test
-    @DisplayName("기존 회원의 구글 로그인을 성공적으로 수행한다")
-    void memberGoogleSignIn_Success() {
+    @DisplayName("기존 회원 구글 로그인 - 성공")
+    void googleSignIn_ExistingMember_Success() {
         // given
         String idToken = "test-id-token";
         SignInRequest request = new SignInRequest(idToken);
@@ -64,8 +64,8 @@ class AuthServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("신규 회원의 구글 로그인을 성공적으로 수행한다")
-    void newMemberGoogleSignIn_Success() {
+    @DisplayName("신규 회원 구글 로그인 - 성공")
+    void googleSignIn_NewMember_Success() {
         // given
         String idToken = "test-id-token";
         SignInRequest request = new SignInRequest(idToken);
@@ -89,8 +89,8 @@ class AuthServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("유효하지 않은 id token으로 구글 로그인을 시도하면 예외가 발생한다")
-    void whenInvalidIdToken_ThrowsInvalidCredentialException() {
+    @DisplayName("유효하지 않은 토큰으로 구글 로그인 - 실패")
+    void googleSignIn_InvalidToken_Fail() {
         // given
         String idToken = "invalid-id-token";
         SignInRequest request = new SignInRequest(idToken);

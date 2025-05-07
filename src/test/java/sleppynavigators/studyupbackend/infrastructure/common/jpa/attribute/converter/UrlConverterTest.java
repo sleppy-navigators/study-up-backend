@@ -8,11 +8,11 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("URL Converter 테스트")
+@DisplayName("[인프라] URL Converter 테스트")
 class UrlConverterTest {
 
     @Test
-    @DisplayName("URL 목록을 DB Column 하나로 변경할 수 있다")
+    @DisplayName("URL 목록을 DB 컬럼으로 변환 - 성공")
     void convertURLsToDatabaseColumn() throws MalformedURLException {
         // given
         UrlConverter converter = new UrlConverter();
@@ -29,7 +29,7 @@ class UrlConverterTest {
     }
 
     @Test
-    @DisplayName("URL 목록이 null일 때 DB Column 하나로 변경할 수 있다")
+    @DisplayName("null URL 목록을 DB 컬럼으로 변환 - 성공")
     void convertNullURLsToDatabaseColumn() {
         // given
         UrlConverter converter = new UrlConverter();
@@ -43,7 +43,7 @@ class UrlConverterTest {
     }
 
     @Test
-    @DisplayName("DB Column 하나를 URL 목록으로 변경할 수 있다")
+    @DisplayName("DB 컬럼을 URL 목록으로 변환 - 성공")
     void convertDatabaseColumnToURLs() throws MalformedURLException {
         // given
         UrlConverter converter = new UrlConverter();
@@ -60,7 +60,7 @@ class UrlConverterTest {
     }
 
     @Test
-    @DisplayName("DB Column이 null일 때 URL 목록으로 변경할 수 있다")
+    @DisplayName("null DB 컬럼을 URL 목록으로 변환 - 성공")
     void convertNullDatabaseColumnToURLs() {
         // given
         UrlConverter converter = new UrlConverter();
@@ -74,7 +74,7 @@ class UrlConverterTest {
     }
 
     @Test
-    @DisplayName("DB Column이 빈 문자열일 때 URL 목록으로 변경할 수 있다")
+    @DisplayName("빈 문자열 DB 컬럼을 URL 목록으로 변환 - 성공")
     void convertEmptyDatabaseColumnToURLs() {
         // given
         UrlConverter converter = new UrlConverter();
@@ -88,7 +88,7 @@ class UrlConverterTest {
     }
 
     @Test
-    @DisplayName("DB Column이 잘못된 URL을 포함할 때 URL 목록으로 변경할 수 있다")
+    @DisplayName("잘못된 URL이 포함된 DB 컬럼을 URL 목록으로 변환 - 성공")
     void convertInvalidDatabaseColumnToURLs() throws MalformedURLException {
         // given
         UrlConverter converter = new UrlConverter();

@@ -37,7 +37,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskL
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
 
-@DisplayName("ChallengeController API 테스트")
+@DisplayName("[프레젠테이션] ChallengeController 테스트")
 public class ChallengeControllerTest extends RestAssuredBaseTest {
 
     @Autowired
@@ -70,8 +70,8 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("챌린지 생성 24시간 이내 삭제 성공")
-    void cancelChallenge_Success() {
+    @DisplayName("챌린지 삭제 (24시간 이내) - 성공")
+    void deleteChallenge_Within24Hours_Success() {
         // given
         Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
         Challenge challengeToCancel = challengeSupport
@@ -89,8 +89,8 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("챌린지 생성 24시간이 초과하면 삭제 실패")
-    void cancelChallenge_Fail() {
+    @DisplayName("챌린지 삭제 (24시간 초과) - 실패")
+    void deleteChallenge_After24Hours_Fail() {
         // given
         Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
         Challenge challengeToCancel = challengeSupport
@@ -113,7 +113,7 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("챌린지 테스크 목록 조회")
+    @DisplayName("테스크 목록 조회 - 성공")
     void getTasks_Success() {
         // given
         Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -132,13 +132,15 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.tasks()).hasSize(3);
-                    assertThat(data.tasks()).map(TaskListItem::certification).anyMatch(Objects::nonNull);
-                    assertThat(data.tasks()).map(TaskListItem::certification).anyMatch(Objects::isNull);
+                    assertThat(data.tasks()).map(TaskListItem::certification)
+                            .anyMatch(Objects::nonNull);
+                    assertThat(data.tasks()).map(TaskListItem::certification)
+                            .anyMatch(Objects::isNull);
                 });
     }
 
     @Test
-    @DisplayName("챌린지 테스크 목록 조회 - 인증된 테스크만")
+    @DisplayName("테스크 목록 조회 (인증된 테스크) - 성공")
     void getTasks_Certified_Success() {
         // given
         Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -158,12 +160,13 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.tasks()).hasSize(1);
-                    assertThat(data.tasks()).map(TaskListItem::certification).allMatch(Objects::nonNull);
+                    assertThat(data.tasks()).map(TaskListItem::certification)
+                            .allMatch(Objects::nonNull);
                 });
     }
 
     @Test
-    @DisplayName("챌린지 테스크 완료")
+    @DisplayName("테스크 완료 - 성공")
     void completeTask_Success() throws MalformedURLException {
         // given
         Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
@@ -171,13 +174,12 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
                 .callToMakeChallengesWithTasks(groupToBelong, 3, 1, currentUser);
         Task taskToCertify = challengeToQuery.getTasks().get(1);
 
-        TaskCertificationRequest request =
-                new TaskCertificationRequest(
-                        List.of(new URL("https://blog.com/article1"),
-                                new URL("https://blog.com/article2")),
-                        List.of(new URL("https://sns.com/image1"),
-                                new URL("https://sns.com/image2"),
-                                new URL("https://sns.com/image3")));
+        TaskCertificationRequest request = new TaskCertificationRequest(
+                List.of(new URL("https://blog.com/article1"),
+                        new URL("https://blog.com/article2")),
+                List.of(new URL("https://sns.com/image1"),
+                        new URL("https://sns.com/image2"),
+                        new URL("https://sns.com/image3")));
 
         // when
         ExtractableResponse<?> response = with()

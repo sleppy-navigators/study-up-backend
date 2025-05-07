@@ -17,7 +17,7 @@ import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.business.SessionExpiredException;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 
-@DisplayName("User Session Manager 테스트")
+@DisplayName("[도메인] UserSessionManager 테스트")
 class UserSessionManagerTest extends IntegrationBaseTest {
 
     @Autowired
@@ -27,8 +27,8 @@ class UserSessionManagerTest extends IntegrationBaseTest {
     private AccessTokenProperties accessTokenProperties;
 
     @Test
-    @DisplayName("세션을 시작한다")
-    void whenStartSession_Success() {
+    @DisplayName("세션 시작 - 성공")
+    void startSession_Success() {
         // given
         User user = new User("test-user", "email@test.com");
         UserSession userSession = UserSession.builder().user(user).build();
@@ -38,14 +38,15 @@ class UserSessionManagerTest extends IntegrationBaseTest {
 
         // then
         assertThat(userSession.getRefreshToken()).isNotBlank();
-        AccessToken issuedAccessToken = AccessToken.deserialize(userSession.getAccessToken(), accessTokenProperties);
+        AccessToken issuedAccessToken = AccessToken.deserialize(userSession.getAccessToken(),
+                accessTokenProperties);
         assertThat(issuedAccessToken.getUserProfile().getUsername()).isEqualTo("test-user");
         assertThat(userSession.isAlive()).isTrue();
     }
 
     @Test
-    @DisplayName("세션을 연장한다")
-    void whenExtendSession_Success() {
+    @DisplayName("세션 연장 - 성공")
+    void extendSession_Success() {
         // given
         UserProfile userProfile = new UserProfile("test-user", "email@test.com");
 
@@ -65,14 +66,15 @@ class UserSessionManagerTest extends IntegrationBaseTest {
 
         // then
         assertThat(userSession.getRefreshToken()).isNotBlank();
-        AccessToken issuedAccessToken = AccessToken.deserialize(userSession.getAccessToken(), accessTokenProperties);
+        AccessToken issuedAccessToken = AccessToken.deserialize(userSession.getAccessToken(),
+                accessTokenProperties);
         assertThat(issuedAccessToken.getUserId()).isEqualTo(1L);
         assertThat(userSession.isAlive()).isTrue();
     }
 
     @Test
-    @DisplayName("세션 연장 요청이 만료된 세션에 대해 실패한다")
-    void whenExtendSession_ExpiredSession_thenFail() {
+    @DisplayName("세션 연장 - 만료된 세션")
+    void extendSession_ExpiredSession_Fail() {
         // given
         UserProfile userProfile = new UserProfile("test-user", "email@test.com");
 
@@ -93,15 +95,15 @@ class UserSessionManagerTest extends IntegrationBaseTest {
     }
 
     @Test
-    @DisplayName("세션 연장 요청이 일치하지 않은 토큰에 대해 실패한다")
-    void whenExtendSession_InvalidToken_thenFail() {
+    @DisplayName("세션 연장 - 일치하지 않은 토큰")
+    void extendSession_InvalidToken_Fail() {
         // given
         UserProfile userProfile = new UserProfile("test-user", "email@test.com");
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
 
         RefreshToken invalidRefreshToken = new RefreshToken();
-        AccessToken invalidAccessToken =
-                new AccessToken(1L, userProfile, List.of("profile"), accessTokenProperties);
+        AccessToken invalidAccessToken = new AccessToken(1L, userProfile, List.of("profile"),
+                accessTokenProperties);
 
         UserSession userSession = UserSession.builder()
                 .user(new User("test-user", "email@test.com"))
@@ -112,7 +114,8 @@ class UserSessionManagerTest extends IntegrationBaseTest {
 
         // when & then
         assertThatThrownBy(
-                () -> userSessionManager.extendSession(userSession, invalidRefreshToken, invalidAccessToken))
+                () -> userSessionManager.extendSession(userSession, invalidRefreshToken,
+                        invalidAccessToken))
                 .isInstanceOf(InvalidCredentialException.class);
     }
 }

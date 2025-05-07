@@ -28,7 +28,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 
-@DisplayName("ChallengeService 테스트")
+@DisplayName("[애플리케이션] ChallengeService 테스트")
 class ChallengeServiceTest extends ApplicationBaseTest {
 
     @Autowired
@@ -61,14 +61,13 @@ class ChallengeServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("챌린지 생성 시 ChallengeCreateEvent가 발행된다")
+    @DisplayName("챌린지 생성 이벤트 발행 - 성공")
     void createChallenge_PublishesChallengeCreateEvent() {
         // given
         ZonedDateTime deadline = ZonedDateTime.now().plusDays(7);
         TaskRequest taskRequest = new ChallengeCreationRequest.TaskRequest("testTask", deadline);
         ChallengeCreationRequest request = new ChallengeCreationRequest(
-                "testChallenge", "description", List.of(taskRequest)
-        );
+                "testChallenge", "description", List.of(taskRequest));
 
         // when
         challengeService.createChallenge(testUser.getId(), testGroup.getId(), request);
@@ -77,12 +76,11 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         verify(systemEventListener).handleSystemEvent(
                 new ChallengeCreateEvent(testUser.getUserProfile().getUsername(),
                         "testChallenge",
-                        testGroup.getId())
-        );
+                        testGroup.getId()));
     }
 
     @Test
-    @DisplayName("챌린지 취소 시 ChallengeCancelEvent가 발행된다")
+    @DisplayName("챌린지 취소 이벤트 발행 - 성공")
     void cancelChallenge_PublishesChallengeCancelEvent() {
         // given
         Challenge challenge = challengeSupport
@@ -96,25 +94,22 @@ class ChallengeServiceTest extends ApplicationBaseTest {
                 new ChallengeCreateEvent(
                         testUser.getUserProfile().getUsername(),
                         challenge.getDetail().getTitle(),
-                        testGroup.getId())
-        );
+                        testGroup.getId()));
         verify(systemEventListener).handleSystemEvent(
                 new ChallengeCancelEvent(
                         testUser.getUserProfile().getUsername(),
                         challenge.getDetail().getTitle(),
-                        testGroup.getId())
-        );
+                        testGroup.getId()));
     }
 
     @Test
-    @DisplayName("테스크 인증 자료 제출 시 TaskCertifiedEvent가 발행된다")
+    @DisplayName("테스크 인증 이벤트 발행 - 성공")
     void certifyTask_PublishesTaskCertifiedEvent() throws MalformedURLException {
         // given
         Challenge challenge = challengeSupport
                 .callToMakeChallengesWithTasks(testGroup, 3, 0, testUser);
-        TaskCertificationRequest taskCertificationRequest =
-                new TaskCertificationRequest(List.of(new URL("https://blog.com/article")), List.of()
-                );
+        TaskCertificationRequest taskCertificationRequest = new TaskCertificationRequest(
+                List.of(new URL("https://blog.com/article")), List.of());
 
         // when
         challengeService.completeTask(testUser.getId(), challenge.getId(), 1L, taskCertificationRequest);
@@ -124,14 +119,12 @@ class ChallengeServiceTest extends ApplicationBaseTest {
                 new ChallengeCreateEvent(
                         testUser.getUserProfile().getUsername(),
                         challenge.getDetail().getTitle(),
-                        testGroup.getId())
-        );
+                        testGroup.getId()));
         verify(systemEventListener).handleSystemEvent(
                 new TaskCertifiedEvent(
                         testUser.getUserProfile().getUsername(),
                         challenge.getTasks().get(0).getDetail().getTitle(),
                         challenge.getDetail().getTitle(),
-                        testGroup.getId())
-        );
+                        testGroup.getId()));
     }
 }

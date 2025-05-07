@@ -2,15 +2,18 @@ package sleppynavigators.studyupbackend.domain.chat.systemmessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 
+@DisplayName("[도메인] UserJoinSystemMessageGenerator 테스트")
 class UserJoinSystemMessageGeneratorTest {
 
     private final UserJoinSystemMessageGenerator generator = new UserJoinSystemMessageGenerator();
 
     @Test
+    @DisplayName("지원하는 이벤트 타입 조회 - 성공")
     void getEventType_ShouldReturnUserJoin() {
         // when
         EventType eventType = generator.supportedEventType();
@@ -20,6 +23,7 @@ class UserJoinSystemMessageGeneratorTest {
     }
 
     @Test
+    @DisplayName("시스템 메시지 생성 - 성공")
     void generate_ShouldReturnFormattedMessage() {
         // given
         String userName = "홍길동";

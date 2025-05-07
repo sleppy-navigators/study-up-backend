@@ -19,7 +19,7 @@ import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.request.RefreshRequest;
 import sleppynavigators.studyupbackend.presentation.authentication.dto.response.TokenResponse;
 
-@DisplayName("AuthController API 테스트")
+@DisplayName("[프레젠테이션] AuthController 테스트")
 class AuthControllerTest extends RestAssuredBaseTest {
 
     @Autowired
@@ -29,15 +29,15 @@ class AuthControllerTest extends RestAssuredBaseTest {
     private AuthSupport authSupport;
 
     @Test
-    @DisplayName("토큰 갱신 요청이 성공적으로 수행된다")
+    @DisplayName("토큰 갱신 - 성공")
     void refresh_Success() {
         // given
         User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
         UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, notExpiredTime);
 
-        RefreshRequest request =
-                new RefreshRequest(sessionToRefresh.getAccessToken(), sessionToRefresh.getRefreshToken());
+        RefreshRequest request = new RefreshRequest(sessionToRefresh.getAccessToken(),
+                sessionToRefresh.getRefreshToken());
 
         // when
         ExtractableResponse<?> response = with().body(request)
@@ -52,15 +52,15 @@ class AuthControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("만료된 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
+    @DisplayName("토큰 갱신 (만료된 세션) - 실패")
     void whenExpiredSession_ThrowsInvalidCredentialException() {
         // given
         User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(1);
         UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, expiredTime);
 
-        RefreshRequest request =
-                new RefreshRequest(sessionToRefresh.getAccessToken(), sessionToRefresh.getRefreshToken());
+        RefreshRequest request = new RefreshRequest(sessionToRefresh.getAccessToken(),
+                sessionToRefresh.getRefreshToken());
 
         // when
         ExtractableResponse<?> response = with().body(request)
@@ -71,11 +71,12 @@ class AuthControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.SESSION_EXPIRED.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.SESSION_EXPIRED.getDefaultMessage());
+        assertThat(response.jsonPath().getString("message"))
+                .isEqualTo(ErrorCode.SESSION_EXPIRED.getDefaultMessage());
     }
 
     @Test
-    @DisplayName("존재하지 않는 세션에 대해 토큰 갱신 요청을 수행하면 예외가 발생한다")
+    @DisplayName("토큰 갱신 (존재하지 않는 세션) - 실패")
     void whenNonExistentSession_ThrowsInvalidCredentialException() {
         // given
         User userToRefresh = userSupport.registerUserToDB();
@@ -98,7 +99,7 @@ class AuthControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("토큰 정보가 일치하지 않을 경우 예외가 발생한다")
+    @DisplayName("토큰 갱신 (토큰 불일치) - 실패")
     void whenUnMatchedToken_ThrowsInvalidCredentialException() {
         // given
         User userToRefresh = userSupport.registerUserToDB();
@@ -123,15 +124,14 @@ class AuthControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("JWT가 아닌 Access 토큰으로 토큰 갱신 요청을 수행하면 예외가 발생한다")
+    @DisplayName("토큰 갱신 (JWT가 아닌 Access 토큰) - 실패")
     void whenNotJwtAccessToken_ThrowsInvalidCredentialException() {
         // given
         User userToRefresh = userSupport.registerUserToDB();
         LocalDateTime notExpiredTime = LocalDateTime.now().plusMinutes(1);
         UserSession sessionToRefresh = authSupport.registerUserSessionToDB(userToRefresh, notExpiredTime);
 
-        RefreshRequest request =
-                new RefreshRequest("not-jwt-access-token", sessionToRefresh.getRefreshToken());
+        RefreshRequest request = new RefreshRequest("not-jwt-access-token", sessionToRefresh.getRefreshToken());
 
         // when
         ExtractableResponse<?> response = with().body(request)

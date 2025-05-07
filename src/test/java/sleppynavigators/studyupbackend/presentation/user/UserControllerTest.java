@@ -31,7 +31,7 @@ import sleppynavigators.studyupbackend.presentation.user.dto.response.UserRespon
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskListItem;
 
-@DisplayName("UserController API 테스트")
+@DisplayName("[프레젠테이션] UserController API 테스트")
 public class UserControllerTest extends RestAssuredBaseTest {
 
     @Autowired
@@ -58,7 +58,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("사용자 정보 조회에 성공한다")
+    @DisplayName("사용자 정보 조회 - 성공")
     void getUserInfo_Success() {
         // given
         User userToQuery = userSupport.registerUserToDB();
@@ -79,7 +79,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("사용자가 그룹 목록 조회에 성공한다")
+    @DisplayName("그룹 목록 조회 - 성공")
     void getGroups_Success() {
         // given
         User anotherUser1 = userSupport.registerUserToDB();
@@ -120,8 +120,8 @@ public class UserControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("사용자가 그룹 목록 조회 - 시스템 메시지 순 정렬")
-    void getGroups_Success_SortBySystemMessage() {
+    @DisplayName("그룹 목록 조회 (시스템 메시지 순) - 성공")
+    void getGroups_SortBySystemMessage_Success() {
         // given
         User anotherUser1 = userSupport.registerUserToDB();
         User anotherUser2 = userSupport.registerUserToDB();
@@ -160,7 +160,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("사용자가 테스크 목록 조회에 성공한다")
+    @DisplayName("테스크 목록 조회 - 성공")
     void getTasks_Success() {
         // given
         User anotherUser1 = userSupport.registerUserToDB();
@@ -189,18 +189,21 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.tasks()).hasSize(9);
-                    assertThat(data.tasks()).map(UserTaskListItem::certification).anyMatch(Objects::nonNull);
-                    assertThat(data.tasks()).map(UserTaskListItem::certification).anyMatch(Objects::isNull);
+                    assertThat(data.tasks()).map(UserTaskListItem::certification)
+                            .anyMatch(Objects::nonNull);
+                    assertThat(data.tasks()).map(UserTaskListItem::certification)
+                            .anyMatch(Objects::isNull);
                     assertThat(data.tasks())
                             .map(UserTaskListItem::groupDetail)
                             .map(TaskGroupDTO::currentlyJoined)
-                            .containsExactly(true, true, true, true, true, true, true, false, false);
+                            .containsExactly(true, true, true, true, true, true, true,
+                                    false, false);
                 });
     }
 
     @Test
-    @DisplayName("사용자가 테스크 목록 조회 - 진행중인 테스크만")
-    void getTasks_Certified_Success() {
+    @DisplayName("테스크 목록 조회 (진행중인 테스크) - 성공")
+    void getTasks_InProgress_Success() {
         // given
         User anotherUser1 = userSupport.registerUserToDB();
         User anotherUser2 = userSupport.registerUserToDB();
@@ -229,7 +232,8 @@ public class UserControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.tasks()).hasSize(5);
-                    assertThat(data.tasks()).map(UserTaskListItem::certification).allMatch(Objects::isNull);
+                    assertThat(data.tasks()).map(UserTaskListItem::certification)
+                            .allMatch(Objects::isNull);
                     assertThat(data.tasks())
                             .map(UserTaskListItem::groupDetail)
                             .map(TaskGroupDTO::currentlyJoined)

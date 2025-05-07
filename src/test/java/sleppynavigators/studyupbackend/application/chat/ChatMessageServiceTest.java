@@ -36,7 +36,7 @@ import sleppynavigators.studyupbackend.infrastructure.chat.ChatMessageRepository
 import sleppynavigators.studyupbackend.presentation.chat.dto.request.ChatMessageRequest;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 
-@DisplayName("ChatService 통합 테스트")
+@DisplayName("[애플리케이션] ChatMessageService 테스트")
 class ChatMessageServiceTest extends ApplicationBaseTest {
 
     private static final Long AUTHENTICATED_USER_ID = 1L;
@@ -67,8 +67,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("메시지를 저장하고 WebSocket으로 전송한다")
-    void sendMessage() {
+    @DisplayName("메시지 전송 및 저장 - 성공")
+    void sendMessage_Success() {
         // given
         ChatMessageRequest request = new ChatMessageRequest(1L, "테스트 메시지");
         String destination = "/topic/group/1";
@@ -89,8 +89,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("메시지 전송 실패 시 ChatMessageException이 발생한다")
-    void sendMessage_WhenDeliveryFails_ThrowsChatMessageException() {
+    @DisplayName("메시지 전송 - ChatMessageException 발생")
+    void sendMessage_DeliveryFail_ThrowsChatMessageException() {
         // given
         String destination = "/topic/group/test";
         ChatMessageRequest request = ChatMessageRequest.builder()
@@ -103,15 +103,16 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatMessageService.sendUserMessage(request, destination, AUTHENTICATED_USER_ID))
+        assertThatThrownBy(
+                () -> chatMessageService.sendUserMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
 
         assertThat(chatMessageRepository.findAll()).isEmpty();
     }
 
     @Test
-    @DisplayName("예상치 못한 오류 발생 시 ChatMessageException이 발생한다")
-    void sendMessage_WhenUnexpectedError_ThrowsChatMessageException() {
+    @DisplayName("메시지 전송 - 예상치 못한 오류 발생")
+    void sendMessage_UnexpectedError_ThrowsChatMessageException() {
         // given
         String destination = "/topic/group/test";
         ChatMessageRequest request = ChatMessageRequest.builder()
@@ -124,15 +125,16 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
         // when & then
-        assertThatThrownBy(() -> chatMessageService.sendUserMessage(request, destination, AUTHENTICATED_USER_ID))
+        assertThatThrownBy(
+                () -> chatMessageService.sendUserMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
 
         assertThat(chatMessageRepository.findAll()).isEmpty();
     }
 
     @Test
-    @DisplayName("시스템 메시지를 저장하고 WebSocket으로 전송한다")
-    void sendSystemMessage() {
+    @DisplayName("시스템 메시지 전송 및 저장 - 성공")
+    void sendSystemMessage_Success() {
         // given
         Long groupId = 1L;
         String username = "testUser";
@@ -144,8 +146,7 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         // then
         verify(messagingTemplate).convertAndSend(
                 eq(String.format("/topic/group/%d", groupId)),
-                any(SuccessResponse.class)
-        );
+                any(SuccessResponse.class));
 
         ChatMessage savedMessage = chatMessageRepository
                 .findGroupMessages(groupId, PageRequest.of(0, 1))
@@ -156,8 +157,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("시스템 메시지 전송 실패 시 ChatMessageException이 발생한다")
-    void sendSystemMessage_WhenDeliveryFails_ThrowsChatMessageException() {
+    @DisplayName("시스템 메시지 전송 - ChatMessageException 발생")
+    void sendSystemMessage_DeliveryFail_ThrowsChatMessageException() {
         // given
         Long groupId = 1L;
         String username = "testUser";
@@ -165,7 +166,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
 
         doThrow(new RuntimeException("메시지 전송 실패"))
                 .when(messagingTemplate)
-                .convertAndSend(eq(String.format("/topic/group/%d", groupId)), any(SuccessResponse.class));
+                .convertAndSend(eq(String.format("/topic/group/%d", groupId)),
+                        any(SuccessResponse.class));
 
         // when & then
         assertThatThrownBy(() -> chatMessageService.sendSystemMessage(event))
