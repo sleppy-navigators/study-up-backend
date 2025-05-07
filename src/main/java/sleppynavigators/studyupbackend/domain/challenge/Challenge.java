@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
+import sleppynavigators.studyupbackend.domain.challenge.vo.TaskDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -45,10 +46,10 @@ public class Challenge extends TimeAuditBaseEntity {
     private List<Task> tasks;
 
     @Builder
-    public Challenge(User owner, Group group, String title, String description, LocalDateTime deadline) {
+    public Challenge(User owner, Group group, String title, String description) {
         this.owner = owner;
         this.group = group;
-        this.detail = new ChallengeDetail(title, deadline, description);
+        this.detail = new ChallengeDetail(title, description);
         this.tasks = new ArrayList<>();
     }
 
@@ -82,7 +83,7 @@ public class Challenge extends TimeAuditBaseEntity {
     }
 
     public boolean isCompleted() {
-        return isAllTasksCompleted() || detail.isOverdue();
+        return isAllTasksCompleted();
     }
 
     public double getCompletionRate() {
@@ -92,5 +93,13 @@ public class Challenge extends TimeAuditBaseEntity {
 
         long completedTasks = tasks.stream().filter(Task::isCompleted).count();
         return (double) completedTasks / tasks.size() * 100;
+    }
+
+    public LocalDateTime getDeadline() {
+        return tasks.stream()
+                .map(Task::getDetail)
+                .map(TaskDetail::getDeadline)
+                .max(LocalDateTime::compareTo)
+                .orElseThrow(() -> new IllegalStateException("Challenge has no tasks"));
     }
 }

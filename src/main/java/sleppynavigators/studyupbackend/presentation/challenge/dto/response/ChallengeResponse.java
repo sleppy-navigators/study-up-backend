@@ -25,7 +25,7 @@ public record ChallengeResponse(
         return new ChallengeResponse(
                 challenge.getId(),
                 challenge.getDetail().getTitle(),
-                challenge.getDetail().getDeadline().atZone(ZoneId.systemDefault()),
+                challenge.getDeadline().atZone(ZoneId.systemDefault()),
                 challenge.getDetail().getDescription()
         );
     }
