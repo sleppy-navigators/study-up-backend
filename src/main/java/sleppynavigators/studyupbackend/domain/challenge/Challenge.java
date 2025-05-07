@@ -78,10 +78,6 @@ public class Challenge extends TimeAuditBaseEntity {
                 .orElse(null);
     }
 
-    public boolean isAllTasksCompleted() {
-        return tasks.stream().allMatch(Task::isCompleted);
-    }
-
     public boolean isCompleted() {
         return isAllTasksCompleted();
     }
@@ -101,5 +97,9 @@ public class Challenge extends TimeAuditBaseEntity {
                 .map(TaskDetail::getDeadline)
                 .max(LocalDateTime::compareTo)
                 .orElseThrow(() -> new IllegalStateException("Challenge has no tasks"));
+    }
+
+    private boolean isAllTasksCompleted() {
+        return tasks.stream().allMatch(Task::isCompleted);
     }
 }
