@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.challenge;
 
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
 import java.net.MalformedURLException;
@@ -70,6 +71,8 @@ class ChallengeServiceTest extends ApplicationBaseTest {
                 "testChallenge", "description", List.of(taskRequest)
         );
 
+        clearInvocations(systemEventListener);
+
         // when
         challengeService.createChallenge(testUser.getId(), testGroup.getId(), request);
 
@@ -88,16 +91,12 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         Challenge challenge = challengeSupport
                 .callToMakeChallengesWithTasks(testGroup, 3, 2, testUser);
 
+        clearInvocations(systemEventListener);
+
         // when
         challengeService.cancelChallenge(testUser.getId(), challenge.getId());
 
         // then
-        verify(systemEventListener).handleSystemEvent(
-                new ChallengeCreateEvent(
-                        testUser.getUserProfile().getUsername(),
-                        challenge.getDetail().getTitle(),
-                        testGroup.getId())
-        );
         verify(systemEventListener).handleSystemEvent(
                 new ChallengeCancelEvent(
                         testUser.getUserProfile().getUsername(),
@@ -116,16 +115,12 @@ class ChallengeServiceTest extends ApplicationBaseTest {
                 new TaskCertificationRequest(List.of(new URL("https://blog.com/article")), List.of()
                 );
 
+        clearInvocations(systemEventListener);
+
         // when
         challengeService.completeTask(testUser.getId(), challenge.getId(), 1L, taskCertificationRequest);
 
         // then
-        verify(systemEventListener).handleSystemEvent(
-                new ChallengeCreateEvent(
-                        testUser.getUserProfile().getUsername(),
-                        challenge.getDetail().getTitle(),
-                        testGroup.getId())
-        );
         verify(systemEventListener).handleSystemEvent(
                 new TaskCertifiedEvent(
                         testUser.getUserProfile().getUsername(),
