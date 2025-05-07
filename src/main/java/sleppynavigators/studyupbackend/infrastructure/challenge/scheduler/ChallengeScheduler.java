@@ -18,8 +18,7 @@ public class ChallengeScheduler {
     private final ChallengeRepository challengeRepository;
     private final SystemEventPublisher systemEventPublisher;
 
-    // TODO(@Jayon): properties 분리 필요성이 생기면 빼기
-    @Scheduled(cron = "0 0 9 * * *", zone = "Asia/Seoul") // 매일 오전 9시에 실행
+    @Scheduled(cron = "${scheduler.challenge.check-expiration}", zone = "Asia/Seoul")
     @Transactional
     public void checkExpiredChallenges() {
         LocalDateTime now = LocalDateTime.now();
