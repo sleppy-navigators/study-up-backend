@@ -84,4 +84,13 @@ public class Challenge extends TimeAuditBaseEntity {
     public boolean isCompleted() {
         return isAllTasksCompleted() || detail.isOverdue();
     }
+
+    public double getCompletionRate() {
+        if (tasks.isEmpty()) {
+            return 0.0;
+        }
+
+        long completedTasks = tasks.stream().filter(Task::isCompleted).count();
+        return (double) completedTasks / tasks.size() * 100;
+    }
 }
