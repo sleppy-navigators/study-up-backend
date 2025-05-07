@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.group;
 
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
@@ -63,6 +64,8 @@ class GroupServiceTest extends ApplicationBaseTest {
         User creator = userSupport.registerUserToDB();
         GroupCreationRequest request = new GroupCreationRequest("스터디하기", "스터디 설명", null);
 
+        clearInvocations(systemEventListener);
+
         // when
         GroupResponse response = groupService.createGroup(creator.getId(), request);
 
@@ -78,6 +81,8 @@ class GroupServiceTest extends ApplicationBaseTest {
         // given
         User newUser = userSupport.registerUserToDB();
         GroupInvitationAcceptRequest request = new GroupInvitationAcceptRequest(testInvitation.getInvitationKey());
+
+        clearInvocations(systemEventListener);
 
         // when
         groupService.acceptInvitation(newUser.getId(), testGroup.getId(), testInvitation.getId(), request);
@@ -95,6 +100,8 @@ class GroupServiceTest extends ApplicationBaseTest {
         User anotherMember = userSupport.registerUserToDB();
         Group groupToLeave = groupSupport.registerGroupToDB(List.of(testUser, anotherMember));
         Bot testBot = botSupport.registerBotToDB(groupToLeave);
+
+        clearInvocations(systemEventListener);
 
         // when
         groupService.leaveGroup(anotherMember.getId(), groupToLeave.getId());
