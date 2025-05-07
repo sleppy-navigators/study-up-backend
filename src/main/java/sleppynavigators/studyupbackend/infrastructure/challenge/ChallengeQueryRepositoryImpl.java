@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.infrastructure.challenge;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,22 @@ public class ChallengeQueryRepositoryImpl implements ChallengeQueryRepository {
                 .orderBy(task.certification.certifiedAt.max().desc())
                 .offset(pageNum * pageSize)
                 .limit(pageSize)
+                .fetch();
+    }
+
+    @Override
+    public List<Challenge> findAllRecentlyCompleted(Predicate predicate, LocalDateTime completedAfter) {
+        QChallenge challenge = QChallenge.challenge;
+        QTask task = QTask.task;
+
+        LocalDateTime now = LocalDateTime.now();
+        return queryFactory
+                .selectFrom(challenge)
+                .where(predicate)
+                .leftJoin(task).on(task.challenge.eq(challenge))
+                .groupBy(challenge.id)
+                .having(task.certification.certifiedAt.max().between(completedAfter, now))
+                .orderBy(task.certification.certifiedAt.max().desc())
                 .fetch();
     }
 }

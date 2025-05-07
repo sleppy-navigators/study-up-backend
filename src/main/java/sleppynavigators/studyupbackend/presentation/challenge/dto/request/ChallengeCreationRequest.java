@@ -18,9 +18,6 @@ public record ChallengeCreationRequest(
         @Schema(description = "챌린지 제목", example = "스터디 챌린지")
         @NotBlank String title,
 
-        @Schema(description = "챌린지 마감일", example = "2023-10-01T10:00:00Z")
-        @NotNull ZonedDateTime deadline,
-
         @Schema(description = "챌린지 설명", example = "아무튼 공부하는 스터디")
         String description,
 
@@ -33,7 +30,6 @@ public record ChallengeCreationRequest(
                     .owner(owner)
                     .group(group)
                     .title(title)
-                    .deadline(deadline.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime())
                     .description(description)
                     .build();
             for (TaskRequest task : tasks) {
