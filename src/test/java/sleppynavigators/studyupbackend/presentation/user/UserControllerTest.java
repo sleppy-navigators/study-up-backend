@@ -154,7 +154,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
                     assertThat(data.groups()).map(GroupListItem::lastChatMessage)
                             .containsExactly(
                                     "test-user님이 'test-challenge' 챌린지를 생성했습니다.",
-                                    "test-user님이 'test-challenge' 챌린지를 생성했습니다.",
+                                    "test-user님이 'test-challenge' 테스크를 완료했습니다. (test-task-1)",
                                     "test-user님이 그룹에 참여했습니다.");
                 });
     }

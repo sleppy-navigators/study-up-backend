@@ -38,9 +38,7 @@ public class ChallengeSupport {
 
         // Create a challenge with tasks
         ChallengeCreationRequest challengeCreationRequest = new ChallengeCreationRequest(
-                "test-challenge",
-                ZonedDateTime.now().plusDays(3),
-                "test-challenge-description",
+                "test-challenge", "test-challenge-description",
                 IntStream.range(0, numOfTotalTasks)
                         .mapToObj(i -> new TaskRequest("test-task-" + i, ZonedDateTime.now().plusHours(3)))
                         .toList());
