@@ -33,3 +33,7 @@ authentication:
   access-token:
     secret: testsecretfortestspringbootapplication
     expiration-in-milliseconds: 3600000
+    
+fcm:
+  service-account-key-path: config/fcm/study-up-account-key.json
+  project-id: test-id

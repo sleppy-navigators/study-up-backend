@@ -47,7 +47,8 @@ sonar {
 ///////////////////////////// DEPENDENCIES /////////////////////////////
 
 ext {
-    apacheCommonsVersion = "3.14.0"
+    apacheCommonsLangVersion = "3.14.0"
+    apacheCommonsCollectionsVersion = "4.4"
     springAwsVersion = "3.0.0"
     okHttpVersion = "5.0.0-alpha.12"
     jjwtVersion = "0.12.3"
@@ -57,6 +58,7 @@ ext {
     assertJVersion = "3.25.3"
     awaitilityVersion = "4.2.0"
     flappdoodleVersion = "4.11.0"
+    firebaseAdminVersion = "9.2.0"
 }
 
 dependencies {
@@ -73,7 +75,8 @@ dependencies {
     // Validation
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    implementation "org.apache.commons:commons-lang3:${apacheCommonsVersion}"
+    implementation "org.apache.commons:commons-lang3:${apacheCommonsLangVersion}"
+    implementation "org.apache.commons:commons-collections4:${apacheCommonsCollectionsVersion}"
 
     // AWS
     implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:${springAwsVersion}")
@@ -85,6 +88,9 @@ dependencies {
 
     // Socket
     implementation "org.springframework.boot:spring-boot-starter-websocket"
+
+    // Firebase
+    implementation "com.google.firebase:firebase-admin:${firebaseAdminVersion}"
 
     // Security
     implementation "org.springframework.boot:spring-boot-starter-security"
