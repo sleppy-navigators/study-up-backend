@@ -11,7 +11,7 @@ import sleppynavigators.studyupbackend.exception.database.EntityNotFoundExceptio
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmClient;
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.presentation.notification.dto.TestNotificationRequest;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.TestNotificationRequest;
 
 import java.util.List;
 

@@ -19,11 +19,11 @@ import sleppynavigators.studyupbackend.application.notification.FcmTokenService;
 import sleppynavigators.studyupbackend.domain.notification.FcmToken;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenDeleteRequest;
-import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenRequest;
-import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenResponse;
-import sleppynavigators.studyupbackend.presentation.notification.dto.TestNotificationRequest;
-import sleppynavigators.studyupbackend.presentation.notification.dto.TestNotificationResponse;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenDeleteRequest;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenRequest;
+import sleppynavigators.studyupbackend.presentation.notification.dto.response.FcmTokenResponse;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.TestNotificationRequest;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.TestNotificationResponse;
 
 @RestController
 @RequestMapping("/api/notifications")

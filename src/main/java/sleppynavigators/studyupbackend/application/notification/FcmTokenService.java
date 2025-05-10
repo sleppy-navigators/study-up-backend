@@ -9,7 +9,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
-import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenRequest;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenRequest;
 
 @Service
 @Transactional(readOnly = true)

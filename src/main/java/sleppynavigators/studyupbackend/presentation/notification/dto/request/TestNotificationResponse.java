@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.presentation.notification.dto;
+package sleppynavigators.studyupbackend.presentation.notification.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -23,8 +23,8 @@ import sleppynavigators.studyupbackend.domain.notification.FcmToken.DeviceType;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmClient;
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
-import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenDeleteRequest;
-import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenRequest;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenDeleteRequest;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenRequest;
 
 @DisplayName("FcmController API 테스트")
 class FcmControllerTest extends RestAssuredBaseTest {
