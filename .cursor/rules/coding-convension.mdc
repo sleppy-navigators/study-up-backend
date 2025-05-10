@@ -1,8 +1,4 @@
 ---
-description: 
-globs: 
----
----
 description: Java coding style and convention rules for StudyUp backend
 globs: **/*
 ---
@@ -11,7 +7,7 @@ globs: **/*
 ## 공통 규칙
 - JDK 17 문법을 적극적으로 사용합니다. (단, var은 테스트 레벨이 아니라면 지양합니다.)
 - 파일 맨 끝에 개행을 추가합니다.
-- 파일을 새롭게 추가할 때는 반드시 기존 작성된 파일의 컨벤션과 해당 mdc 파일의 규칙을 꼼꼼히 읽어보고 작성합니다.
+- **파일을 새롭게 추가하거나 수정할 때는 반드시 기존 작성된 파일의 컨벤션과 해당 mdc 파일의 규칙을 꼼꼼히 읽어보고 작성합니다.**
 - **개발자가 코드를 실제로 반영하라고 이야기하기 전까지 절대로 코드를 실제로 edit 하지 않습니다.**
 
 ### import 순서
@@ -49,7 +45,8 @@ globs: **/*
 
 ## 테스트 작성 규칙
 - 테스트는 JUnit5, AssertJ를 사용합니다.
+- given - when - then 패턴을 사용하며 이를 주석으로 구분합니다.
 - Domain 테스트는 단위 테스트, Application 테스트는 통합 테스트, Presentation 테스트는 E2E 테스트로 작성합니다.
 - 가능한 모킹을 최소화합니다. (외부 API 호출 정도만 모킹할 것.)
 - Application 테스트, Presentation 테스트를 작성할 때는 적절히 XXXSupport를 통한 픽스처 팩토리/유틸 클래스를 활용합니다.
-- Presentation 테스트를 작성할 때 DTO jakarta validation을 사용하여 유효성 검사가 잘 되는지도 확인합니다.
+- Presentation 테스트를 작성할 때 DTO 유효성 검사가 잘 되는지도 확인합니다.
