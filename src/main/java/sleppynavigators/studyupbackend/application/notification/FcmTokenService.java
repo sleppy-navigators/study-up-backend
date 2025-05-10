@@ -27,7 +27,7 @@ public class FcmTokenService {
         return fcmTokenRepository.findByDeviceId(request.deviceId())
                 .map(existingToken -> {
                     existingToken.updateToken(request.token());
-                    return fcmTokenRepository.save(existingToken);
+                    return existingToken;
                 })
                 .orElseGet(() -> {
                     FcmToken newToken = FcmToken.builder()
