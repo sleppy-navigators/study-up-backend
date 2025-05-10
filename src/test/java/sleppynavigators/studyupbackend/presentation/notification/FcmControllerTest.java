@@ -177,6 +177,50 @@ class FcmControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
+    @DisplayName("다른 사용자의 FCM 토큰은 삭제할 수 없다")
+    void deleteToken_CannotDeleteOtherUsersToken() {
+        // 첫 번째 사용자가 토큰 등록
+        User user1 = userSupport.registerUserToDB();
+        String accessToken1 = authSupport.createAccessToken(user1);
+
+        FcmTokenRequest registerRequest = new FcmTokenRequest(
+                "token-of-user1", 
+                "test-device-id-special", 
+                DeviceType.IOS
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + accessToken1)
+                .body(registerRequest)
+                .when()
+                .put("/api/notifications/tokens")
+                .then()
+                .statusCode(HttpStatus.SC_CREATED);
+
+        // 토큰이 등록되었는지 확인
+        assertThat(fcmTokenRepository.findByDeviceId("test-device-id-special")).isPresent();
+
+        // 두 번째 사용자가 첫 번째 사용자의 토큰 삭제 시도
+        User user2 = userSupport.registerUserToDB();
+        String accessToken2 = authSupport.createAccessToken(user2);
+
+        FcmTokenDeleteRequest deleteRequest = new FcmTokenDeleteRequest("test-device-id-special");
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + accessToken2)
+                .body(deleteRequest)
+                .when()
+                .delete("/api/notifications/tokens")
+                .then()
+                .statusCode(HttpStatus.SC_NO_CONTENT);
+
+        // 토큰이 여전히 존재해야 함 (삭제되지 않음)
+        assertThat(fcmTokenRepository.findByDeviceId("test-device-id-special")).isPresent();
+    }
+
+    @Test
     @DisplayName("FCM 토큰 전체 삭제 요청이 성공적으로 수행된다")
     void deleteAllTokens_Success() {
         User user = userSupport.registerUserToDB();

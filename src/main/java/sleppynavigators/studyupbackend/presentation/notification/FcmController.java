@@ -47,12 +47,12 @@ public class FcmController {
     }
 
     @DeleteMapping("/tokens")
-    @Operation(summary = "FCM 토큰 삭제", description = "특정 디바이스의 FCM 토큰을 삭제합니다.")
+    @Operation(summary = "FCM 토큰 삭제", description = "사용자의 특정 디바이스의 FCM 토큰을 삭제합니다.")
     public ResponseEntity<SuccessResponse<Void>> deleteToken(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FcmTokenDeleteRequest request
     ) {
-        fcmTokenService.deleteTokenByDeviceId(request.deviceId());
+        fcmTokenService.deleteTokenByDeviceId(userPrincipal.userId(), request.deviceId());
         return ResponseEntity.noContent().build();
     }
 

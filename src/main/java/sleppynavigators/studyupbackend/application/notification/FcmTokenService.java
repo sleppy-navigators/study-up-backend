@@ -10,6 +10,7 @@ import sleppynavigators.studyupbackend.exception.database.EntityNotFoundExceptio
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenRequest;
+import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenDeleteRequest;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,8 +42,11 @@ public class FcmTokenService {
     }
 
     @Transactional
-    public void deleteTokenByDeviceId(String deviceId) {
-        fcmTokenRepository.findByDeviceId(deviceId)
+    public void deleteTokenByDeviceId(Long userId, String deviceId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        
+        fcmTokenRepository.findByDeviceIdAndUserId(deviceId, user.getId())
                 .ifPresent(fcmTokenRepository::delete);
     }
 
@@ -51,7 +55,7 @@ public class FcmTokenService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        List<FcmToken> tokens = fcmTokenRepository.findAllByUserId(userId);
+        List<FcmToken> tokens = fcmTokenRepository.findAllByUserId(user.getId());
         fcmTokenRepository.deleteAll(tokens);
     }
 }

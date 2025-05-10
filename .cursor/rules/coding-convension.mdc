@@ -37,7 +37,8 @@ globs: **/*
 
 ## Presentation 레이어 규칙 (presentation 패키지 하위 파일)
 - 일반적인 Restful API 규칙을 따릅니다.
-- API를 응답할 때는 `ResponseEntity.ok(new SuccessResponse<>(response))` 같이 SuccessResponse를 활용한 통일된 형태를 반환합니다.
+- API를 응답할 때는 SuccessResponse를 활용한 통일된 형태를 반환합니다.
+    - 단, 204 No Content 응답은 빈 형태를 반환합니다.
 - DTO를 정의할 때는 request, response 패키지를 구분하고 각각의 DTO를 정의합니다.
 - 요청/응답 DTO 모두 swagger 어노테이션을 사용하여 API 문서화를 진행합니다.
 - 요청/응답 DTO 모두 jakarta validation을 사용하여 유효성 검사를 수행합니다.
