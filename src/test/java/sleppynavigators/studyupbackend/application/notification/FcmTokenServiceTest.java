@@ -93,25 +93,58 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("사용자의 특정 디바이스 FCM 토큰을 삭제한다")
-    void deleteTokenByDeviceId_DeletesToken() {
+    @DisplayName("디바이스 ID를 지정하여 사용자의 특정 FCM 토큰을 삭제한다")
+    void deleteTokens_WithDeviceId_DeletesSpecificToken() {
         User user = createUser("test-user");
         String token = "test-token";
         String deviceId = "device-id-4";
         DeviceType deviceType = DeviceType.IOS;
 
-        FcmTokenRequest request = new FcmTokenRequest(token, deviceId, deviceType);
-        fcmTokenService.upsertToken(user.getId(), request);
+        // 두 개의 다른 토큰 등록
+        FcmTokenRequest request1 = new FcmTokenRequest(token, deviceId, deviceType);
+        fcmTokenService.upsertToken(user.getId(), request1);
+        
+        FcmTokenRequest request2 = new FcmTokenRequest("another-token", "another-device-id", deviceType);
+        fcmTokenService.upsertToken(user.getId(), request2);
+        
         assertThat(fcmTokenRepository.findByDeviceId(deviceId)).isPresent();
+        assertThat(fcmTokenRepository.findByDeviceId("another-device-id")).isPresent();
 
-        fcmTokenService.deleteTokenByDeviceId(user.getId(), deviceId);
+        // 특정 디바이스 토큰만 삭제
+        fcmTokenService.deleteTokens(user.getId(), deviceId);
 
+        // 특정 토큰만 삭제되고 다른 토큰은 남아있어야 함
         assertThat(fcmTokenRepository.findByDeviceId(deviceId)).isEmpty();
+        assertThat(fcmTokenRepository.findByDeviceId("another-device-id")).isPresent();
+    }
+
+    @Test
+    @DisplayName("디바이스 ID를 지정하지 않고 사용자의 모든 FCM 토큰을 삭제한다")
+    void deleteTokens_WithoutDeviceId_DeletesAllTokens() {
+        User user = createUser("test-user-for-delete-all");
+        
+        // 여러 토큰 등록
+        FcmTokenRequest request1 = new FcmTokenRequest("token1", "device-id-7", DeviceType.ANDROID);
+        FcmTokenRequest request2 = new FcmTokenRequest("token2", "device-id-8", DeviceType.IOS);
+        FcmTokenRequest request3 = new FcmTokenRequest("token3", "device-id-9", DeviceType.WEB);
+        
+        fcmTokenService.upsertToken(user.getId(), request1);
+        fcmTokenService.upsertToken(user.getId(), request2);
+        fcmTokenService.upsertToken(user.getId(), request3);
+
+        List<FcmToken> userTokens = fcmTokenRepository.findAllByUserId(user.getId());
+        assertThat(userTokens).hasSize(3);
+
+        // deviceId 없이 호출하여 모든 토큰 삭제
+        fcmTokenService.deleteTokens(user.getId(), null);
+
+        List<FcmToken> remainingTokens = fcmTokenRepository.findAllByUserId(user.getId());
+        assertThat(remainingTokens).isEmpty();
     }
 
     @Test
     @DisplayName("다른 사용자의 디바이스 FCM 토큰을 삭제하려고 시도해도 삭제되지 않는다")
-    void deleteTokenByDeviceId_DoesNotDeleteTokenOfOtherUser() {
+    void deleteTokens_WithDeviceId_DoesNotDeleteTokenOfOtherUser() {
         // 첫 번째 사용자와 토큰
         User user1 = createUser("test-user-1");
         String token = "test-token";
@@ -124,7 +157,7 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
 
         // 두 번째 사용자가 첫 번째 사용자의 토큰 삭제 시도
         User user2 = createUser("test-user-2");
-        fcmTokenService.deleteTokenByDeviceId(user2.getId(), deviceId);
+        fcmTokenService.deleteTokens(user2.getId(), deviceId);
 
         // 토큰이 여전히 존재해야 함
         assertThat(fcmTokenRepository.findByDeviceId(deviceId)).isPresent();
@@ -132,54 +165,20 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
 
     @Test
     @DisplayName("존재하지 않는 디바이스 ID에 대해 토큰 삭제를 시도해도 예외가 발생하지 않는다")
-    void deleteTokenByDeviceId_DoesNothing_WhenDeviceIdNotFound() {
+    void deleteTokens_WithNonExistentDeviceId_DoesNotThrowException() {
         User user = createUser("test-user");
         String nonExistentDeviceId = "non-existent-device-id";
         
-        fcmTokenService.deleteTokenByDeviceId(user.getId(), nonExistentDeviceId);
+        fcmTokenService.deleteTokens(user.getId(), nonExistentDeviceId);
     }
 
     @Test
     @DisplayName("존재하지 않는 사용자로 토큰 삭제를 시도하면 예외가 발생한다")
-    void deleteTokenByDeviceId_ThrowsException_WhenUserNotFound() {
+    void deleteTokens_WithNonExistentUser_ThrowsException() {
         Long nonExistentUserId = 9999L;
-        String deviceId = "device-id-6";
         
         assertThatThrownBy(() -> 
-            fcmTokenService.deleteTokenByDeviceId(nonExistentUserId, deviceId))
-            .isInstanceOf(EntityNotFoundException.class)
-            .hasMessageContaining("User not found");
-    }
-
-    @Test
-    @DisplayName("사용자의 모든 FCM 토큰을 삭제한다")
-    void deleteAllTokensByUserId_DeletesAllTokens() {
-        User user = createUser("test-user-for-delete-all");
-        
-        FcmTokenRequest request1 = new FcmTokenRequest("token1", "device-id-7", DeviceType.ANDROID);
-        FcmTokenRequest request2 = new FcmTokenRequest("token2", "device-id-8", DeviceType.IOS);
-        FcmTokenRequest request3 = new FcmTokenRequest("token3", "device-id-9", DeviceType.WEB);
-        
-        fcmTokenService.upsertToken(user.getId(), request1);
-        fcmTokenService.upsertToken(user.getId(), request2);
-        fcmTokenService.upsertToken(user.getId(), request3);
-
-        List<FcmToken> userTokens = fcmTokenRepository.findAllByUserId(user.getId());
-        assertThat(userTokens).hasSize(3);
-
-        fcmTokenService.deleteAllTokensByUserId(user.getId());
-
-        List<FcmToken> remainingTokens = fcmTokenRepository.findAllByUserId(user.getId());
-        assertThat(remainingTokens).isEmpty();
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 사용자에 대해 모든 토큰 삭제를 시도하면 예외가 발생한다")
-    void deleteAllTokensByUserId_ThrowsException_WhenUserNotFound() {
-        Long nonExistentUserId = 9999L;
-
-        assertThatThrownBy(() -> 
-            fcmTokenService.deleteAllTokensByUserId(nonExistentUserId))
+            fcmTokenService.deleteTokens(nonExistentUserId, "any-device-id"))
             .isInstanceOf(EntityNotFoundException.class)
             .hasMessageContaining("User not found");
     }

@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.application.notification;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +11,6 @@ import sleppynavigators.studyupbackend.exception.database.EntityNotFoundExceptio
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenRequest;
-import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenDeleteRequest;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,37 +25,31 @@ public class FcmTokenService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        return fcmTokenRepository.findByDeviceId(request.deviceId())
-                .map(existingToken -> {
-                    existingToken.updateToken(request.token());
-                    return existingToken;
-                })
-                .orElseGet(() -> {
-                    FcmToken newToken = FcmToken.builder()
-                            .token(request.token())
-                            .deviceId(request.deviceId())
-                            .deviceType(request.deviceType())
-                            .user(user)
-                            .build();
-                    return fcmTokenRepository.save(newToken);
-                });
+        Optional<FcmToken> existingToken = fcmTokenRepository.findByDeviceId(request.deviceId());
+        if (existingToken.isPresent()) {
+            FcmToken token = existingToken.get();
+            token.updateToken(request.token());
+            return token;
+        }
+
+        FcmToken newToken = new FcmToken(
+                request.token(),
+                request.deviceId(),
+                request.deviceType(),
+                user
+        );
+        return fcmTokenRepository.save(newToken);
     }
 
     @Transactional
-    public void deleteTokenByDeviceId(Long userId, String deviceId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        
-        fcmTokenRepository.findByDeviceIdAndUserId(deviceId, user.getId())
-                .ifPresent(fcmTokenRepository::delete);
-    }
-
-    @Transactional
-    public void deleteAllTokensByUserId(Long userId) {
+    public void deleteTokens(Long userId, String deviceId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        List<FcmToken> tokens = fcmTokenRepository.findAllByUserId(user.getId());
-        fcmTokenRepository.deleteAll(tokens);
+        if (deviceId != null) {
+            fcmTokenRepository.deleteByDeviceIdAndUserId(deviceId, user.getId());
+        } else {
+            fcmTokenRepository.deleteAllByUserId(user.getId());
+        }
     }
 }

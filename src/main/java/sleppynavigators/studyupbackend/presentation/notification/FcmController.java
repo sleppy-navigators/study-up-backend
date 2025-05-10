@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.presentation.notification;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -13,17 +14,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.notification.FcmNotificationService;
 import sleppynavigators.studyupbackend.application.notification.FcmTokenService;
 import sleppynavigators.studyupbackend.domain.notification.FcmToken;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
-import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenDeleteRequest;
 import sleppynavigators.studyupbackend.presentation.notification.dto.request.FcmTokenRequest;
-import sleppynavigators.studyupbackend.presentation.notification.dto.response.FcmTokenResponse;
 import sleppynavigators.studyupbackend.presentation.notification.dto.request.TestNotificationRequest;
 import sleppynavigators.studyupbackend.presentation.notification.dto.request.TestNotificationResponse;
+import sleppynavigators.studyupbackend.presentation.notification.dto.response.FcmTokenResponse;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -47,21 +48,16 @@ public class FcmController {
     }
 
     @DeleteMapping("/tokens")
-    @Operation(summary = "FCM 토큰 삭제", description = "사용자의 특정 디바이스의 FCM 토큰을 삭제합니다.")
-    public ResponseEntity<SuccessResponse<Void>> deleteToken(
+    @Operation(
+            summary = "FCM 토큰 삭제",
+            description = "사용자의 FCM 토큰을 삭제합니다."
+    )
+    public ResponseEntity<SuccessResponse<Void>> deleteTokens(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Valid @RequestBody FcmTokenDeleteRequest request
+            @Parameter(description = "삭제할 디바이스 ID. 제공되지 않으면 모든 토큰 삭제")
+            @RequestParam(required = false) String deviceId
     ) {
-        fcmTokenService.deleteTokenByDeviceId(userPrincipal.userId(), request.deviceId());
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/tokens/all")
-    @Operation(summary = "FCM 토큰 전체 삭제", description = "사용자의 모든 FCM 토큰을 삭제합니다.")
-    public ResponseEntity<SuccessResponse<Void>> deleteAllTokens(
-            @AuthenticationPrincipal UserPrincipal userPrincipal
-    ) {
-        fcmTokenService.deleteAllTokensByUserId(userPrincipal.userId());
+        fcmTokenService.deleteTokens(userPrincipal.userId(), deviceId);
         return ResponseEntity.noContent().build();
     }
 
