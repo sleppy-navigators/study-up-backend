@@ -30,9 +30,9 @@ public class FcmNotificationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        List<FcmToken> tokens = fcmTokenRepository.findAllByUserId(userId);
+        List<FcmToken> tokens = fcmTokenRepository.findAllByUserId(user.getId());
         if (tokens.isEmpty()) {
-            throw new EntityNotFoundException("No registered devices found for the user. id: " + userId);
+            throw new EntityNotFoundException("No registered devices found for the user. id: " + user.getId());
         }
 
         List<String> successMessageIds = new ArrayList<>();
@@ -41,7 +41,7 @@ public class FcmNotificationService {
                 String messageId = fcmClient.sendMessage(token.getToken(), request.title(), request.body(), request.imageUrl(), request.data());
                 successMessageIds.add(messageId);
             } catch (Exception e) {
-                log.warn("Failed to send notification to token: {}", token.getToken(), e);
+                log.error("Failed to send notification to token: {}", token.getToken(), e);
             }
         }
         return successMessageIds;
