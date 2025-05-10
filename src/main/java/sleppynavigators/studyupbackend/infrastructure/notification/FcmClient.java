@@ -8,6 +8,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,14 +47,14 @@ public class FcmClient {
         return sendMessage(token, title, body, null, null);
     }
 
-    public String sendMessage(String token, String title, String body, String imageUrl, Map<String, String> data) {
+    public String sendMessage(String token, String title, String body, URL imageUrl, Map<String, String> data) {
         Message.Builder messageBuilder = Message.builder()
                 .setToken(token)
                 .setNotification(
                         Notification.builder()
                                 .setTitle(title)
                                 .setBody(body)
-                                .setImage(imageUrl)
+                                .setImage(imageUrl.toString())
                                 .build()
                 );
 

@@ -53,7 +53,7 @@ public class FcmController {
             @Valid @RequestBody FcmTokenDeleteRequest request
     ) {
         fcmTokenService.deleteTokenByDeviceId(request.deviceId());
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/tokens/all")
@@ -62,7 +62,7 @@ public class FcmController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         fcmTokenService.deleteAllTokensByUserId(userPrincipal.userId());
-        return ResponseEntity.ok(new SuccessResponse<>(null));
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/test")

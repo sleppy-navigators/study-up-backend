@@ -3,6 +3,7 @@ package sleppynavigators.studyupbackend.presentation.notification.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
+import java.net.URL;
 import java.util.Map;
 
 @Schema(description = "테스트 알림 전송 요청")
@@ -14,7 +15,7 @@ public record TestNotificationRequest(
         @NotBlank String body,
 
         @Schema(description = "알림 이미지 URL", example = "https://example.com/image.jpg", nullable = true)
-        String imageUrl,
+        URL imageUrl,
 
         @Schema(description = "추가 데이터", nullable = true)
         Map<String, String> data

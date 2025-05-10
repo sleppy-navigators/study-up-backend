@@ -46,7 +46,7 @@ class FcmControllerTest extends RestAssuredBaseTest {
         when(fcmClient.sendMessage(anyString(), anyString(), anyString()))
             .thenReturn("mocked-message-id-1");
             
-        when(fcmClient.sendMessage(anyString(), anyString(), anyString(), anyString(), any()))
+        when(fcmClient.sendMessage(anyString(), anyString(), anyString(), any(), any()))
             .thenReturn("mocked-message-id-2");
     }
 
