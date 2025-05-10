@@ -28,7 +28,7 @@ public class FcmClient {
     @PostConstruct
     public void initialize() {
         try {
-            ClassPathResource resource = new ClassPathResource(fcmProperties.getServiceAccountKeyPath());
+            ClassPathResource resource = new ClassPathResource(fcmProperties.serviceAccountKeyPath());
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(resource.getInputStream()))
