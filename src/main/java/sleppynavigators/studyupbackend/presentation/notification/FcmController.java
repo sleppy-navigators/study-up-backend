@@ -18,6 +18,7 @@ import sleppynavigators.studyupbackend.application.notification.FcmNotificationS
 import sleppynavigators.studyupbackend.application.notification.FcmTokenService;
 import sleppynavigators.studyupbackend.domain.notification.FcmToken;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
+import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenDeleteRequest;
 import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenRequest;
 import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenResponse;
@@ -35,39 +36,33 @@ public class FcmController {
 
     @PutMapping("/tokens")
     @Operation(summary = "FCM 토큰 등록/갱신", description = "FCM 토큰을 등록하거나 갱신합니다. 디바이스 ID가 이미 존재하는 경우 토큰을 갱신합니다.")
-    public ResponseEntity<FcmTokenResponse> upsertToken(
+    public ResponseEntity<SuccessResponse<FcmTokenResponse>> upsertToken(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FcmTokenRequest request
     ) {
-
-        FcmToken fcmToken = fcmTokenService.upsertToken(
-                userPrincipal.userId(),
-                request.token(),
-                request.deviceId(),
-                request.deviceType()
-        );
+        FcmToken fcmToken = fcmTokenService.upsertToken(userPrincipal.userId(), request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(FcmTokenResponse.fromEntity(fcmToken));
+                .body(new SuccessResponse<>(FcmTokenResponse.fromEntity(fcmToken)));
     }
 
     @DeleteMapping("/tokens")
     @Operation(summary = "FCM 토큰 삭제", description = "특정 디바이스의 FCM 토큰을 삭제합니다.")
-    public ResponseEntity<Void> deleteToken(
+    public ResponseEntity<SuccessResponse<Void>> deleteToken(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FcmTokenDeleteRequest request
     ) {
         fcmTokenService.deleteTokenByDeviceId(request.deviceId());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 
     @DeleteMapping("/tokens/all")
     @Operation(summary = "FCM 토큰 전체 삭제", description = "사용자의 모든 FCM 토큰을 삭제합니다.")
-    public ResponseEntity<Void> deleteAllTokens(
+    public ResponseEntity<SuccessResponse<Void>> deleteAllTokens(
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         fcmTokenService.deleteAllTokensByUserId(userPrincipal.userId());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 
     @PostMapping("/test")
@@ -76,21 +71,17 @@ public class FcmController {
             description = "사용자의 모든 등록된 디바이스에 테스트 알림을 전송합니다. " +
                     "알림을 수신하려면 최소한 하나 이상의 FCM 토큰이 등록되어 있어야 합니다."
     )
-    public ResponseEntity<List<TestNotificationResponse>> sendTestNotification(
+    public ResponseEntity<SuccessResponse<List<TestNotificationResponse>>> sendTestNotification(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody TestNotificationRequest request
     ) {
-        List<String> messageIds = fcmNotificationService.sendTestNotification(
-                userPrincipal.userId(),
-                request.title(),
-                request.body(),
-                request.imageUrl(),
-                request.data()
-        );
+        List<String> messageIds = fcmNotificationService.sendTestNotification(userPrincipal.userId(), request);
         return ResponseEntity.ok(
-                messageIds.stream()
-                        .map(TestNotificationResponse::from)
-                        .toList()
+                new SuccessResponse<>(
+                        messageIds.stream()
+                                .map(TestNotificationResponse::from)
+                                .toList()
+                )
         );
     }
 }

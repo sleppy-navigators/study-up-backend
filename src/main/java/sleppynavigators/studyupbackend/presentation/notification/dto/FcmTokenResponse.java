@@ -9,7 +9,7 @@ import sleppynavigators.studyupbackend.domain.notification.FcmToken;
 public record FcmTokenResponse(
 
         @Schema(description = "FCM 토큰 ID", example = "1")
-        @NotBlank Long id,
+        @NotNull Long id,
 
         @Schema(description = "FCM 토큰", example = "fcm_token_example")
         @NotBlank String token,

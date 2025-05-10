@@ -9,9 +9,10 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
+import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenRequest;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FcmTokenService {
 
@@ -19,17 +20,22 @@ public class FcmTokenService {
     private final UserRepository userRepository;
 
     @Transactional
-    public FcmToken upsertToken(Long userId, String token, String deviceId, FcmToken.DeviceType deviceType) {
+    public FcmToken upsertToken(Long userId, FcmTokenRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        return fcmTokenRepository.findByDeviceId(deviceId)
+        return fcmTokenRepository.findByDeviceId(request.deviceId())
                 .map(existingToken -> {
-                    existingToken.updateToken(token);
+                    existingToken.updateToken(request.token());
                     return fcmTokenRepository.save(existingToken);
                 })
                 .orElseGet(() -> {
-                    FcmToken newToken = new FcmToken(token, deviceId, deviceType, user);
+                    FcmToken newToken = FcmToken.builder()
+                            .token(request.token())
+                            .deviceId(request.deviceId())
+                            .deviceType(request.deviceType())
+                            .user(user)
+                            .build();
                     return fcmTokenRepository.save(newToken);
                 });
     }

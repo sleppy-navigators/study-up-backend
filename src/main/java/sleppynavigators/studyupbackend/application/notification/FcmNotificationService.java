@@ -12,13 +12,14 @@ import sleppynavigators.studyupbackend.exception.database.EntityNotFoundExceptio
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmClient;
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
+import sleppynavigators.studyupbackend.presentation.notification.dto.TestNotificationRequest;
 
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FcmNotificationService {
 
@@ -27,14 +28,7 @@ public class FcmNotificationService {
     private final UserRepository userRepository;
 
     // TODO(@Jayon): 추후 이벤트 pub/sub 구조로 변경해야 함.
-    @Transactional(readOnly = true)
-    public List<String> sendTestNotification(
-            Long userId,
-            String title,
-            String body,
-            @Nullable String imageUrl,
-            @Nullable Map<String, String> data
-    ) {
+    public List<String> sendTestNotification(Long userId, TestNotificationRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
@@ -46,7 +40,7 @@ public class FcmNotificationService {
         List<String> successMessageIds = new ArrayList<>();
         for (FcmToken token : tokens) {
             try {
-                String messageId = fcmClient.sendMessage(token.getToken(), title, body, imageUrl, data);
+                String messageId = fcmClient.sendMessage(token.getToken(), request.title(), request.body(), request.imageUrl(), request.data());
                 successMessageIds.add(messageId);
             } catch (Exception e) {
                 log.warn("Failed to send notification to token: {}", token.getToken(), e);

@@ -13,6 +13,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.notification.FcmTokenRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
+import sleppynavigators.studyupbackend.presentation.notification.dto.FcmTokenRequest;
 
 import java.util.List;
 
@@ -36,7 +37,8 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
         String deviceId = "device-id-1";
         DeviceType deviceType = DeviceType.WEB;
 
-        FcmToken fcmToken = fcmTokenService.upsertToken(user.getId(), token, deviceId, deviceType);
+        FcmTokenRequest request = new FcmTokenRequest(token, deviceId, deviceType);
+        FcmToken fcmToken = fcmTokenService.upsertToken(user.getId(), request);
 
         assertThat(fcmToken).isNotNull();
         assertThat(fcmToken.getId()).isNotNull();
@@ -59,10 +61,12 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
         String deviceId = "device-id-2";
         DeviceType deviceType = DeviceType.ANDROID;
 
-        FcmToken initialToken = fcmTokenService.upsertToken(user.getId(), oldToken, deviceId, deviceType);
+        FcmTokenRequest initialRequest = new FcmTokenRequest(oldToken, deviceId, deviceType);
+        FcmToken initialToken = fcmTokenService.upsertToken(user.getId(), initialRequest);
         assertThat(initialToken.getToken()).isEqualTo(oldToken);
 
-        FcmToken updatedToken = fcmTokenService.upsertToken(user.getId(), newToken, deviceId, deviceType);
+        FcmTokenRequest updateRequest = new FcmTokenRequest(newToken, deviceId, deviceType);
+        FcmToken updatedToken = fcmTokenService.upsertToken(user.getId(), updateRequest);
         
         assertThat(updatedToken.getId()).isEqualTo(initialToken.getId());
         assertThat(updatedToken.getToken()).isEqualTo(newToken);
@@ -81,8 +85,9 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
         String deviceId = "device-id-3";
         DeviceType deviceType = DeviceType.WEB;
 
+        FcmTokenRequest request = new FcmTokenRequest(token, deviceId, deviceType);
         assertThatThrownBy(() -> 
-            fcmTokenService.upsertToken(nonExistentUserId, token, deviceId, deviceType))
+            fcmTokenService.upsertToken(nonExistentUserId, request))
             .isInstanceOf(EntityNotFoundException.class)
             .hasMessageContaining("User not found");
     }
@@ -95,7 +100,8 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
         String deviceId = "device-id-4";
         DeviceType deviceType = DeviceType.IOS;
 
-        fcmTokenService.upsertToken(user.getId(), token, deviceId, deviceType);
+        FcmTokenRequest request = new FcmTokenRequest(token, deviceId, deviceType);
+        fcmTokenService.upsertToken(user.getId(), request);
         assertThat(fcmTokenRepository.findByDeviceId(deviceId)).isPresent();
 
         fcmTokenService.deleteTokenByDeviceId(deviceId);
@@ -116,9 +122,13 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
     void deleteAllTokensByUserId_DeletesAllTokens() {
         User user = createUser("test-user-for-delete-all");
         
-        fcmTokenService.upsertToken(user.getId(), "token1", "device-id-5", DeviceType.ANDROID);
-        fcmTokenService.upsertToken(user.getId(), "token2", "device-id-6", DeviceType.IOS);
-        fcmTokenService.upsertToken(user.getId(), "token3", "device-id-7", DeviceType.WEB);
+        FcmTokenRequest request1 = new FcmTokenRequest("token1", "device-id-5", DeviceType.ANDROID);
+        FcmTokenRequest request2 = new FcmTokenRequest("token2", "device-id-6", DeviceType.IOS);
+        FcmTokenRequest request3 = new FcmTokenRequest("token3", "device-id-7", DeviceType.WEB);
+        
+        fcmTokenService.upsertToken(user.getId(), request1);
+        fcmTokenService.upsertToken(user.getId(), request2);
+        fcmTokenService.upsertToken(user.getId(), request3);
 
         List<FcmToken> userTokens = fcmTokenRepository.findAllByUser(user);
         assertThat(userTokens).hasSize(3);
