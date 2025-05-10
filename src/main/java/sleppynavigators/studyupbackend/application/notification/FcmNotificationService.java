@@ -1,6 +1,5 @@
 package sleppynavigators.studyupbackend.application.notification;
 
-import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.notification.dto.TestNotificationRequest;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -32,7 +30,7 @@ public class FcmNotificationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        List<FcmToken> tokens = fcmTokenRepository.findAllByUser(user);
+        List<FcmToken> tokens = fcmTokenRepository.findAllByUserId(userId);
         if (tokens.isEmpty()) {
             throw new EntityNotFoundException("No registered devices found for the user. id: " + userId);
         }

@@ -130,12 +130,12 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
         fcmTokenService.upsertToken(user.getId(), request2);
         fcmTokenService.upsertToken(user.getId(), request3);
 
-        List<FcmToken> userTokens = fcmTokenRepository.findAllByUser(user);
+        List<FcmToken> userTokens = fcmTokenRepository.findAllByUserId(user.getId());
         assertThat(userTokens).hasSize(3);
 
         fcmTokenService.deleteAllTokensByUserId(user.getId());
 
-        List<FcmToken> remainingTokens = fcmTokenRepository.findAllByUser(user);
+        List<FcmToken> remainingTokens = fcmTokenRepository.findAllByUserId(user.getId());
         assertThat(remainingTokens).isEmpty();
     }
 

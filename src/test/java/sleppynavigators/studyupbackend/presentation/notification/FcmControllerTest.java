@@ -213,7 +213,7 @@ class FcmControllerTest extends RestAssuredBaseTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_NO_CONTENT);
 
         // 사용자의 모든 토큰이 삭제되었는지 확인
-        assertThat(fcmTokenRepository.findAllByUser(user)).isEmpty();
+        assertThat(fcmTokenRepository.findAllByUserId(user.getId())).isEmpty();
     }
 
     @Test
