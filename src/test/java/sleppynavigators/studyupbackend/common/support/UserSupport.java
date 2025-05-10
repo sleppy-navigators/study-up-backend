@@ -24,4 +24,9 @@ public class UserSupport {
         User user = new User("test-user", "test-email");
         return userRepository.save(user);
     }
+
+    public User registerUserToDB(String username, String email) {
+        User user = new User(username, email);
+        return userRepository.save(user);
+    }
 }
