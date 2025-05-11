@@ -32,20 +32,6 @@ public class FcmSupport {
     @Autowired
     private UserRepository userRepository;
 
-    public FcmToken callToUpsertToken(User user, String token, String deviceId, DeviceType deviceType) {
-        FcmTokenRequest request = new FcmTokenRequest(token, deviceId, deviceType);
-        return fcmTokenService.upsertToken(user.getId(), request);
-    }
-
-    public void callToDeleteTokens(User user, String deviceId) {
-        fcmTokenService.deleteTokens(user.getId(), deviceId);
-    }
-
-    public List<String> callToSendTestNotification(User user, String title, String body, Map<String, String> data) {
-        TestNotificationRequest request = new TestNotificationRequest(title, body, null, data);
-        return fcmNotificationService.sendTestNotification(user.getId(), request);
-    }
-
     public FcmToken registerFcmTokenToDB(User user, String token, String deviceId, DeviceType deviceType) {
         User foundUser = userRepository.findById(user.getId()).orElseThrow();
         FcmToken fcmToken = new FcmToken(token, deviceId, deviceType, foundUser);
@@ -61,9 +47,5 @@ public class FcmSupport {
         ).subList(0, Math.min(count, 3)).stream()
                 .map(fcmTokenRepository::save)
                 .toList();
-    }
-
-    public void deleteAllFcmTokensForUser(User user) {
-        fcmTokenRepository.deleteAllByUserId(user.getId());
     }
 } 

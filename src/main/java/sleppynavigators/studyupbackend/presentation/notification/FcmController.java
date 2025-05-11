@@ -53,12 +53,16 @@ public class FcmController {
             summary = "FCM 토큰 삭제",
             description = "사용자의 FCM 토큰을 삭제합니다."
     )
-    public ResponseEntity<SuccessResponse<Void>> deleteTokens(
+    public ResponseEntity<Void> deleteTokens(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(description = "삭제할 디바이스 ID. 제공되지 않으면 모든 토큰 삭제")
             @RequestParam(required = false) String deviceId
     ) {
-        fcmTokenService.deleteTokens(userPrincipal.userId(), deviceId);
+        if (deviceId == null) {
+            fcmTokenService.deleteTokens(userPrincipal.userId());
+        } else {
+            fcmTokenService.deleteTokensByUserIdAndDeviceId(userPrincipal.userId(), deviceId);
+        }
         return ResponseEntity.noContent().build();
     }
 

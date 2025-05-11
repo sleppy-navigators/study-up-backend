@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.notification;
 
+import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,14 +42,18 @@ public class FcmTokenService {
     }
 
     @Transactional
-    public void deleteTokens(Long userId, String deviceId) {
+    public void deleteTokens(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        if (deviceId != null) {
-            fcmTokenRepository.deleteByDeviceIdAndUserId(deviceId, user.getId());
-        } else {
-            fcmTokenRepository.deleteAllByUserId(user.getId());
-        }
+        fcmTokenRepository.deleteAllByUserId(user.getId());
+    }
+
+    @Transactional
+    public void deleteTokensByUserIdAndDeviceId(Long userId, String deviceId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        fcmTokenRepository.deleteByDeviceIdAndUserId(deviceId, user.getId());
     }
 }

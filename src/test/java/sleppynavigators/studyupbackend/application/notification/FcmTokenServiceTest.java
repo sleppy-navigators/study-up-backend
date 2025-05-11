@@ -116,7 +116,7 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
         assertThat(fcmTokenRepository.findByDeviceId("another-device-id")).isPresent();
 
         // 특정 디바이스 토큰만 삭제
-        fcmTokenService.deleteTokens(testUser.getId(), deviceId);
+        fcmTokenService.deleteTokensByUserIdAndDeviceId(testUser.getId(), deviceId);
 
         // 특정 토큰만 삭제되고 다른 토큰은 남아있어야 함
         assertThat(fcmTokenRepository.findByDeviceId(deviceId)).isEmpty();
@@ -139,7 +139,7 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
         assertThat(userTokens).hasSize(3);
 
         // deviceId 없이 호출하여 모든 토큰 삭제
-        fcmTokenService.deleteTokens(testUser.getId(), null);
+        fcmTokenService.deleteTokens(testUser.getId());
 
         List<FcmToken> remainingTokens = fcmTokenRepository.findAllByUserId(testUser.getId());
         assertThat(remainingTokens).isEmpty();
@@ -160,7 +160,7 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
 
         // 두 번째 사용자가 첫 번째 사용자의 토큰 삭제 시도
         User user2 = userSupport.registerUserToDB("test-user-2", "test2@test.com");
-        fcmTokenService.deleteTokens(user2.getId(), deviceId);
+        fcmTokenService.deleteTokensByUserIdAndDeviceId(user2.getId(), deviceId);
 
         // 토큰이 여전히 존재해야 함
         assertThat(fcmTokenRepository.findByDeviceId(deviceId)).isPresent();
@@ -171,7 +171,7 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
     void deleteTokens_WithNonExistentDeviceId_DoesNotThrowException() {
         String nonExistentDeviceId = "non-existent-device-id";
         
-        fcmTokenService.deleteTokens(testUser.getId(), nonExistentDeviceId);
+        fcmTokenService.deleteTokensByUserIdAndDeviceId(testUser.getId(), nonExistentDeviceId);
     }
 
     @Test
@@ -180,7 +180,7 @@ class FcmTokenServiceTest extends ApplicationBaseTest {
         Long nonExistentUserId = 9999L;
         
         assertThatThrownBy(() -> 
-            fcmTokenService.deleteTokens(nonExistentUserId, "any-device-id"))
+            fcmTokenService.deleteTokensByUserIdAndDeviceId(nonExistentUserId, "any-device-id"))
             .isInstanceOf(EntityNotFoundException.class)
             .hasMessageContaining("User not found");
     }
