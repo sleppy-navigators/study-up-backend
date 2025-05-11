@@ -12,7 +12,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
-import sleppynavigators.studyupbackend.domain.event.TaskCertifiedEvent;
+import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
@@ -112,7 +112,7 @@ public class ChallengeService {
         try {
             task.certify(request.externalLinks(), request.imageUrls(), user);
 
-            SystemEvent event = new TaskCertifiedEvent(
+            SystemEvent event = new TaskCertifyEvent(
                     user.getUserProfile().getUsername(),
                     task.getDetail().getTitle(),
                     task.getChallenge().getDetail().getTitle(),

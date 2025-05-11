@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.TaskCertifiedEvent;
+import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 
 public class TaskCertifySystemMessageGeneratorTest {
 
@@ -26,7 +26,7 @@ public class TaskCertifySystemMessageGeneratorTest {
         String challengeName = "알고리즘 끝장내기";
         String taskName = "알고리즘 문제 풀기";
         Long groupId = 1L;
-        TaskCertifiedEvent event = new TaskCertifiedEvent(userName, challengeName, taskName, groupId);
+        TaskCertifyEvent event = new TaskCertifyEvent(userName, challengeName, taskName, groupId);
 
         // when
         String message = generator.generate(event);

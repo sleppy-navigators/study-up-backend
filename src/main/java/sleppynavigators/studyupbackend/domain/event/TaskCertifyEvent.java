@@ -1,6 +1,6 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public record TaskCertifiedEvent(
+public record TaskCertifyEvent(
         String userName, String challengeName, String taskName, Long groupId
 ) implements SystemEvent {
 

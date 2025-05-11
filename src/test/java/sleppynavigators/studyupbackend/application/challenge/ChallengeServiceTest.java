@@ -22,7 +22,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
-import sleppynavigators.studyupbackend.domain.event.TaskCertifiedEvent;
+import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
@@ -122,7 +122,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new TaskCertifiedEvent(
+                new TaskCertifyEvent(
                         testUser.getUserProfile().getUsername(),
                         challenge.getTasks().get(0).getDetail().getTitle(),
                         challenge.getDetail().getTitle(),
