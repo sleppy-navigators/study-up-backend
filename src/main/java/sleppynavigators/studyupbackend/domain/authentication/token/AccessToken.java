@@ -6,13 +6,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.network.InvalidCredentialException;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccessToken {
 
     private final static String ISSUER = "study-up";

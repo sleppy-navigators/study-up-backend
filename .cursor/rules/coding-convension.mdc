@@ -1,0 +1,67 @@
+---
+description: Java coding style and convention rules for StudyUp backend
+globs: **/*
+---
+# Cursor Coding Rule Guide
+
+## 공통 규칙
+- JDK 17 문법을 적극적으로 사용합니다. (단, var은 테스트 레벨이 아니라면 지양합니다.)
+- 파일 맨 끝에 개행을 추가합니다.
+- **파일을 새롭게 추가하거나 수정할 때는 반드시 기존 작성된 파일의 컨벤션과 해당 mdc 파일의 규칙을 꼼꼼히 읽어보고 작성합니다.**
+- **개발자가 코드를 실제로 반영하라고 이야기하기 전까지 절대로 코드를 실제로 edit 하지 않습니다.**
+
+### import 순서
+1. static imports
+2. java.
+3. javax.
+4. jakarta.
+5. org.
+6. net.
+7. 8, 9를 제외한 com.
+8. 1 ~ 7, 9를 제외한 패키지에 있는 클래스
+9. 나의 프로젝트 패키지 (ex: sleppynavigators.studyupbackend)
+
+## 클래스 선언 규칙
+- 클래스 이름은 대문자로 시작하며, CamelCase를 사용합니다.
+- 클래스 이름은 명사로 작성합니다.
+- 클래스 이름은 해당 클래스의 역할을 명확히 나타내야 합니다.
+- Lombok을 적극적으로 사용합니다.
+    - @RequiredArgsConstructor, @NoArgsConstructor를 사용할 경우만, 접근 제어자를 PROTECTED로 설정합니다. 나머지는 default 값으로 둡니다.
+    - @Builder의 경우 인스턴스 필드 개수가 4개 이상일 때 사용합니다.
+    - @Data는 사용하지 않습니다. 대신 @Getter, @Setter, @ToString을 사용합니다.
+- 최대한 불변 객체를 지향합니다.
+
++## 예외 처리 규칙
+- 비즈니스 로직 관련 예외는 custom exception으로 정의합니다.
+- 예외 발생 시 적절한 HTTP 상태 코드를 반환하도록 ExceptionHandler를 구현합니다.
+- 외부 API(FCM 등) 호출 시 발생할 수 있는 예외를 명확히 처리합니다.
+
+## 로깅 규칙
+- 로깅 프레임워크로 SLF4J를 사용합니다.
+- 적절한 로그 레벨(ERROR, WARN, INFO, DEBUG)을 상황에 맞게 사용합니다.
+- 외부 API 호출 시작과 응답은 반드시 로깅합니다.
+
+## Presentation 레이어 규칙 (presentation 패키지 하위 파일)
+- 일반적인 Restful API 규칙을 따릅니다.
+- API를 응답할 때는 SuccessResponse를 활용한 통일된 형태를 반환합니다.
+    - 단, 204 No Content 응답은 빈 형태를 반환합니다.
+- DTO를 정의할 때는 request, response 패키지를 구분하고 각각의 DTO를 정의합니다.
+- 요청/응답 DTO 모두 swagger 어노테이션을 사용하여 API 문서화를 진행합니다.
+- 요청/응답 DTO 모두 jakarta validation을 사용하여 유효성 검사를 수행합니다.
+
+## Application 레이어 규칙 (application 패키지 하위 파일)
+- 클래스 레벨의 @Transactional은 readOnly=true 로 명시하고, 필요할 경우 메서드 레벨에서 readOnly 옵션을 붙이지 않습니다.
+- 메서드의 파라미터는 Presentation 레이어에서 정의한 DTO를 사용합니다. 단, 억지로 필요없는 DTO를 만들어서 내려 보내지 않습니다.
+
+## 테스트 작성 규칙
+- 테스트는 JUnit5, AssertJ를 사용합니다.
+- given - when - then 패턴을 사용하며 이를 주석으로 구분합니다.
+- Domain 테스트는 단위 테스트, Application 테스트는 통합 테스트, Presentation 테스트는 E2E 테스트로 작성합니다.
+- 가능한 모킹을 최소화합니다. (외부 API 호출 정도만 모킹할 것.)
+    - 외부 API(FCM 등) 호출은 반드시 모킹하되, 다음 사항을 검증합니다:
+        - 올바른 엔드포인트와 파라미터로 호출되는지
+        - 성공/실패 응답에 따른 비즈니스 로직이 올바르게 동작하는지
+        - 예외 상황에서 적절한 예외 처리가 이루어지는지
+    - 테스트 환경에서 FCM 토큰은 고정된 더미 값을 사용합니다.
+- Application 테스트, Presentation 테스트를 작성할 때는 적절히 XXXSupport를 통한 픽스처 팩토리/유틸 클래스를 활용합니다.
+- Presentation 테스트를 작성할 때 DTO 유효성 검사가 잘 되는지도 확인합니다.

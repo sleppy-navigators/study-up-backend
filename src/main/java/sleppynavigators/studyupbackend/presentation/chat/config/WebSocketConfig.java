@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.presentation.chat.config;
 
 import java.util.concurrent.TimeUnit;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -16,7 +17,7 @@ import sleppynavigators.studyupbackend.presentation.chat.interceptor.StompAuthen
 
 @Configuration
 @EnableWebSocketMessageBroker
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private static final int HEARTBEAT_INTERVAL = (int) TimeUnit.SECONDS.toMillis(10);

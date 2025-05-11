@@ -1,10 +1,11 @@
 package sleppynavigators.studyupbackend.exception;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public enum ErrorCode {
 
     // request exceptions
@@ -17,6 +18,7 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(404, "D44", "Not found"),
 
     // client exceptions
+    INITIALIZE_FAILED(500, "C50", "Client initialization failed"),
     UNSUCCESSFUL_RESPONSE(500, "C52", "Internal server error"),
 
     // business exceptions
