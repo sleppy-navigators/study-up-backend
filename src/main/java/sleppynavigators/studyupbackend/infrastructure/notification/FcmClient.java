@@ -10,6 +10,7 @@ import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
@@ -20,7 +21,7 @@ import sleppynavigators.studyupbackend.exception.client.UnsuccessfulResponseExce
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class FcmClient {
 
     private final FcmProperties fcmProperties;

@@ -1,10 +1,11 @@
 package sleppynavigators.studyupbackend.exception;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public enum ErrorCode {
 
     // request exceptions

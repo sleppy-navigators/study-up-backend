@@ -1,7 +1,7 @@
 package sleppynavigators.studyupbackend.application.notification;
 
-import java.util.List;
 import java.util.Optional;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,7 @@ import sleppynavigators.studyupbackend.presentation.notification.dto.request.Fcm
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class FcmTokenService {
 
     private final FcmTokenRepository fcmTokenRepository;
