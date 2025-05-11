@@ -1,6 +1,5 @@
 package sleppynavigators.studyupbackend.application.notification;
 
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,20 +24,20 @@ public class FcmTokenService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        Optional<FcmToken> existingToken = fcmTokenRepository.findByDeviceId(request.deviceId());
-        if (existingToken.isPresent()) {
-            FcmToken token = existingToken.get();
-            token.updateToken(request.token());
-            return token;
-        }
-
-        FcmToken newToken = new FcmToken(
-                request.token(),
-                request.deviceId(),
-                request.deviceType(),
-                user
-        );
-        return fcmTokenRepository.save(newToken);
+        return fcmTokenRepository.findByDeviceId(request.deviceId())
+                .map(existingToken -> {
+                    existingToken.updateToken(request.token());
+                    return fcmTokenRepository.save(existingToken);
+                })
+                .orElseGet(() -> {
+                    FcmToken newToken = FcmToken.builder()
+                            .token(request.token())
+                            .deviceId(request.deviceId())
+                            .deviceType(request.deviceType())
+                            .user(user)
+                            .build();
+                    return fcmTokenRepository.save(newToken);
+                });
     }
 
     @Transactional
