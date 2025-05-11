@@ -27,7 +27,7 @@ public class ChallengeScheduler {
     public void checkExpiredChallenges() {
         LocalDateTime baseTime = LocalDateTime.now().minusMinutes(challengeCheckIntervalMinutes);
         List<Challenge> completedChallenges = challengeRepository
-                .findAllRecentlyCompleted(null, baseTime);
+                .findAllByCompletedAtAfter(null, baseTime);
 
         for (Challenge challenge : completedChallenges) {
             ChallengeCompleteEvent event = new ChallengeCompleteEvent(

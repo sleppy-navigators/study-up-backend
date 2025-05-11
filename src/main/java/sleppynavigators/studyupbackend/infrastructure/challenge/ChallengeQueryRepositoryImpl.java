@@ -43,7 +43,7 @@ public class ChallengeQueryRepositoryImpl implements ChallengeQueryRepository {
     }
 
     @Override
-    public List<Challenge> findAllRecentlyCompleted(Predicate predicate, LocalDateTime completedAfter) {
+    public List<Challenge> findAllByCompletedAtAfter(Predicate predicate, LocalDateTime completedAfter) {
         QChallenge challenge = QChallenge.challenge;
         QTask task = QTask.task;
 

@@ -11,5 +11,5 @@ public interface ChallengeQueryRepository {
 
     List<Challenge> findAllSortedByCertificationDate(Predicate predicate, Long pageNum, Integer pageSize);
 
-    List<Challenge> findAllRecentlyCompleted(Predicate predicate, LocalDateTime completedAfter);
+    List<Challenge> findAllByCompletedAtAfter(Predicate predicate, LocalDateTime completedAfter);
 }
