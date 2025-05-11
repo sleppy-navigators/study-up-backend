@@ -21,6 +21,7 @@ import sleppynavigators.studyupbackend.domain.challenge.vo.TaskDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.exception.business.ChallengeHasNoTaskException;
 
 @SoftDelete
 @Entity(name = "challenges")
@@ -96,7 +97,7 @@ public class Challenge extends TimeAuditBaseEntity {
                 .map(Task::getDetail)
                 .map(TaskDetail::getDeadline)
                 .max(LocalDateTime::compareTo)
-                .orElseThrow(() -> new IllegalStateException("Challenge has no tasks"));
+                .orElseThrow(ChallengeHasNoTaskException::new);
     }
 
     private boolean isAllTasksCompleted() {
