@@ -3,6 +3,7 @@ package sleppynavigators.studyupbackend.infrastructure.challenge.scheduler;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class ChallengeScheduler {
@@ -25,6 +27,7 @@ public class ChallengeScheduler {
     @Scheduled(cron = "${scheduler.challenge.check-expiration.cron}", zone = "Asia/Seoul")
     @Transactional
     public void checkExpiredChallenges() {
+        log.info("ChallengeScheduler - checkExpiredChallenges() started");
         LocalDateTime baseTime = LocalDateTime.now().minusMinutes(challengeCheckIntervalMinutes);
         List<Challenge> completedChallenges = challengeRepository
                 .findAllByCompletedAtAfter(null, baseTime);
@@ -38,5 +41,6 @@ public class ChallengeScheduler {
             );
             systemEventPublisher.publish(event);
         }
+        log.info("ChallengeScheduler - checkExpiredChallenges() completed");
     }
 }
