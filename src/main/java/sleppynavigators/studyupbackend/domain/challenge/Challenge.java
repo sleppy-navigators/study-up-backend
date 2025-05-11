@@ -82,7 +82,7 @@ public class Challenge extends TimeAuditBaseEntity {
         return isAllTasksCompleted();
     }
 
-    public double getCompletionRate() {
+    public double calcCompletionRate() {
         if (tasks.isEmpty()) {
             return 0.0;
         }

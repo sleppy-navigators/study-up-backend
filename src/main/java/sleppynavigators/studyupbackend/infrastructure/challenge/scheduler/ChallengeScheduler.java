@@ -34,7 +34,7 @@ public class ChallengeScheduler {
                     challenge.getOwner().getUserProfile().getUsername(),
                     challenge.getDetail().getTitle(),
                     challenge.getGroup().getId(),
-                    challenge.getCompletionRate()
+                    challenge.calcCompletionRate()
             );
             systemEventPublisher.publish(event);
         }
