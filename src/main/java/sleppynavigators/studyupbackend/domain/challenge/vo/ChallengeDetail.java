@@ -26,6 +26,10 @@ public class ChallengeDetail {
     @Column
     private String description;
 
+    public ChallengeDetail(String title, String description) {
+        this(title, null, description);
+    }
+
     public ChallengeDetail(String title, LocalDateTime deadline, String description) {
         validateTitle(title);
         validateDeadline(deadline);
@@ -36,10 +40,6 @@ public class ChallengeDetail {
         this.description = description;
     }
 
-    public boolean isOverdue() {
-        return deadline.isBefore(LocalDateTime.now());
-    }
-
     private void validateTitle(String title) {
         if (title.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("Title must not be longer than " + MAX_LENGTH + " characters");
@@ -47,7 +47,7 @@ public class ChallengeDetail {
     }
 
     private void validateDeadline(LocalDateTime deadline) {
-        if (deadline.isBefore(LocalDateTime.now())) {
+        if (deadline != null && deadline.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Deadline must not be in the past");
         }
     }

@@ -7,7 +7,8 @@ public enum EventType {
     CHALLENGE_CREATE,
     CHALLENGE_COMPLETE,
     CHALLENGE_CANCEL,
-    GROUP_CREATE
+    GROUP_CREATE,
+    TASK_CERTIFY,
 
     // 추후 추가될 이벤트 타입이 있다면 여기에 추가.
 }

@@ -54,7 +54,7 @@ public record GroupChallengeListResponse(
             return new GroupChallengeListItem(
                     challenge.getId(),
                     challenge.getDetail().getTitle(),
-                    challenge.getDetail().getDeadline().atZone(ZoneId.systemDefault()),
+                    challenge.getDeadline().atZone(ZoneId.systemDefault()),
                     challenge.getDetail().getDescription(),
                     challenge.isCompleted(),
                     ChallengerDTO.fromEntity(challenge),

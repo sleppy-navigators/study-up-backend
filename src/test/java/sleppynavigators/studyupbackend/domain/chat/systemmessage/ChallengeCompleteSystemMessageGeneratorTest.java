@@ -25,12 +25,12 @@ class ChallengeCompleteSystemMessageGeneratorTest {
         String userName = "홍길동";
         String challengeName = "알고리즘 문제 풀기";
         Long groupId = 1L;
-        ChallengeCompleteEvent event = new ChallengeCompleteEvent(userName, challengeName, groupId);
+        ChallengeCompleteEvent event = new ChallengeCompleteEvent(userName, challengeName, groupId, 98.857);
 
         // when
         String message = generator.generate(event);
 
         // then
-        assertThat(message).isEqualTo("홍길동님이 '알고리즘 문제 풀기' 챌린지를 완료했습니다.");
+        assertThat(message).isEqualTo("홍길동님이 '알고리즘 문제 풀기' 챌린지를 완료했습니다. (98.86% 달성)");
     }
 }

@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.challenge;
 
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
 import java.net.MalformedURLException;
@@ -18,11 +19,10 @@ import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
-import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
+import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
@@ -68,8 +68,10 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         ZonedDateTime deadline = ZonedDateTime.now().plusDays(7);
         TaskRequest taskRequest = new ChallengeCreationRequest.TaskRequest("testTask", deadline);
         ChallengeCreationRequest request = new ChallengeCreationRequest(
-                "testChallenge", deadline, "description", List.of(taskRequest)
+                "testChallenge", "description", List.of(taskRequest)
         );
+
+        clearInvocations(systemEventListener);
 
         // when
         challengeService.createChallenge(testUser.getId(), testGroup.getId(), request);
@@ -83,46 +85,46 @@ class ChallengeServiceTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("모든 태스크 완료 시 ChallengeCompleteEvent가 발행된다")
-    void completeAllTasks_PublishesChallengeCompleteEvent() throws MalformedURLException {
-        // given
-        Challenge challenge = challengeSupport
-                .callToMakeChallengesWithTasks(testGroup, 3, 2, testUser);
-        Task taskToCertify = challenge.getTasks().get(2);
-
-        TaskCertificationRequest request = new TaskCertificationRequest(
-                List.of(new URL("http://example.com")),
-                List.of(new URL("http://example.com/image"))
-        );
-
-        // when
-        challengeService.completeTask(testUser.getId(), challenge.getId(), taskToCertify.getId(), request);
-
-        // then
-        verify(systemEventListener).handleSystemEvent(new ChallengeCompleteEvent(
-                testUser.getUserProfile().getUsername(), challenge.getDetail().getTitle(), testGroup.getId()));
-    }
-
-    @Test
     @DisplayName("챌린지 취소 시 ChallengeCancelEvent가 발행된다")
     void cancelChallenge_PublishesChallengeCancelEvent() {
         // given
         Challenge challenge = challengeSupport
                 .callToMakeChallengesWithTasks(testGroup, 3, 2, testUser);
 
+        clearInvocations(systemEventListener);
+
         // when
         challengeService.cancelChallenge(testUser.getId(), challenge.getId());
 
         // then
         verify(systemEventListener).handleSystemEvent(
-                new ChallengeCreateEvent(
+                new ChallengeCancelEvent(
                         testUser.getUserProfile().getUsername(),
                         challenge.getDetail().getTitle(),
                         testGroup.getId())
         );
+    }
+
+    @Test
+    @DisplayName("테스크 인증 자료 제출 시 TaskCertifiedEvent가 발행된다")
+    void certifyTask_PublishesTaskCertifiedEvent() throws MalformedURLException {
+        // given
+        Challenge challenge = challengeSupport
+                .callToMakeChallengesWithTasks(testGroup, 3, 0, testUser);
+        TaskCertificationRequest taskCertificationRequest =
+                new TaskCertificationRequest(List.of(new URL("https://blog.com/article")), List.of()
+                );
+
+        clearInvocations(systemEventListener);
+
+        // when
+        challengeService.completeTask(testUser.getId(), challenge.getId(), 1L, taskCertificationRequest);
+
+        // then
         verify(systemEventListener).handleSystemEvent(
-                new ChallengeCancelEvent(
+                new TaskCertifyEvent(
                         testUser.getUserProfile().getUsername(),
+                        challenge.getTasks().get(0).getDetail().getTitle(),
                         challenge.getDetail().getTitle(),
                         testGroup.getId())
         );
