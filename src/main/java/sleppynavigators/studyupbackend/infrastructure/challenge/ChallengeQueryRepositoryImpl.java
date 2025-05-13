@@ -2,7 +2,6 @@ package sleppynavigators.studyupbackend.infrastructure.challenge;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,15 @@ import sleppynavigators.studyupbackend.domain.challenge.QTask;
 public class ChallengeQueryRepositoryImpl implements ChallengeQueryRepository {
 
     private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List<Challenge> findAll(Predicate predicate) {
+        QChallenge challenge = QChallenge.challenge;
+        return queryFactory
+                .selectFrom(challenge)
+                .where(predicate)
+                .fetch();
+    }
 
     @Override
     public List<Challenge> findAll(Predicate predicate, Long pageNum, Integer pageSize) {
@@ -39,22 +47,6 @@ public class ChallengeQueryRepositoryImpl implements ChallengeQueryRepository {
                 .orderBy(task.certification.certifiedAt.max().desc())
                 .offset(pageNum * pageSize)
                 .limit(pageSize)
-                .fetch();
-    }
-
-    @Override
-    public List<Challenge> findAllByCompletedAtAfter(Predicate predicate, LocalDateTime completedAfter) {
-        QChallenge challenge = QChallenge.challenge;
-        QTask task = QTask.task;
-
-        LocalDateTime now = LocalDateTime.now();
-        return queryFactory
-                .selectFrom(challenge)
-                .where(predicate)
-                .leftJoin(task).on(task.challenge.eq(challenge))
-                .groupBy(challenge.id)
-                .having(task.certification.certifiedAt.max().between(completedAfter, now))
-                .orderBy(task.certification.certifiedAt.max().desc())
                 .fetch();
     }
 }

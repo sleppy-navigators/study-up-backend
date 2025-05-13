@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.infrastructure.challenge.scheduler;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
+import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 
 @Slf4j
@@ -28,9 +30,10 @@ public class ChallengeScheduler {
     @Transactional
     public void checkExpiredChallenges() {
         log.info("ChallengeScheduler - checkExpiredChallenges() started");
+
         LocalDateTime baseTime = LocalDateTime.now().minusMinutes(challengeCheckIntervalMinutes);
-        List<Challenge> completedChallenges = challengeRepository
-                .findAllByCompletedAtAfter(null, baseTime);
+        BooleanExpression predicate = ChallengeQueryOptions.getCompletedAfterPredicate(baseTime);
+        List<Challenge> completedChallenges = challengeRepository.findAll(predicate);
 
         for (Challenge challenge : completedChallenges) {
             ChallengeCompleteEvent event = new ChallengeCompleteEvent(

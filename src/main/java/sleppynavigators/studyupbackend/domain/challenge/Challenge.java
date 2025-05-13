@@ -17,11 +17,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
-import sleppynavigators.studyupbackend.domain.challenge.vo.TaskDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
-import sleppynavigators.studyupbackend.exception.business.ChallengeHasNoTaskException;
 
 @SoftDelete
 @Entity(name = "challenges")
@@ -56,6 +54,9 @@ public class Challenge extends TimeAuditBaseEntity {
 
     public void addTask(String title, LocalDateTime deadline) {
         tasks.add(new Task(title, deadline, this));
+        if (detail.getDeadline() == null || deadline.isAfter(detail.getDeadline())) {
+            detail = new ChallengeDetail(detail.getTitle(), deadline, detail.getDescription());
+        }
     }
 
     public boolean isOwner(User user) {
@@ -93,11 +94,7 @@ public class Challenge extends TimeAuditBaseEntity {
     }
 
     public LocalDateTime getDeadline() {
-        return tasks.stream()
-                .map(Task::getDetail)
-                .map(TaskDetail::getDeadline)
-                .max(LocalDateTime::compareTo)
-                .orElseThrow(ChallengeHasNoTaskException::new);
+        return detail.getDeadline();
     }
 
     private boolean isAllTasksCompleted() {

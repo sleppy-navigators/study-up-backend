@@ -28,7 +28,6 @@ public enum ErrorCode {
     OVERED_DEADLINE(400, "B43", "Deadline was overed"),
     FORBIDDEN_CONTENT(400, "B44", "Forbidden content"),
     ACTION_REQUIRED_BEFORE(400, "B45", "Some actions required before"),
-    HAS_NO_TASK(500, "B46", "Challenge has no task"),
 
     // global exceptions
     INTERNAL_SERVER_ERROR(500, "G50", "Internal server error"),
