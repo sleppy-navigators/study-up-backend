@@ -1,8 +1,10 @@
 package sleppynavigators.studyupbackend.presentation.group.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springdoc.core.annotations.ParameterObject;
 import sleppynavigators.studyupbackend.application.group.GroupSortType;
 
+@ParameterObject
 @Schema(description = "그룹 검색 조건")
 public record GroupSearch(
         @Schema(description = "정렬 조건", example = "LATEST_CHAT")

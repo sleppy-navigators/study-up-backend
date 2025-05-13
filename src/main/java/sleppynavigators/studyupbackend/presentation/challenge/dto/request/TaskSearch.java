@@ -2,8 +2,10 @@ package sleppynavigators.studyupbackend.presentation.challenge.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Range;
+import org.springdoc.core.annotations.ParameterObject;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 
+@ParameterObject
 @Schema(description = "과제 검색 조건")
 public record TaskSearch(
         @Schema(description = "페이지 번호", example = "0")
