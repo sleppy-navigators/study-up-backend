@@ -1,7 +1,4 @@
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
   data:
     mongodb:
       database: study_up_chat_test
