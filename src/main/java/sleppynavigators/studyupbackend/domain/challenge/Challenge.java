@@ -45,15 +45,18 @@ public class Challenge extends TimeAuditBaseEntity {
     private List<Task> tasks;
 
     @Builder
-    public Challenge(User owner, Group group, String title, String description, LocalDateTime deadline) {
+    public Challenge(User owner, Group group, String title, String description) {
         this.owner = owner;
         this.group = group;
-        this.detail = new ChallengeDetail(title, deadline, description);
+        this.detail = new ChallengeDetail(title, description);
         this.tasks = new ArrayList<>();
     }
 
     public void addTask(String title, LocalDateTime deadline) {
         tasks.add(new Task(title, deadline, this));
+        if (detail.getDeadline() == null || deadline.isAfter(detail.getDeadline())) {
+            detail = new ChallengeDetail(detail.getTitle(), deadline, detail.getDescription());
+        }
     }
 
     public boolean isOwner(User user) {
@@ -77,11 +80,24 @@ public class Challenge extends TimeAuditBaseEntity {
                 .orElse(null);
     }
 
-    public boolean isAllTasksCompleted() {
-        return tasks.stream().allMatch(Task::isCompleted);
+    public boolean isCompleted() {
+        return isAllTasksCompleted();
     }
 
-    public boolean isCompleted() {
-        return isAllTasksCompleted() || detail.isOverdue();
+    public double calcCompletionRate() {
+        if (tasks.isEmpty()) {
+            return 0.0;
+        }
+
+        long completedTasks = tasks.stream().filter(Task::isCompleted).count();
+        return (double) completedTasks / tasks.size() * 100;
+    }
+
+    public LocalDateTime getDeadline() {
+        return detail.getDeadline();
+    }
+
+    private boolean isAllTasksCompleted() {
+        return tasks.stream().allMatch(Task::isCompleted);
     }
 }

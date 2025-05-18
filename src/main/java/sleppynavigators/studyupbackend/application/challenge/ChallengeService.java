@@ -10,9 +10,9 @@ import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
@@ -112,14 +112,13 @@ public class ChallengeService {
         try {
             task.certify(request.externalLinks(), request.imageUrls(), user);
 
-            if (task.getChallenge().isAllTasksCompleted()) {
-                SystemEvent event = new ChallengeCompleteEvent(
-                        user.getUserProfile().getUsername(),
-                        task.getChallenge().getDetail().getTitle(),
-                        task.getChallenge().getGroup().getId()
-                );
-                systemEventPublisher.publish(event);
-            }
+            SystemEvent event = new TaskCertifyEvent(
+                    user.getUserProfile().getUsername(),
+                    task.getDetail().getTitle(),
+                    task.getChallenge().getDetail().getTitle(),
+                    task.getChallenge().getGroup().getId()
+            );
+            systemEventPublisher.publish(event);
 
             return TaskResponse.fromEntity(task);
         } catch (IllegalArgumentException ex) {

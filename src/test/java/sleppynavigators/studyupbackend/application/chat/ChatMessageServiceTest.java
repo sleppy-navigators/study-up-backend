@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
@@ -74,6 +75,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         String destination = "/topic/group/1";
         Long senderId = 1L;
 
+        clearInvocations(messagingTemplate);
+
         // when
         chatMessageService.sendUserMessage(request, destination, senderId);
 
@@ -102,6 +105,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
                 .given(messagingTemplate)
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
+        clearInvocations(messagingTemplate);
+
         // when & then
         assertThatThrownBy(() -> chatMessageService.sendUserMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
@@ -123,6 +128,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
                 .given(messagingTemplate)
                 .convertAndSend(eq(destination), any(SuccessResponse.class));
 
+        clearInvocations(messagingTemplate);
+
         // when & then
         assertThatThrownBy(() -> chatMessageService.sendUserMessage(request, destination, AUTHENTICATED_USER_ID))
                 .isInstanceOf(ChatMessageException.class);
@@ -137,6 +144,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         Long groupId = 1L;
         String username = "testUser";
         SystemEvent event = new UserJoinEvent(username, groupId);
+
+        clearInvocations(messagingTemplate);
 
         // when
         chatMessageService.sendSystemMessage(event);
@@ -166,6 +175,8 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         doThrow(new RuntimeException("메시지 전송 실패"))
                 .when(messagingTemplate)
                 .convertAndSend(eq(String.format("/topic/group/%d", groupId)), any(SuccessResponse.class));
+
+        clearInvocations(messagingTemplate);
 
         // when & then
         assertThatThrownBy(() -> chatMessageService.sendSystemMessage(event))

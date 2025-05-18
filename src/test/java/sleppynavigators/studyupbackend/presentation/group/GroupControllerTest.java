@@ -427,9 +427,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
-                "test challenge",
-                ZonedDateTime.now().plusDays(3),
-                "test description",
+                "test challenge", "test description",
                 List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
                         new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
                         new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
@@ -447,7 +445,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.title()).isEqualTo(request.title());
-                    assertThat(data.deadline()).isEqualTo(request.deadline());
+                    assertThat(data.deadline()).isEqualTo(request.tasks().get(2).deadline());
                     assertThat(data.description()).isEqualTo(request.description());
                 });
     }
@@ -459,12 +457,10 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
-                "test challenge",
-                ZonedDateTime.now().minusDays(1),
-                "test description",
-                List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
-                        new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
+                "test challenge", "test description",
+                List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
+                        new TaskRequest("test task 2", ZonedDateTime.now().minusHours(6)),
+                        new TaskRequest("test task 3", ZonedDateTime.now().minusHours(9))));
 
         // when
         ExtractableResponse<?> response = with()
@@ -486,9 +482,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
 
         ChallengeCreationRequest request = new ChallengeCreationRequest(
-                "test challenge",
-                ZonedDateTime.now().plusDays(3),
-                "test description",
+                "test challenge", "test description",
                 List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
                         new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
                         new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));

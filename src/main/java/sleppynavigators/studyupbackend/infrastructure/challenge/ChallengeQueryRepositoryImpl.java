@@ -15,6 +15,15 @@ public class ChallengeQueryRepositoryImpl implements ChallengeQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public List<Challenge> findAll(Predicate predicate) {
+        QChallenge challenge = QChallenge.challenge;
+        return queryFactory
+                .selectFrom(challenge)
+                .where(predicate)
+                .fetch();
+    }
+
+    @Override
     public List<Challenge> findAll(Predicate predicate, Long pageNum, Integer pageSize) {
         QChallenge challenge = QChallenge.challenge;
         return queryFactory
