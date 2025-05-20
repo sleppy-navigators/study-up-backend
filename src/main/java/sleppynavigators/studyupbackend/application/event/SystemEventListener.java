@@ -16,6 +16,7 @@ public class SystemEventListener {
     private final ChatMessageService chatMessageService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    // NOTE: Transaction in this method cannot be committed
     public void handleSystemEvent(SystemEvent event) {
         try {
             chatMessageService.sendSystemMessage(event);
