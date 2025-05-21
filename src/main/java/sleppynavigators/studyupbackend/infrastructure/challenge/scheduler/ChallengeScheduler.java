@@ -31,8 +31,9 @@ public class ChallengeScheduler {
     public void checkExpiredChallenges() {
         log.info("ChallengeScheduler - checkExpiredChallenges() started");
 
-        LocalDateTime baseTime = LocalDateTime.now().minusMinutes(challengeCheckIntervalMinutes);
-        BooleanExpression predicate = ChallengeQueryOptions.getCompletedAfterPredicate(baseTime);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime baseTime = now.minusMinutes(challengeCheckIntervalMinutes);
+        BooleanExpression predicate = ChallengeQueryOptions.getCompletedBetweenPredicate(baseTime, now);
         List<Challenge> completedChallenges = challengeRepository.findAll(predicate);
 
         for (Challenge challenge : completedChallenges) {
