@@ -22,11 +22,11 @@ public class Point extends UserAndTimeAuditBaseEntity {
     private Long amount;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "challenge_id", nullable = false, updatable = false)
+    @JoinColumn(name = "challenge_id", updatable = false)
     private Challenge challenge;
 
     private Point(Long amount) {
