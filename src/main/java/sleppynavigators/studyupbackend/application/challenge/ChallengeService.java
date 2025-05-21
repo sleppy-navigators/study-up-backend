@@ -14,6 +14,7 @@ import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
+import sleppynavigators.studyupbackend.domain.point.Point;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
@@ -22,6 +23,7 @@ import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeReposit
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
+import sleppynavigators.studyupbackend.infrastructure.point.PointRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
@@ -40,6 +42,7 @@ public class ChallengeService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final SystemEventPublisher systemEventPublisher;
+    private final PointRepository pointRepository;
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
@@ -52,6 +55,15 @@ public class ChallengeService {
             throw new ForbiddenContentException(
                     "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
         }
+
+        Point remainingEquity = pointRepository.findByUserIdForUpdate(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Point not found - userId: " + userId));
+        Point deposit = new Point(request.deposit());
+        if (remainingEquity.isSufficientFor(deposit)) {
+            throw new ForbiddenContentException(
+                    "User cannot create challenge with insufficient deposit - userId: " + userId);
+        }
+        remainingEquity.subtract(deposit);
 
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
