@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,6 +20,7 @@ import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
+import sleppynavigators.studyupbackend.domain.point.Point;
 import sleppynavigators.studyupbackend.domain.user.User;
 
 @SoftDelete
@@ -41,15 +43,20 @@ public class Challenge extends TimeAuditBaseEntity {
     @Embedded
     private ChallengeDetail detail;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "point_id", nullable = false)
+    private Point deposit;
+
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     @Builder
-    public Challenge(User owner, Group group, String title, String description) {
+    public Challenge(User owner, Group group, String title, String description, Long deposit) {
         this.owner = owner;
         this.group = group;
         this.detail = new ChallengeDetail(title, description);
         this.tasks = new ArrayList<>();
+        this.deposit = new Point(deposit);
     }
 
     public void addTask(String title, LocalDateTime deadline) {

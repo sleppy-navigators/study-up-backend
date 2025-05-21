@@ -137,4 +137,18 @@ public class ChallengeService {
             throw new InvalidPayloadException(ex);
         }
     }
+
+    @Transactional
+    public void settlementDeposit(Long challengeId, Double additionalRate) {
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
+        User owner = challenge.getOwner();
+
+        Point ownerEquity = pointRepository.findByUserIdForUpdate(owner.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Point not found - userId: " + owner.getId()));
+        Point remainingDeposit = pointRepository.findByChallengeIdForUpdate(challengeId)
+                .orElseThrow(() -> new EntityNotFoundException("Point not found - challengeId: " + challengeId));
+
+        ownerEquity.addWithAdditionalRate(remainingDeposit, additionalRate);
+    }
 }

@@ -41,7 +41,8 @@ public class ChallengeSupport {
                 "test-challenge", "test-challenge-description",
                 IntStream.range(0, numOfTotalTasks)
                         .mapToObj(i -> new TaskRequest("test-task-" + i, ZonedDateTime.now().plusHours(3)))
-                        .toList());
+                        .toList(),
+                10L);
         ChallengeResponse challengeResponse = challengeService
                 .createChallenge(challenger.getId(), group.getId(), challengeCreationRequest);
 

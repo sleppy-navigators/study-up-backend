@@ -430,7 +430,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                 "test challenge", "test description",
                 List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
                         new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))),
+                10L);
 
         // when
         ExtractableResponse<?> response = with()
@@ -460,7 +461,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                 "test challenge", "test description",
                 List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
                         new TaskRequest("test task 2", ZonedDateTime.now().minusHours(6)),
-                        new TaskRequest("test task 3", ZonedDateTime.now().minusHours(9))));
+                        new TaskRequest("test task 3", ZonedDateTime.now().minusHours(9))),
+                10L);
 
         // when
         ExtractableResponse<?> response = with()
@@ -485,7 +487,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                 "test challenge", "test description",
                 List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
                         new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))),
+                10L);
 
         // when
         ExtractableResponse<?> response = with()

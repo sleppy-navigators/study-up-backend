@@ -22,7 +22,10 @@ public record ChallengeCreationRequest(
         String description,
 
         @Schema(description = "챌린지 태스크 목록")
-        @NotEmpty @Valid List<TaskRequest> tasks) {
+        @NotEmpty @Valid List<TaskRequest> tasks,
+
+        @Schema(description = "챌린지 보증금", example = "10000")
+        @NotNull Long deposit) {
 
     public Challenge toEntity(User owner, Group group) {
         try {
@@ -31,6 +34,7 @@ public record ChallengeCreationRequest(
                     .group(group)
                     .title(title)
                     .description(description)
+                    .deposit(deposit)
                     .build();
             for (TaskRequest task : tasks) {
                 challenge.addTask(task.title(),

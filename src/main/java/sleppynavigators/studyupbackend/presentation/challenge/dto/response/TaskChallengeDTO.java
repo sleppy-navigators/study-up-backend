@@ -13,6 +13,9 @@ public record TaskChallengeDTO(
         @Schema(description = "챌린지 제목", example = "챌린지 제목")
         @NotBlank String challengeTitle,
 
+        @Schema(description = "챌린지 잔여 보증금", example = "10000")
+        @NotNull Long challengeDeposit,
+
         @Schema(description = "챌린지 완료 여부", example = "true")
         @NotNull Boolean isCompleted) {
 
@@ -20,6 +23,7 @@ public record TaskChallengeDTO(
         return new TaskChallengeDTO(
                 task.getChallenge().getId(),
                 task.getChallenge().getDetail().getTitle(),
+                task.getChallenge().getDeposit().getAmount(),
                 task.getChallenge().isCompleted());
     }
 }

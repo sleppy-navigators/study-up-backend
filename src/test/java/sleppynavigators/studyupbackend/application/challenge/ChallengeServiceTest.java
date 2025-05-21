@@ -68,7 +68,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         ZonedDateTime deadline = ZonedDateTime.now().plusDays(7);
         TaskRequest taskRequest = new ChallengeCreationRequest.TaskRequest("testTask", deadline);
         ChallengeCreationRequest request = new ChallengeCreationRequest(
-                "testChallenge", "description", List.of(taskRequest)
+                "testChallenge", "description", List.of(taskRequest), 10L
         );
 
         clearInvocations(systemEventListener);

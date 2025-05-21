@@ -40,6 +40,7 @@ public class ChallengeScheduler {
                     challenge.getOwner().getUserProfile().getUsername(),
                     challenge.getDetail().getTitle(),
                     challenge.getGroup().getId(),
+                    challenge.getId(),
                     challenge.calcCompletionRate()
             );
             systemEventPublisher.publish(event);

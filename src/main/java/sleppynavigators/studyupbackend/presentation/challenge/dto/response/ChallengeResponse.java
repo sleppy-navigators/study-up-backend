@@ -19,14 +19,17 @@ public record ChallengeResponse(
         @NotNull ZonedDateTime deadline,
 
         @Schema(description = "챌린지 설명", example = "매일 30분 독서하기 챌린지")
-        String description) {
+        String description,
+
+        @Schema(description = "챌린지 잔여 보증금", example = "10000")
+        @NotNull Long deposit) {
 
     public static ChallengeResponse fromEntity(Challenge challenge) {
         return new ChallengeResponse(
                 challenge.getId(),
                 challenge.getDetail().getTitle(),
                 challenge.getDeadline().atZone(ZoneId.systemDefault()),
-                challenge.getDetail().getDescription()
-        );
+                challenge.getDetail().getDescription(),
+                challenge.getDeposit().getAmount());
     }
 }
