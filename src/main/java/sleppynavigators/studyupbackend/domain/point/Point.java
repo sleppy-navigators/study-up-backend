@@ -45,6 +45,7 @@ public class Point extends UserAndTimeAuditBaseEntity {
     }
 
     public void add(Long amount) {
+        validateAmount(this.amount + amount);
         this.amount += amount;
     }
 
@@ -61,7 +62,7 @@ public class Point extends UserAndTimeAuditBaseEntity {
     }
 
     private void validateAmount(Long amount) {
-        if (amount == null || amount < 0) {
+        if (amount < 0) {
             throw new IllegalArgumentException("Amount must be a non-negative number");
         }
     }
