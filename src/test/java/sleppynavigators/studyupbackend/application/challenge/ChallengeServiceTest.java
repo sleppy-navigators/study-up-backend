@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.challenge;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
@@ -25,6 +26,7 @@ import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest.TaskRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
@@ -53,6 +55,8 @@ class ChallengeServiceTest extends ApplicationBaseTest {
     private User testUser;
 
     private Group testGroup;
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
@@ -128,5 +132,23 @@ class ChallengeServiceTest extends ApplicationBaseTest {
                         challenge.getDetail().getTitle(),
                         testGroup.getId())
         );
+    }
+
+    @Test
+    @DisplayName("챌린지 완료 시 남은 보증금에 따라 챌린저에게 포인트를 지급한다")
+    void completeChallenge_Success() {
+        // given
+        Challenge challenge = challengeSupport
+                .callToMakeChallengesWithTasks(testGroup, 3, 0, testUser);
+        User challenger = challenge.getOwner();
+        Long initialChallengerEquity = challenger.getEquity().getAmount();
+        Long remainingDeposit = challenge.getDeposit().getAmount();
+
+        // when
+        challengeService.settlementDeposit(challenge.getId());
+
+        // then
+        assertThat(userRepository.findById(challenger.getId()).orElseThrow().getEquity().getAmount())
+                .isEqualTo(Math.round(initialChallengerEquity + remainingDeposit * 1.1));
     }
 }

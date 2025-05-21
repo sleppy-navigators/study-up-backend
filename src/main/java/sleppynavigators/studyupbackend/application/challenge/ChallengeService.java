@@ -37,6 +37,8 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskR
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChallengeService {
 
+    private static final Double DEPOSIT_ADDITION_RATE = 0.1;
+
     private final ChallengeRepository challengeRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
@@ -138,7 +140,7 @@ public class ChallengeService {
     }
 
     @Transactional
-    public void settlementDeposit(Long challengeId, Double additionalRate) {
+    public void settlementDeposit(Long challengeId) {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
         User owner = challenge.getOwner();
@@ -148,7 +150,7 @@ public class ChallengeService {
         Point remainingDeposit = pointRepository.findByChallengeIdForUpdate(challengeId)
                 .orElseThrow(() -> new EntityNotFoundException("Point not found - challengeId: " + challengeId));
 
-        Long reward = Math.round(remainingDeposit.getAmount() * additionalRate);
+        Long reward = Math.round(remainingDeposit.getAmount() * (1 + DEPOSIT_ADDITION_RATE));
         ownerEquity.add(reward);
     }
 }

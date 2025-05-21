@@ -18,8 +18,6 @@ import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SystemEventListener {
 
-    private static final Double DEPOSIT_ADDITION_RATE = 0.1;
-
     private final ChatMessageService chatMessageService;
     private final ChallengeService challengeService;
 
@@ -36,6 +34,6 @@ public class SystemEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleSystemEventWithTransaction(ChallengeCompleteEvent event) {
-        challengeService.settlementDeposit(event.challengeId(), DEPOSIT_ADDITION_RATE);
+        challengeService.settlementDeposit(event.challengeId());
     }
 }
