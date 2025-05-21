@@ -58,7 +58,7 @@ public class ChallengeService {
 
         Point remainingEquity = pointRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Point not found - userId: " + userId));
-        if (remainingEquity.isSufficientFor(request.deposit())) {
+        if (!remainingEquity.isSufficientFor(request.deposit())) {
             throw new ForbiddenContentException(
                     "User cannot create challenge with insufficient deposit - userId: " + userId);
         }
