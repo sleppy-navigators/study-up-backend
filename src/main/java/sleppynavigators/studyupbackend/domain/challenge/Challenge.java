@@ -43,8 +43,7 @@ public class Challenge extends TimeAuditBaseEntity {
     @Embedded
     private ChallengeDetail detail;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "point_id", nullable = false)
+    @OneToOne(mappedBy = "challenge", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Point deposit;
 
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
@@ -56,7 +55,7 @@ public class Challenge extends TimeAuditBaseEntity {
         this.group = group;
         this.detail = new ChallengeDetail(title, description);
         this.tasks = new ArrayList<>();
-        this.deposit = new Point(deposit);
+        this.deposit = new Point(deposit, this);
     }
 
     public void addTask(String title, LocalDateTime deadline) {

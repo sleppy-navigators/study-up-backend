@@ -2,10 +2,15 @@ package sleppynavigators.studyupbackend.domain.point;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
+import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.common.UserAndTimeAuditBaseEntity;
+import sleppynavigators.studyupbackend.domain.user.User;
 
 @SoftDelete
 @Entity(name = "points")
@@ -14,36 +19,45 @@ import sleppynavigators.studyupbackend.domain.common.UserAndTimeAuditBaseEntity;
 public class Point extends UserAndTimeAuditBaseEntity {
 
     @Column(nullable = false)
-    Long amount;
+    private Long amount;
 
-    public Point(Long amount) {
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "challenge_id", nullable = false, updatable = false)
+    private Challenge challenge;
+
+    private Point(Long amount) {
         validateAmount(amount);
         this.amount = amount;
     }
 
-    public void addWithAdditionalRate(Point other, Double rate) {
-        if (rate < 0) {
-            throw new IllegalArgumentException("Rate must be a non-negative number");
-        }
-
-        Long additionalAmount = Math.round(other.amount * rate);
-        this.amount += other.amount + additionalAmount;
+    public Point(Long amount, User user) {
+        this(amount);
+        this.user = user;
     }
 
-    public void add(Point other) {
-        this.amount += other.amount;
+    public Point(Long amount, Challenge challenge) {
+        this(amount);
+        this.challenge = challenge;
     }
 
-    public void subtract(Point other) {
-        if (this.amount < other.amount) {
+    public void add(Long amount) {
+        this.amount += amount;
+    }
+
+    public void subtract(Long amount) {
+        if (this.amount < amount) {
             throw new IllegalArgumentException("Insufficient points for subtraction");
         }
 
-        this.amount -= other.amount;
+        this.amount -= amount;
     }
 
-    public Boolean isSufficientFor(Point other) {
-        return this.amount >= other.amount;
+    public Boolean isSufficientFor(Long amount) {
+        return this.amount >= amount;
     }
 
     private void validateAmount(Long amount) {

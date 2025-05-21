@@ -58,12 +58,11 @@ public class ChallengeService {
 
         Point remainingEquity = pointRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Point not found - userId: " + userId));
-        Point deposit = new Point(request.deposit());
-        if (remainingEquity.isSufficientFor(deposit)) {
+        if (remainingEquity.isSufficientFor(request.deposit())) {
             throw new ForbiddenContentException(
                     "User cannot create challenge with insufficient deposit - userId: " + userId);
         }
-        remainingEquity.subtract(deposit);
+        remainingEquity.subtract(request.deposit());
 
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
@@ -149,6 +148,7 @@ public class ChallengeService {
         Point remainingDeposit = pointRepository.findByChallengeIdForUpdate(challengeId)
                 .orElseThrow(() -> new EntityNotFoundException("Point not found - challengeId: " + challengeId));
 
-        ownerEquity.addWithAdditionalRate(remainingDeposit, additionalRate);
+        Long reward = Math.round(remainingDeposit.getAmount() * additionalRate);
+        ownerEquity.add(reward);
     }
 }

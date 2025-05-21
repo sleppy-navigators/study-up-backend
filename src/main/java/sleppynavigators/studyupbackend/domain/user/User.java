@@ -4,7 +4,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,12 +23,11 @@ public class User extends TimeAuditBaseEntity {
     @Embedded
     private UserProfile userProfile;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "point_id", nullable = false)
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Point equity;
 
     public User(String username, String email) {
         this.userProfile = new UserProfile(username, email);
-        this.equity = new Point(INITIAL_EQUITY);
+        this.equity = new Point(INITIAL_EQUITY, this);
     }
 }
