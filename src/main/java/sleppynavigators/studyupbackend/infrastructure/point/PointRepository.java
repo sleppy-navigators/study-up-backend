@@ -10,10 +10,10 @@ import sleppynavigators.studyupbackend.domain.point.Point;
 public interface PointRepository extends JpaRepository<Point, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT p FROM points p WHERE p.user.id = :userId")
+    @Query("SELECT u.equity FROM users u WHERE u.id = :userId")
     Optional<Point> findByUserIdForUpdate(Long userId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT p FROM points p WHERE p.challenge.id = :id")
+    @Query("SELECT c.deposit FROM challenges c WHERE c.id = :id")
     Optional<Point> findByChallengeIdForUpdate(Long id);
 }
