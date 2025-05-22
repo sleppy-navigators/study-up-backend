@@ -18,6 +18,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
+import sleppynavigators.studyupbackend.exception.database.LockFailedException;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
@@ -44,7 +45,9 @@ public class ChallengeService {
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
         try {
-            userRepository.lockById(userId);
+            if (userRepository.lockById(userId) != 1) {
+                throw new LockFailedException("Failed to lock user - userId: " + userId);
+            }
 
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
@@ -134,16 +137,18 @@ public class ChallengeService {
     }
 
     @Transactional
-    public void settlementReward(Long challengeId) {
+    public void settlementReward(Long challengerId, Long challengeId) {
         try {
-            userRepository.lockById(challengeId);
+            if (userRepository.lockById(challengerId) != 1) {
+                throw new LockFailedException("Failed to lock user - userId: " + challengerId);
+            }
 
             Challenge challenge = challengeRepository.findById(challengeId)
                     .orElseThrow(
                             () -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
             challenge.rewardToOwner();
         } finally {
-            userRepository.unlockById(challengeId);
+            userRepository.unlockById(challengerId);
         }
     }
 }

@@ -80,6 +80,10 @@ public class Challenge extends TimeAuditBaseEntity {
     }
 
     public void rewardToOwner() {
+        if (!isCompleted()) {
+            throw new IllegalStateException("Challenge is not completed yet.");
+        }
+
         Point reward = deposit.multiply(1 + REWARD_RATE);
         owner.grantEquity(reward.getAmount());
     }

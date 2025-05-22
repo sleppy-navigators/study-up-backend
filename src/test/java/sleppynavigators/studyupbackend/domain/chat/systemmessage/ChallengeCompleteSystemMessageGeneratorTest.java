@@ -26,8 +26,9 @@ class ChallengeCompleteSystemMessageGeneratorTest {
         String challengeName = "알고리즘 문제 풀기";
         Long groupId = 1L;
         Long challengeId = 1L;
+        Long challengerId = 1L;
         ChallengeCompleteEvent event =
-                new ChallengeCompleteEvent(userName, challengeName, groupId, challengeId, 98.857);
+                new ChallengeCompleteEvent(userName, challengeName, groupId, challengeId, challengerId, 98.857);
 
         // when
         String message = generator.generate(event);

@@ -6,9 +6,9 @@ import sleppynavigators.studyupbackend.domain.user.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT get_lock('userId_' + :userId, 2)")
-    void lockById(Long userId);
+    @Query("SELECT get_lock(concat('userId_', :userId), 2)")
+    Integer lockById(Long userId);
 
-    @Query("SELECT release_lock('userId_' + :userId)")
+    @Query("SELECT release_lock(concat('userId_', :userId))")
     void unlockById(Long userId);
 }
