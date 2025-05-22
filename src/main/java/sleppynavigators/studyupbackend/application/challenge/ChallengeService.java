@@ -43,26 +43,32 @@ public class ChallengeService {
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
+        try {
+            userRepository.lockById(userId);
 
-        if (!group.hasMember(user)) {
-            throw new ForbiddenContentException(
-                    "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+            Group group = groupRepository.findById(groupId)
+                    .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
+
+            if (!group.hasMember(user)) {
+                throw new ForbiddenContentException(
+                        "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
+            }
+
+            user.deductEquity(request.deposit());
+            Challenge challenge = challengeRepository.save(request.toEntity(user, group));
+
+            SystemEvent event = new ChallengeCreateEvent(
+                    user.getUserProfile().getUsername(),
+                    challenge.getDetail().getTitle(),
+                    groupId);
+            systemEventPublisher.publish(event);
+
+            return ChallengeResponse.fromEntity(challenge);
+        } finally {
+            userRepository.unlockById(userId);
         }
-
-        user.deductEquity(request.deposit());
-        Challenge challenge = challengeRepository.save(request.toEntity(user, group));
-
-        SystemEvent event = new ChallengeCreateEvent(
-                user.getUserProfile().getUsername(),
-                challenge.getDetail().getTitle(),
-                groupId);
-        systemEventPublisher.publish(event);
-
-        return ChallengeResponse.fromEntity(challenge);
     }
 
     @Transactional
@@ -129,8 +135,15 @@ public class ChallengeService {
 
     @Transactional
     public void settlementReward(Long challengeId) {
-        Challenge challenge = challengeRepository.findById(challengeId)
-                .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
-        challenge.rewardToOwner();
+        try {
+            userRepository.lockById(challengeId);
+
+            Challenge challenge = challengeRepository.findById(challengeId)
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
+            challenge.rewardToOwner();
+        } finally {
+            userRepository.unlockById(challengeId);
+        }
     }
 }
