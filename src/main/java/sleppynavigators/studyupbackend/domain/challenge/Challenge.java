@@ -7,7 +7,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,7 +19,7 @@ import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.domain.point.Point;
+import sleppynavigators.studyupbackend.domain.point.vo.Point;
 import sleppynavigators.studyupbackend.domain.user.User;
 
 @SoftDelete
@@ -29,6 +28,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Challenge extends TimeAuditBaseEntity {
 
+    private static final double REWARD_RATE = 0.1;
     private static final long MODIFIABLE_PERIOD_HOUR = 24L;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -43,7 +43,7 @@ public class Challenge extends TimeAuditBaseEntity {
     @Embedded
     private ChallengeDetail detail;
 
-    @OneToOne(mappedBy = "challenge", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Embedded
     private Point deposit;
 
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
@@ -54,8 +54,8 @@ public class Challenge extends TimeAuditBaseEntity {
         this.owner = owner;
         this.group = group;
         this.detail = new ChallengeDetail(title, description);
+        this.deposit = new Point(deposit);
         this.tasks = new ArrayList<>();
-        this.deposit = new Point(deposit, this);
     }
 
     public void addTask(String title, LocalDateTime deadline) {
@@ -77,6 +77,11 @@ public class Challenge extends TimeAuditBaseEntity {
 
     public boolean canAccess(User user) {
         return group.hasMember(user);
+    }
+
+    public void rewardToOwner() {
+        Point reward = deposit.multiply(1 + REWARD_RATE);
+        owner.grantEquity(reward.getAmount());
     }
 
     public Task getRecentCertifiedTask() {

@@ -14,7 +14,6 @@ import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.domain.point.Point;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
@@ -23,7 +22,6 @@ import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeReposit
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
-import sleppynavigators.studyupbackend.infrastructure.point.PointRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
@@ -37,14 +35,11 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskR
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChallengeService {
 
-    private static final Double DEPOSIT_ADDITION_RATE = 0.1;
-
     private final ChallengeRepository challengeRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final SystemEventPublisher systemEventPublisher;
-    private final PointRepository pointRepository;
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
@@ -58,14 +53,7 @@ public class ChallengeService {
                     "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        Point remainingEquity = pointRepository.findByUserIdForUpdate(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Point not found - userId: " + userId));
-        if (!remainingEquity.isSufficientFor(request.deposit())) {
-            throw new ForbiddenContentException(
-                    "User cannot create challenge with insufficient deposit - userId: " + userId);
-        }
-        remainingEquity.subtract(request.deposit());
-
+        user.deductEquity(request.deposit());
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
         SystemEvent event = new ChallengeCreateEvent(
@@ -140,17 +128,9 @@ public class ChallengeService {
     }
 
     @Transactional
-    public void settlementDeposit(Long challengeId) {
+    public void settlementReward(Long challengeId) {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
-        User owner = challenge.getOwner();
-
-        Point ownerEquity = pointRepository.findByUserIdForUpdate(owner.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Point not found - userId: " + owner.getId()));
-        Point remainingDeposit = pointRepository.findByChallengeIdForUpdate(challengeId)
-                .orElseThrow(() -> new EntityNotFoundException("Point not found - challengeId: " + challengeId));
-
-        Long reward = Math.round(remainingDeposit.getAmount() * (1 + DEPOSIT_ADDITION_RATE));
-        ownerEquity.add(reward);
+        challenge.rewardToOwner();
     }
 }

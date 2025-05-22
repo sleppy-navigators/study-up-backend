@@ -33,7 +33,7 @@ public class SystemEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleSystemEventWithTransaction(ChallengeCompleteEvent event) {
-        challengeService.settlementDeposit(event.challengeId());
+    public void handleChallengeCompleteEvent(ChallengeCompleteEvent event) {
+        challengeService.settlementReward(event.challengeId());
     }
 }

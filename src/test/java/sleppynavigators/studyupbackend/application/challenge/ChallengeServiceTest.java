@@ -145,7 +145,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         Long remainingDeposit = challenge.getDeposit().getAmount();
 
         // when
-        challengeService.settlementDeposit(challenge.getId());
+        challengeService.settlementReward(challenge.getId());
 
         // then
         assertThat(userRepository.findById(challenger.getId()).orElseThrow().getEquity().getAmount())
