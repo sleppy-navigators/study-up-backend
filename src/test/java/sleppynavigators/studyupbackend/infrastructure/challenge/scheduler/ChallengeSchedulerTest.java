@@ -5,13 +5,11 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
@@ -38,9 +36,6 @@ public class ChallengeSchedulerTest extends ApplicationBaseTest {
     @Autowired
     private ChallengeSupport challengeSupport;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @MockitoBean
     private SystemEventPublisher systemEventPublisher;
 
@@ -57,19 +52,12 @@ public class ChallengeSchedulerTest extends ApplicationBaseTest {
         // given
         Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
 
-        Challenge completed1 = challengeSupport.callToMakeChallengesWithTasks(
-                groupToBelong, 10, 5, currentUser);
-        Challenge completed2 = challengeSupport.callToMakeChallengesWithTasks(
-                groupToBelong, 10, 10, currentUser);
+        Challenge completed1 = challengeSupport.callToMakeCompletedChallengeWithTasks(
+                groupToBelong, 10, currentUser);
+        Challenge completed2 = challengeSupport.callToMakeCompletedChallengeWithTasks(
+                groupToBelong, 10, currentUser);
         Challenge notCompleted = challengeSupport.callToMakeChallengesWithTasks(
                 groupToBelong, 10, 0, currentUser);
-
-        jdbcTemplate.update("UPDATE challenges SET deadline = ? WHERE id = ?",
-                LocalDateTime.now().minusHours(24), completed1.getId());
-        jdbcTemplate.update("UPDATE challenges SET deadline = ? WHERE id = ?",
-                LocalDateTime.now().minusHours(24), completed2.getId());
-        jdbcTemplate.update("UPDATE challenges SET deadline = ? WHERE id = ?",
-                LocalDateTime.now().plusHours(24), notCompleted.getId());
 
         clearInvocations(systemEventPublisher);
 

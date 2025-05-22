@@ -55,6 +55,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
     private User testUser;
 
     private Group testGroup;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -139,7 +140,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
     void completeChallenge_Success() {
         // given
         Challenge challenge = challengeSupport
-                .callToMakeChallengesWithTasks(testGroup, 3, 0, testUser);
+                .callToMakeCompletedChallengeWithTasks(testGroup, 3, testUser);
         User challenger = challenge.getOwner();
         Long initialChallengerEquity = challenger.getEquity().getAmount();
         Long remainingDeposit = challenge.getDeposit().getAmount();

@@ -4,6 +4,8 @@ spring:
       database: study_up_chat_test
   datasource:
     url: jdbc:tc:mysql:8:///study_up?serverTimezone=Asia/Seoul
+  jpa:
+    show-sql: true
 
 de.flapdoodle:
   mongodb:
@@ -15,3 +17,7 @@ authentication:
   access-token:
     secret: testsecretfortestspringbootapplication
     expiration-in-milliseconds: 3600000
+
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG

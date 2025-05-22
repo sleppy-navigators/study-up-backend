@@ -195,7 +195,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
         Challenge challenge2 = challengeSupport
                 .callToMakeChallengesWithTasks(groupCurrentlyJoined, 4, 0, currentUser);
         Challenge challenge3 = challengeSupport
-                .callToMakeChallengesWithTasks(groupWillNotJoined, 2, 2, currentUser);
+                .callToMakeCompletedChallengeWithTasks(groupWillNotJoined, 2, currentUser);
 
         // when
         groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());
@@ -234,7 +234,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
         Challenge challenge2 = challengeSupport
                 .callToMakeChallengesWithTasks(groupCurrentlyJoined, 4, 0, currentUser);
         Challenge challenge3 = challengeSupport
-                .callToMakeChallengesWithTasks(groupWillNotJoined, 2, 2, currentUser);
+                .callToMakeCompletedChallengeWithTasks(groupWillNotJoined, 2, currentUser);
 
         // when
         groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());

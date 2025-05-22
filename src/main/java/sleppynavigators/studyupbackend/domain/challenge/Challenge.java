@@ -96,7 +96,7 @@ public class Challenge extends TimeAuditBaseEntity {
     }
 
     public boolean isCompleted() {
-        return isAllTasksCompleted();
+        return detail.isOverdue();
     }
 
     public double calcCompletionRate() {
@@ -110,9 +110,5 @@ public class Challenge extends TimeAuditBaseEntity {
 
     public LocalDateTime getDeadline() {
         return detail.getDeadline();
-    }
-
-    private boolean isAllTasksCompleted() {
-        return tasks.stream().allMatch(Task::isCompleted);
     }
 }
