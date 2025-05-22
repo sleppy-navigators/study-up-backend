@@ -59,6 +59,7 @@ ext {
     awaitilityVersion = "4.2.0"
     flappdoodleVersion = "4.11.0"
     firebaseAdminVersion = "9.2.0"
+    testcontainersVersion = "1.21.0"
 }
 
 dependencies {
@@ -107,7 +108,6 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-    runtimeOnly "com.h2database:h2"
     runtimeOnly "com.mysql:mysql-connector-j"
 
     // Lombok
@@ -124,6 +124,8 @@ dependencies {
     testImplementation "org.assertj:assertj-core:${assertJVersion}"
     testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
     testImplementation "de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:${flappdoodleVersion}"
+    implementation platform("org.testcontainers:testcontainers-bom:${testcontainersVersion}")
+    testImplementation "org.testcontainers:mysql"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 

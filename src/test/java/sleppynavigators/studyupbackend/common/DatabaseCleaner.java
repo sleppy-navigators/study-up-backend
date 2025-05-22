@@ -38,11 +38,11 @@ public class DatabaseCleaner {
         entityManager.flush();
         entityManager.clear();
 
-        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
+        entityManager.createNativeQuery("SET foreign_key_checks = 0").executeUpdate();
         for (String tableName : tableNames) {
             entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
         }
-        entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
+        entityManager.createNativeQuery("SET foreign_key_checks = 1").executeUpdate();
     }
 
     private void cleanMongoDatabase() {
