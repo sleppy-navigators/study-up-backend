@@ -1,30 +1,30 @@
-CREATE TABLE `groups`
+create table `groups`
 (
     id            bigint auto_increment primary key,
     name          varchar(255) not null,
     description   varchar(255) not null,
     thumbnail_url varchar(255) null,
-    deleted       bit          not null COMMENT 'Soft-delete indicator',
+    deleted       bit          not null comment 'Soft-delete indicator',
     created_at    datetime(6)  not null,
     created_by    bigint       null,
     updated_at    datetime(6)  not null,
     updated_by    bigint       null
 );
 
-CREATE TABLE bots
+create table bots
 (
     id         bigint auto_increment primary key,
     name       varchar(255) not null,
     group_id   bigint       not null,
     created_at datetime(6)  not null,
     updated_at datetime(6)  not null,
-    CONSTRAINT UKbl66pntl1ns8c1wowc4yqv9yd
+    constraint UKbl66pntl1ns8c1wowc4yqv9yd
         unique (group_id),
-    CONSTRAINT FK5frfnih7gr71yusbn2221m4nx
+    constraint FK5frfnih7gr71yusbn2221m4nx
         foreign key (group_id) references `groups` (id)
 );
 
-CREATE TABLE group_invitations
+create table group_invitations
 (
     id             bigint auto_increment primary key,
     group_id       bigint       not null,
@@ -33,21 +33,21 @@ CREATE TABLE group_invitations
     created_by     bigint       null,
     updated_at     datetime(6)  not null,
     updated_by     bigint       null,
-    CONSTRAINT FKkjm6h04g1d3bf3iinku0wagf5
+    constraint FKkjm6h04g1d3bf3iinku0wagf5
         foreign key (group_id) references `groups` (id)
 );
 
-CREATE TABLE users
+create table users
 (
     id         bigint auto_increment primary key,
     username   varchar(255) not null,
     email      varchar(255) not null,
-    deleted    bit          not null COMMENT 'Soft-delete indicator',
+    deleted    bit          not null comment 'Soft-delete indicator',
     created_at datetime(6)  not null,
     updated_at datetime(6)  not null
 );
 
-CREATE TABLE challenges
+create table challenges
 (
     id          bigint auto_increment primary key,
     title       varchar(255) not null,
@@ -55,16 +55,16 @@ CREATE TABLE challenges
     deadline    datetime(6)  not null,
     owner_id    bigint       not null,
     group_id    bigint       not null,
-    deleted     bit          not null COMMENT 'Soft-delete indicator',
+    deleted     bit          not null comment 'Soft-delete indicator',
     created_at  datetime(6)  not null,
     updated_at  datetime(6)  not null,
-    CONSTRAINT FK6phslw6i958x3hgubwoglpsgh
+    constraint FK6phslw6i958x3hgubwoglpsgh
         foreign key (group_id) references `groups` (id),
-    CONSTRAINT FKbudvg0p3ffvgvbeyf9l8nume3
+    constraint FKbudvg0p3ffvgvbeyf9l8nume3
         foreign key (owner_id) references users (id)
 );
 
-CREATE TABLE fcm_tokens
+create table fcm_tokens
 (
     id          bigint auto_increment primary key,
     user_id     bigint                         not null,
@@ -73,27 +73,27 @@ CREATE TABLE fcm_tokens
     device_type enum ('ANDROID', 'IOS', 'WEB') not null,
     created_at  datetime(6)                    not null,
     updated_at  datetime(6)                    not null,
-    CONSTRAINT UKnbv2435ks37v3744qget6y41m
+    constraint UKnbv2435ks37v3744qget6y41m
         unique (device_id),
-    CONSTRAINT FKj2kob865pl9dv5vwrs2pmshjv
+    constraint FKj2kob865pl9dv5vwrs2pmshjv
         foreign key (user_id) references users (id)
 );
 
-CREATE TABLE group_members
+create table group_members
 (
     id         bigint auto_increment primary key,
     user_id    bigint      not null,
     group_id   bigint      not null,
-    deleted    bit         not null COMMENT 'Soft-delete indicator',
+    deleted    bit         not null comment 'Soft-delete indicator',
     created_at datetime(6) not null,
     updated_at datetime(6) not null,
-    CONSTRAINT FKnr9qg33qt2ovmv29g4vc3gtdx
+    constraint FKnr9qg33qt2ovmv29g4vc3gtdx
         foreign key (user_id) references users (id),
-    CONSTRAINT FKrpgq4bl4kui39wk9mlkl26ib
+    constraint FKrpgq4bl4kui39wk9mlkl26ib
         foreign key (group_id) references `groups` (id)
 );
 
-CREATE TABLE tasks
+create table tasks
 (
     id             bigint auto_increment primary key,
     title          varchar(255) not null,
@@ -101,30 +101,30 @@ CREATE TABLE tasks
     image_urls     varchar(255) not null,
     deadline       datetime(6)  not null,
     challenge_id   bigint       not null,
-    deleted        bit          not null COMMENT 'Soft-delete indicator',
+    deleted        bit          not null comment 'Soft-delete indicator',
     certified_at   datetime(6)  null,
     created_at     datetime(6)  not null,
     updated_at     datetime(6)  not null,
-    CONSTRAINT FKj2p2ll95ivoc2w5o6xk8gv19n
+    constraint FKj2p2ll95ivoc2w5o6xk8gv19n
         foreign key (challenge_id) references challenges (id)
 );
 
-CREATE TABLE user_credentials
+create table user_credentials
 (
     id         bigint auto_increment primary key,
     user_id    bigint       not null,
     subject    varchar(255) not null,
     provider   varchar(255) not null,
-    deleted    bit          not null COMMENT 'Soft-delete indicator',
+    deleted    bit          not null comment 'Soft-delete indicator',
     created_at datetime(6)  not null,
     updated_at datetime(6)  not null,
-    CONSTRAINT UKthx1lw5kg5ygi8d8b90gv2ha3
+    constraint UKthx1lw5kg5ygi8d8b90gv2ha3
         unique (user_id),
-    CONSTRAINT FK98kxj78ausx1xo94eq4mkjm9q
+    constraint FK98kxj78ausx1xo94eq4mkjm9q
         foreign key (user_id) references users (id)
 );
 
-CREATE TABLE user_sessions
+create table user_sessions
 (
     id            bigint auto_increment primary key,
     user_id       bigint       not null,
@@ -133,8 +133,8 @@ CREATE TABLE user_sessions
     expiration    datetime(6)  null,
     created_at    datetime(6)  not null,
     updated_at    datetime(6)  not null,
-    CONSTRAINT UKs53lpnfnkol367c935m8ue3fc
+    constraint UKs53lpnfnkol367c935m8ue3fc
         unique (user_id),
-    CONSTRAINT FK8klxsgb8dcjjklmqebqp1twd5
+    constraint FK8klxsgb8dcjjklmqebqp1twd5
         foreign key (user_id) references users (id)
 );
