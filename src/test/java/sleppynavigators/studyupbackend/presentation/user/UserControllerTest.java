@@ -95,7 +95,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
         assertThat(response.jsonPath().getObject("data", UserResponse.class))
                 .satisfies(data -> {
                     assertThat(this.validator.validate(data)).isEmpty();
-                    assertThat(data.equity()).isEqualTo(1000);
+                    assertThat(data.point()).isEqualTo(1000);
                 });
     }
 
