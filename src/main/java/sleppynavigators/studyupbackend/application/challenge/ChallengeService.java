@@ -16,7 +16,6 @@ import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
-import sleppynavigators.studyupbackend.exception.business.InSufficientPointsException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.exception.database.LockFailedException;

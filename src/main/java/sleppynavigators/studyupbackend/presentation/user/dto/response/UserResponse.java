@@ -17,13 +17,13 @@ public record UserResponse(
         @NotBlank String email,
 
         @Schema(description = "사용자 보유 포인트", example = "1000")
-        @NotNull Long equity) {
+        @NotNull Long point) {
 
     public static UserResponse fromEntity(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getUserProfile().getUsername(),
                 user.getUserProfile().getEmail(),
-                user.getEquity().getAmount());
+                user.getPoint().getAmount());
     }
 }

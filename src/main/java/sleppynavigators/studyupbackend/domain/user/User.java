@@ -16,29 +16,29 @@ import sleppynavigators.studyupbackend.exception.business.InSufficientPointsExce
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class User extends TimeAuditBaseEntity {
 
-    private static final Long INITIAL_EQUITY = 1_000L;
+    private static final Long INITIAL_POINT = 1_000L;
 
     @Embedded
     private UserProfile userProfile;
 
     @Embedded
-    private Point equity;
+    private Point point;
 
     public User(String username, String email) {
         this.userProfile = new UserProfile(username, email);
-        this.equity = new Point(INITIAL_EQUITY);
+        this.point = new Point(INITIAL_POINT);
     }
 
     public void grantEquity(Long amount) {
-        equity = equity.add(amount);
+        point = point.add(amount);
     }
 
     public void deductEquity(Long amount) {
-        if (equity.getAmount() < amount) {
+        if (point.getAmount() < amount) {
             throw new InSufficientPointsException(
                     "Insufficient equity to deduct - current equity: " + amount);
         }
 
-        equity = equity.subtract(amount);
+        point = point.subtract(amount);
     }
 }

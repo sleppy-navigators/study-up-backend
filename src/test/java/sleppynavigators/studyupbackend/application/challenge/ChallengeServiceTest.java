@@ -142,14 +142,14 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         Challenge challenge = challengeSupport
                 .callToMakeCompletedChallengeWithTasks(testGroup, 3, testUser);
         User challenger = challenge.getOwner();
-        Long initialChallengerEquity = challenger.getEquity().getAmount();
+        Long initialChallengerEquity = challenger.getPoint().getAmount();
         Long remainingDeposit = challenge.getDeposit().getAmount();
 
         // when
         challengeService.settlementReward(challenger.getId(), challenge.getId());
 
         // then
-        assertThat(userRepository.findById(challenger.getId()).orElseThrow().getEquity().getAmount())
+        assertThat(userRepository.findById(challenger.getId()).orElseThrow().getPoint().getAmount())
                 .isEqualTo(Math.round(initialChallengerEquity + remainingDeposit * 1.1));
     }
 }
