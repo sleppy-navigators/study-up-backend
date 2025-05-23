@@ -21,6 +21,7 @@ import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.point.vo.Point;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.exception.business.ChallengeInProgressException;
 
 @SoftDelete
 @Entity(name = "challenges")
@@ -81,7 +82,7 @@ public class Challenge extends TimeAuditBaseEntity {
 
     public void rewardToOwner() {
         if (!isCompleted()) {
-            throw new IllegalStateException("Challenge is not completed yet.");
+            throw new ChallengeInProgressException();
         }
 
         Point reward = deposit.multiply(1 + REWARD_RATE);

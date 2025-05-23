@@ -1,11 +1,10 @@
 package sleppynavigators.studyupbackend.exception.business;
 
 import lombok.Getter;
-import sleppynavigators.studyupbackend.exception.BaseException;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 
 @Getter
-public class ChatMessageException extends BaseException {
+public class ChatMessageException extends BusinessBaseException {
 
     public ChatMessageException() {
         super(ErrorCode.CHAT_MESSAGE);

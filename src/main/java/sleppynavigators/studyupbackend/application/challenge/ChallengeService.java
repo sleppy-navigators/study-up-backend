@@ -16,6 +16,7 @@ import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
+import sleppynavigators.studyupbackend.exception.business.InSufficientPointsException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.exception.database.LockFailedException;
@@ -55,8 +56,7 @@ public class ChallengeService {
                     .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
 
             if (!group.hasMember(user)) {
-                throw new ForbiddenContentException(
-                        "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
+                throw new InSufficientPointsException("In sufficient points for user - userId: " + userId);
             }
 
             user.deductEquity(request.deposit());
