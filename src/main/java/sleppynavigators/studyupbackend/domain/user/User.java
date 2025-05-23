@@ -36,7 +36,7 @@ public class User extends TimeAuditBaseEntity {
     public void deductEquity(Long amount) {
         if (point.getAmount() < amount) {
             throw new InSufficientPointsException(
-                    "Insufficient equity to deduct - current equity: " + amount);
+                    "Insufficient equity to deduct - current equity: " + point.getAmount() + ", requested: " + amount);
         }
 
         point = point.subtract(amount);
