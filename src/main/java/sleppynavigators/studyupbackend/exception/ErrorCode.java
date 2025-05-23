@@ -16,7 +16,6 @@ public enum ErrorCode {
 
     // database exceptions
     ENTITY_NOT_FOUND(404, "D44", "Not found"),
-    LOCK_FAILED(500, "D50", "Lock failed"),
 
     // client exceptions
     INITIALIZE_FAILED(500, "C50", "Client initialization failed"),

@@ -18,7 +18,6 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
-import sleppynavigators.studyupbackend.exception.database.LockFailedException;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
@@ -44,34 +43,26 @@ public class ChallengeService {
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
-        try {
-            if (userRepository.lockById(userId) != 1) {
-                throw new LockFailedException("Failed to lock user - userId: " + userId);
-            }
+        User user = userRepository.findByIdForUpdate(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
 
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
-            Group group = groupRepository.findById(groupId)
-                    .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
-
-            if (!group.hasMember(user)) {
-                throw new ForbiddenContentException(
-                        "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
-            }
-
-            user.deductEquity(request.deposit());
-            Challenge challenge = challengeRepository.save(request.toEntity(user, group));
-
-            SystemEvent event = new ChallengeCreateEvent(
-                    user.getUserProfile().getUsername(),
-                    challenge.getDetail().getTitle(),
-                    groupId);
-            systemEventPublisher.publish(event);
-
-            return ChallengeResponse.fromEntity(challenge);
-        } finally {
-            userRepository.unlockById(userId);
+        if (!group.hasMember(user)) {
+            throw new ForbiddenContentException(
+                    "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
         }
+
+        user.deductEquity(request.deposit());
+        Challenge challenge = challengeRepository.save(request.toEntity(user, group));
+
+        SystemEvent event = new ChallengeCreateEvent(
+                user.getUserProfile().getUsername(),
+                challenge.getDetail().getTitle(),
+                groupId);
+        systemEventPublisher.publish(event);
+
+        return ChallengeResponse.fromEntity(challenge);
     }
 
     @Transactional
@@ -138,17 +129,13 @@ public class ChallengeService {
 
     @Transactional
     public void settlementReward(Long challengerId, Long challengeId) {
-        try {
-            if (userRepository.lockById(challengerId) != 1) {
-                throw new LockFailedException("Failed to lock user - userId: " + challengerId);
-            }
+        // Lock the user to prevent concurrent modifications
+        User challenger = userRepository.findByIdForUpdate(challengerId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + challengerId));
 
-            Challenge challenge = challengeRepository.findById(challengeId)
-                    .orElseThrow(
-                            () -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
-            challenge.rewardToOwner();
-        } finally {
-            userRepository.unlockById(challengerId);
-        }
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
+        challenge.rewardToOwner();
     }
 }
