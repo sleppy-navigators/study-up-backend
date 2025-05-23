@@ -19,7 +19,9 @@ import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
+import sleppynavigators.studyupbackend.domain.point.vo.Point;
 import sleppynavigators.studyupbackend.domain.user.User;
+import sleppynavigators.studyupbackend.exception.business.ChallengeInProgressException;
 
 @SoftDelete
 @Entity(name = "challenges")
@@ -27,6 +29,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Challenge extends TimeAuditBaseEntity {
 
+    private static final double REWARD_RATE = 0.1;
     private static final long MODIFIABLE_PERIOD_HOUR = 24L;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -41,14 +44,18 @@ public class Challenge extends TimeAuditBaseEntity {
     @Embedded
     private ChallengeDetail detail;
 
+    @Embedded
+    private Point deposit;
+
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     @Builder
-    public Challenge(User owner, Group group, String title, String description) {
+    public Challenge(User owner, Group group, String title, String description, Long deposit) {
         this.owner = owner;
         this.group = group;
         this.detail = new ChallengeDetail(title, description);
+        this.deposit = new Point(deposit);
         this.tasks = new ArrayList<>();
     }
 
@@ -73,6 +80,15 @@ public class Challenge extends TimeAuditBaseEntity {
         return group.hasMember(user);
     }
 
+    public void rewardToOwner() {
+        if (!isCompleted()) {
+            throw new ChallengeInProgressException();
+        }
+
+        Point reward = deposit.multiply(1 + REWARD_RATE);
+        owner.grantEquity(reward.getAmount());
+    }
+
     public Task getRecentCertifiedTask() {
         return tasks.stream()
                 .filter(Task::isSucceed)
@@ -81,7 +97,7 @@ public class Challenge extends TimeAuditBaseEntity {
     }
 
     public boolean isCompleted() {
-        return isAllTasksCompleted();
+        return detail.isOverdue();
     }
 
     public double calcCompletionRate() {
@@ -95,9 +111,5 @@ public class Challenge extends TimeAuditBaseEntity {
 
     public LocalDateTime getDeadline() {
         return detail.getDeadline();
-    }
-
-    private boolean isAllTasksCompleted() {
-        return tasks.stream().allMatch(Task::isCompleted);
     }
 }

@@ -39,6 +39,9 @@ public record GroupChallengeListResponse(
             @Schema(description = "챌린지 설명", example = "아무튼 공부하는 스터디")
             String description,
 
+            @Schema(description = "챌린지 잔여 보증금", example = "10000")
+            @NotNull Long deposit,
+
             @Schema(description = "챌린지 완료 여부", example = "true")
             @NotNull Boolean isCompleted,
 
@@ -56,6 +59,7 @@ public record GroupChallengeListResponse(
                     challenge.getDetail().getTitle(),
                     challenge.getDeadline().atZone(ZoneId.systemDefault()),
                     challenge.getDetail().getDescription(),
+                    challenge.getDeposit().getAmount(),
                     challenge.isCompleted(),
                     ChallengerDTO.fromEntity(challenge),
                     (recentCertifiedTask != null) ?

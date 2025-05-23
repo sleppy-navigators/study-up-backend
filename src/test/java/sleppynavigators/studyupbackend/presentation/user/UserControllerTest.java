@@ -79,6 +79,27 @@ public class UserControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
+    @DisplayName("최초 회원가입 시, 사용자는 1,000 포인트를 보유하고 있다")
+    void getUserInfo_Success_InitialPoint() {
+        // given
+        User userToQuery = userSupport.registerUserToDB();
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/users/{userId}", userToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", UserResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.point()).isEqualTo(1000);
+                });
+    }
+
+    @Test
     @DisplayName("사용자가 그룹 목록 조회에 성공한다")
     void getGroups_Success() {
         // given
@@ -174,7 +195,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
         Challenge challenge2 = challengeSupport
                 .callToMakeChallengesWithTasks(groupCurrentlyJoined, 4, 0, currentUser);
         Challenge challenge3 = challengeSupport
-                .callToMakeChallengesWithTasks(groupWillNotJoined, 2, 2, currentUser);
+                .callToMakeCompletedChallengeWithTasks(groupWillNotJoined, 2, currentUser);
 
         // when
         groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());
@@ -213,7 +234,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
         Challenge challenge2 = challengeSupport
                 .callToMakeChallengesWithTasks(groupCurrentlyJoined, 4, 0, currentUser);
         Challenge challenge3 = challengeSupport
-                .callToMakeChallengesWithTasks(groupWillNotJoined, 2, 2, currentUser);
+                .callToMakeCompletedChallengeWithTasks(groupWillNotJoined, 2, currentUser);
 
         // when
         groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());

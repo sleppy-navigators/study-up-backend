@@ -430,7 +430,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                 "test challenge", "test description",
                 List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
                         new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))),
+                10L);
 
         // when
         ExtractableResponse<?> response = with()
@@ -460,7 +461,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                 "test challenge", "test description",
                 List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
                         new TaskRequest("test task 2", ZonedDateTime.now().minusHours(6)),
-                        new TaskRequest("test task 3", ZonedDateTime.now().minusHours(9))));
+                        new TaskRequest("test task 3", ZonedDateTime.now().minusHours(9))),
+                10L);
 
         // when
         ExtractableResponse<?> response = with()
@@ -485,7 +487,8 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                 "test challenge", "test description",
                 List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
                         new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
-                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))));
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))),
+                10L);
 
         // when
         ExtractableResponse<?> response = with()
@@ -510,9 +513,9 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Challenge myInProgressChallenge = challengeSupport
                 .callToMakeChallengesWithTasks(groupToQuery, 5, 3, currentUser);
         Challenge myCompletedChallenge = challengeSupport
-                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 4, currentUser);
         Challenge anotherUserChallenge = challengeSupport
-                .callToMakeChallengesWithTasks(groupToQuery, 5, 5, anotherUser);
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 5, anotherUser);
 
         // when
         groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
@@ -550,9 +553,9 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Challenge myInProgressChallenge = challengeSupport
                 .callToMakeChallengesWithTasks(groupToQuery, 5, 3, currentUser);
         Challenge myCompletedChallenge = challengeSupport
-                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 4, currentUser);
         Challenge anotherUserChallenge = challengeSupport
-                .callToMakeChallengesWithTasks(groupToQuery, 5, 5, anotherUser);
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 5, anotherUser);
 
         challengeSupport.callToCertifyTask(currentUser, myInProgressChallenge,
                 myInProgressChallenge.getTasks().get(3).getId(),
@@ -595,9 +598,9 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Challenge myInProgressChallenge = challengeSupport
                 .callToMakeChallengesWithTasks(groupToQuery, 3, 1, currentUser);
         Challenge myCompletedChallenge = challengeSupport
-                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 4, currentUser);
         Challenge anotherUserChallenge = challengeSupport
-                .callToMakeChallengesWithTasks(groupToQuery, 2, 2, anotherUser);
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 2, anotherUser);
 
         // when
         groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());
@@ -637,9 +640,9 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Challenge myInProgressChallenge = challengeSupport
                 .callToMakeChallengesWithTasks(groupToQuery, 3, 1, currentUser);
         Challenge myCompletedChallenge = challengeSupport
-                .callToMakeChallengesWithTasks(groupToQuery, 4, 4, currentUser);
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 4, currentUser);
         Challenge anotherUserChallenge = challengeSupport
-                .callToMakeChallengesWithTasks(groupToQuery, 2, 2, anotherUser);
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 2, anotherUser);
 
         // when
         groupSupport.callToLeaveGroup(anotherUser, groupToQuery.getId());

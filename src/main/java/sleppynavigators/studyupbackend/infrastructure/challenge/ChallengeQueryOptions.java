@@ -11,8 +11,8 @@ public class ChallengeQueryOptions {
         return challenge.group.id.eq(groupId);
     }
 
-    public static BooleanExpression getCompletedAfterPredicate(LocalDateTime completedAt) {
+    public static BooleanExpression getCompletedBetweenPredicate(LocalDateTime start, LocalDateTime end) {
         QChallenge challenge = QChallenge.challenge;
-        return challenge.detail.deadline.after(completedAt);
+        return challenge.detail.deadline.between(start, end);
     }
 }

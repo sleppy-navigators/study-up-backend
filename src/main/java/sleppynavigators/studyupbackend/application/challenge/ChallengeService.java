@@ -43,7 +43,7 @@ public class ChallengeService {
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdForUpdate(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
@@ -53,6 +53,7 @@ public class ChallengeService {
                     "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
         }
 
+        user.deductEquity(request.deposit());
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
         SystemEvent event = new ChallengeCreateEvent(
@@ -124,5 +125,17 @@ public class ChallengeService {
         } catch (IllegalArgumentException ex) {
             throw new InvalidPayloadException(ex);
         }
+    }
+
+    @Transactional
+    public void settlementReward(Long challengerId, Long challengeId) {
+        // Lock the user to prevent concurrent modifications
+        User challenger = userRepository.findByIdForUpdate(challengerId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + challengerId));
+
+        Challenge challenge = challengeRepository.findById(challengeId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
+        challenge.rewardToOwner();
     }
 }
