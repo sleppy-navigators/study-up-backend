@@ -8,6 +8,7 @@ import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.point.vo.Point;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
+import sleppynavigators.studyupbackend.exception.business.InSufficientPointsException;
 
 @SoftDelete
 @Entity(name = "users")
@@ -33,6 +34,11 @@ public class User extends TimeAuditBaseEntity {
     }
 
     public void deductEquity(Long amount) {
+        if (equity.getAmount() < amount) {
+            throw new InSufficientPointsException(
+                    "Insufficient equity to deduct - current equity: " + amount);
+        }
+
         equity = equity.subtract(amount);
     }
 }

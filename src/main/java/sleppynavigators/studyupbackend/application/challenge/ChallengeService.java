@@ -56,7 +56,8 @@ public class ChallengeService {
                     .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
 
             if (!group.hasMember(user)) {
-                throw new InSufficientPointsException("In sufficient points for user - userId: " + userId);
+                throw new ForbiddenContentException(
+                        "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
             }
 
             user.deductEquity(request.deposit());
