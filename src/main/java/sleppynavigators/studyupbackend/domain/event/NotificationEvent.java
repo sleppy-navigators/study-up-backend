@@ -1,4 +1,4 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public interface PushNotificationEvent extends Event {
+public interface NotificationEvent extends Event {
 } 
