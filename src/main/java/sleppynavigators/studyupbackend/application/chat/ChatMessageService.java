@@ -13,7 +13,7 @@ import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGenerator;
 import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGeneratorFactory;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
@@ -58,7 +58,7 @@ public class ChatMessageService {
         }
     }
 
-    public <T extends SystemEvent> void sendSystemMessage(T event) {
+    public <T extends SystemMessageEvent> void sendSystemMessage(T event) {
         ChatMessage savedMessage = null;
         try {
             SystemMessageGenerator<T> systemMessageGenerator = systemMessageGeneratorFactory.get(event);

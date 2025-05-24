@@ -7,12 +7,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
+import sleppynavigators.studyupbackend.application.event.SystemMessageEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
@@ -52,7 +51,7 @@ public class GroupService {
     private final ChallengeRepository challengeRepository;
     private final TaskRepository taskRepository;
     private final BotRepository botRepository;
-    private final SystemEventPublisher systemEventPublisher;
+    private final SystemMessageEventPublisher systemMessageEventPublisher;
 
     public GroupResponse getGroup(Long groupId) {
         Group group = groupRepository.findById(groupId)
@@ -69,11 +68,11 @@ public class GroupService {
         Bot bot = new Bot(savedGroup);
         botRepository.save(bot);
 
-        SystemEvent event = new GroupCreateEvent(
+        GroupCreateEvent event = new GroupCreateEvent(
                 creator.getUserProfile().getUsername(),
                 savedGroup.getGroupDetail().getName(),
                 savedGroup.getId());
-        systemEventPublisher.publish(event);
+        systemMessageEventPublisher.publish(event);
 
         return GroupResponse.fromEntity(savedGroup);
     }
@@ -89,8 +88,8 @@ public class GroupService {
                 botRepository.findByGroupId(groupId).ifPresent(botRepository::delete);
                 groupRepository.delete(group);
             } else {
-                SystemEvent event = new UserLeaveEvent(user.getUserProfile().getUsername(), groupId);
-                systemEventPublisher.publish(event);
+                UserLeaveEvent event = new UserLeaveEvent(user.getUserProfile().getUsername(), groupId);
+                systemMessageEventPublisher.publish(event);
             }
         });
     }
@@ -131,8 +130,8 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         invitation.getGroup().addMember(user);
 
-        SystemEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
-        systemEventPublisher.publish(event);
+        UserJoinEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
+        systemMessageEventPublisher.publish(event);
 
         return GroupInvitationResponse.fromEntity(invitation);
     }

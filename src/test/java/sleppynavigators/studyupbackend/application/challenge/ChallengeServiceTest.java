@@ -13,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import sleppynavigators.studyupbackend.application.event.SystemEventListener;
+import sleppynavigators.studyupbackend.application.event.SystemMessageEventListener;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.BotSupport;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
@@ -50,7 +50,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
     private BotSupport botSupport;
 
     @MockitoSpyBean
-    private SystemEventListener systemEventListener;
+    private SystemMessageEventListener systemEventListener;
 
     private User testUser;
 

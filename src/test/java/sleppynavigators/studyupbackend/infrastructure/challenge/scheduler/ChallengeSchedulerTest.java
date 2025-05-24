@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
+import sleppynavigators.studyupbackend.application.event.SystemMessageEventPublisher;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
@@ -37,7 +37,7 @@ public class ChallengeSchedulerTest extends ApplicationBaseTest {
     private ChallengeSupport challengeSupport;
 
     @MockitoBean
-    private SystemEventPublisher systemEventPublisher;
+    private SystemMessageEventPublisher systemMessageEventPublisher;
 
     private User currentUser;
 
@@ -59,13 +59,13 @@ public class ChallengeSchedulerTest extends ApplicationBaseTest {
         Challenge notCompleted = challengeSupport.callToMakeChallengesWithTasks(
                 groupToBelong, 10, 0, currentUser);
 
-        clearInvocations(systemEventPublisher);
+        clearInvocations(systemMessageEventPublisher);
 
         // when
         challengeScheduler.checkExpiredChallenges();
 
         // then
-        verify(systemEventPublisher, times(2))
+        verify(systemMessageEventPublisher, times(2))
                 .publish(any(ChallengeCompleteEvent.class));
     }
 }

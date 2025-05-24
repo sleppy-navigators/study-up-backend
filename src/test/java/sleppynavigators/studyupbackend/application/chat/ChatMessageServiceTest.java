@@ -28,7 +28,6 @@ import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -143,7 +142,7 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         // given
         Long groupId = 1L;
         String username = "testUser";
-        SystemEvent event = new UserJoinEvent(username, groupId);
+        UserJoinEvent event = new UserJoinEvent(username, groupId);
 
         clearInvocations(messagingTemplate);
 
@@ -170,7 +169,7 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         // given
         Long groupId = 1L;
         String username = "testUser";
-        SystemEvent event = new UserJoinEvent(username, groupId);
+        UserJoinEvent event = new UserJoinEvent(username, groupId);
 
         doThrow(new RuntimeException("메시지 전송 실패"))
                 .when(messagingTemplate)

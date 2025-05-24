@@ -11,19 +11,19 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeService;
 import sleppynavigators.studyupbackend.application.chat.ChatMessageService;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SystemEventListener {
+public class SystemMessageEventListener {
 
     private final ChatMessageService chatMessageService;
     private final ChallengeService challengeService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     // NOTE: Transaction in this method cannot be committed
-    public void handleSystemEvent(SystemEvent event) {
+    public void handleSystemEvent(SystemMessageEvent event) {
         try {
             chatMessageService.sendSystemMessage(event);
         } catch (Exception e) {
