@@ -70,7 +70,7 @@ class GroupServiceTest extends ApplicationBaseTest {
         GroupResponse response = groupService.createGroup(creator.getId(), request);
 
         // then
-        verify(systemEventListener).handleSystemEvent(
+        verify(systemEventListener).handleSystemMessageEvent(
                 new GroupCreateEvent(creator.getUserProfile().getUsername(), "스터디하기", response.id())
         );
     }
@@ -88,7 +88,7 @@ class GroupServiceTest extends ApplicationBaseTest {
         groupService.acceptInvitation(newUser.getId(), testGroup.getId(), testInvitation.getId(), request);
 
         // then
-        verify(systemEventListener).handleSystemEvent(
+        verify(systemEventListener).handleSystemMessageEvent(
                 new UserJoinEvent(testUser.getUserProfile().getUsername(), testGroup.getId())
         );
     }
@@ -107,7 +107,7 @@ class GroupServiceTest extends ApplicationBaseTest {
         groupService.leaveGroup(anotherMember.getId(), groupToLeave.getId());
 
         // then
-        verify(systemEventListener).handleSystemEvent(
+        verify(systemEventListener).handleSystemMessageEvent(
                 new UserLeaveEvent(testUser.getUserProfile().getUsername(), groupToLeave.getId())
         );
     }

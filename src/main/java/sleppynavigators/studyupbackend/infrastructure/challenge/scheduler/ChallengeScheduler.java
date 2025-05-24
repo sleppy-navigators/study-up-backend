@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.application.event.SystemMessageEventPublisher;
+import sleppynavigators.studyupbackend.application.event.ChallengeEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeQueryOptions;
@@ -21,7 +21,7 @@ import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeReposit
 public class ChallengeScheduler {
 
     private final ChallengeRepository challengeRepository;
-    private final SystemMessageEventPublisher systemMessageEventPublisher;
+    private final ChallengeEventPublisher challengeEventPublisher;
 
     @Value("${scheduler.challenge.check-expiration.interval-minutes}")
     private long challengeCheckIntervalMinutes;
@@ -45,7 +45,7 @@ public class ChallengeScheduler {
                     challenge.getOwner().getId(),
                     challenge.calcCompletionRate()
             );
-            systemMessageEventPublisher.publish(event);
+            challengeEventPublisher.publishChallengeCompleteEvent(event);
         }
         log.info("ChallengeScheduler - checkExpiredChallenges() completed");
     }
