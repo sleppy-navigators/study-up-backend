@@ -55,7 +55,7 @@ public class FcmClient {
                         Notification.builder()
                                 .setTitle(title)
                                 .setBody(body)
-                                .setImage(imageUrl.toString())
+                                .setImage(imageUrl != null ? imageUrl.toString() : null)
                                 .build()
                 );
 

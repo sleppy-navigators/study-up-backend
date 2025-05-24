@@ -19,6 +19,10 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     // NOTE: Transaction in this method cannot be committed
     public void handleNotificationEvent(NotificationEvent event) {
-        // fcmNotificationService.sendNotification(event);
+        try {
+            fcmNotificationService.sendNotification(event);
+        } catch (Exception e) {
+            log.error("FCM 알림 처리 중 오류 발생: {}", e.getMessage(), e);
+        }
     }
 }
