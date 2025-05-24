@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.notification;
 
+import com.google.firebase.messaging.BatchResponse;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ import sleppynavigators.studyupbackend.presentation.notification.dto.request.Tes
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class FcmNotificationService {
 
+    private static final int BATCH_SIZE = 500;
+
     private final NotificationMessageGeneratorFactory notificationMessageGeneratorFactory;
     private final FcmClient fcmClient;
     private final FcmTokenRepository fcmTokenRepository;
@@ -57,8 +60,38 @@ public class FcmNotificationService {
                 .map(GroupMember::getUser)
                 .toList();
 
+        List<String> allTokens = new ArrayList<>();
         for (User member : members) {
-            sendNotificationToUser(member.getId(), message);
+            List<FcmToken> userTokens = fcmTokenRepository.findAllByUserId(member.getId());
+            List<String> tokenStrings = userTokens.stream()
+                    .map(FcmToken::getToken)
+                    .toList();
+            allTokens.addAll(tokenStrings);
+        }
+
+        if (allTokens.isEmpty()) {
+            log.warn("No FCM tokens found for group members. groupId: {}", groupId);
+            return;
+        }
+
+        sendBatchNotification(allTokens, message);
+    }
+
+    private void sendBatchNotification(List<String> tokens, NotificationMessage message) {
+        for (int i = 0; i < tokens.size(); i += BATCH_SIZE) {
+            int endIndex = Math.min(i + BATCH_SIZE, tokens.size());
+            List<String> batchTokens = tokens.subList(i, endIndex);
+
+            BatchResponse response = fcmClient.sendMulticast(
+                batchTokens,
+                message.title(),
+                message.body(),
+                message.imageUrl(),
+                message.data()
+            );
+
+            log.info("배치 FCM 알림 전송 완료 - 성공: {}, 실패: {}, 총 토큰: {}",
+                    response.getSuccessCount(), response.getFailureCount(), batchTokens.size());
         }
     }
 
@@ -73,24 +106,22 @@ public class FcmNotificationService {
             return;
         }
 
-        for (FcmToken token : tokens) {
-            try {
-                URL imageUrl = message.imageUrl() != null ? new URL(message.imageUrl()) : null;
-                String messageId = fcmClient.sendMessage(
-                    token.getToken(), 
-                    message.title(), 
-                    message.body(), 
-                    imageUrl, 
-                    message.data()
-                );
-                log.debug("FCM 알림 전송 성공 - userId: {}, messageId: {}", userId, messageId);
-            } catch (Exception e) {
-                log.error("Failed to send notification to token: {} for user: {}", token.getToken(), userId, e);
-            }
-        }
+        List<String> tokenStrings = tokens.stream()
+                .map(FcmToken::getToken)
+                .toList();
+
+        BatchResponse response = fcmClient.sendMulticast(
+            tokenStrings,
+            message.title(),
+            message.body(),
+            message.imageUrl(),
+            message.data()
+        );
+
+        log.debug("개인 FCM 알림 전송 완료 - userId: {}, 성공: {}, 실패: {}",
+                userId, response.getSuccessCount(), response.getFailureCount());
     }
 
-    // TODO(@Jayon): 추후 이벤트 pub/sub 구조로 변경해야 함.
     public List<String> sendTestNotification(Long userId, TestNotificationRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
