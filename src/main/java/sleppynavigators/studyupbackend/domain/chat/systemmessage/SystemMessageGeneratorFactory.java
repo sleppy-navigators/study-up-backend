@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 
 @Component
 public class SystemMessageGeneratorFactory {
     private final Map<EventType, SystemMessageGenerator<?>> generatorMap;
 
-    public SystemMessageGeneratorFactory(List<SystemMessageGenerator<? extends SystemEvent>> generators) {
+    public SystemMessageGeneratorFactory(List<SystemMessageGenerator<? extends SystemMessageEvent>> generators) {
         this.generatorMap = generators.stream()
                 .collect(Collectors.toMap(
                         SystemMessageGenerator::supportedEventType,
@@ -20,7 +20,7 @@ public class SystemMessageGeneratorFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SystemEvent> SystemMessageGenerator<T> get(T event) {
+    public <T extends SystemMessageEvent> SystemMessageGenerator<T> get(T event) {
         SystemMessageGenerator<?> generator = generatorMap.get(event.getType());
 
         if (generator == null) {

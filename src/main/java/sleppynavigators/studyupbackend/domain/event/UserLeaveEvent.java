@@ -1,6 +1,6 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public record UserLeaveEvent(String userName, Long groupId) implements SystemEvent {
+public record UserLeaveEvent(String userName, Long groupId) implements SystemMessageEvent {
 
     @Override
     public EventType getType() {

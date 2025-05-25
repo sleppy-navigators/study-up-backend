@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.domain.event;
 
 public record TaskCertifyEvent(
         String userName, String challengeName, String taskName, Long groupId
-) implements SystemEvent {
+) implements SystemMessageEvent {
 
     @Override
     public EventType getType() {

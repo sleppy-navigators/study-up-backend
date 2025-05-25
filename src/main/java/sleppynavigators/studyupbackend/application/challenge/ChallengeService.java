@@ -6,12 +6,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.application.event.SystemEventPublisher;
+import sleppynavigators.studyupbackend.application.event.SystemMessageEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
-import sleppynavigators.studyupbackend.domain.event.SystemEvent;
 import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -39,7 +38,7 @@ public class ChallengeService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
-    private final SystemEventPublisher systemEventPublisher;
+    private final SystemMessageEventPublisher systemMessageEventPublisher;
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
@@ -56,11 +55,11 @@ public class ChallengeService {
         user.deductEquity(request.deposit());
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
-        SystemEvent event = new ChallengeCreateEvent(
+        ChallengeCreateEvent event = new ChallengeCreateEvent(
                 user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
                 groupId);
-        systemEventPublisher.publish(event);
+        systemMessageEventPublisher.publish(event);
 
         return ChallengeResponse.fromEntity(challenge);
     }
@@ -77,11 +76,11 @@ public class ChallengeService {
                     "User cannot modify this challenge - userId: " + userId + ", challengeId: " + challengeId);
         }
 
-        SystemEvent event = new ChallengeCancelEvent(
+        ChallengeCancelEvent event = new ChallengeCancelEvent(
                 user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
                 challenge.getGroup().getId());
-        systemEventPublisher.publish(event);
+        systemMessageEventPublisher.publish(event);
 
         challengeRepository.deleteById(challengeId);
     }
@@ -113,13 +112,13 @@ public class ChallengeService {
         try {
             task.certify(request.externalLinks(), request.imageUrls(), user);
 
-            SystemEvent event = new TaskCertifyEvent(
+            TaskCertifyEvent event = new TaskCertifyEvent(
                     user.getUserProfile().getUsername(),
                     task.getDetail().getTitle(),
                     task.getChallenge().getDetail().getTitle(),
                     task.getChallenge().getGroup().getId()
             );
-            systemEventPublisher.publish(event);
+            systemMessageEventPublisher.publish(event);
 
             return TaskResponse.fromEntity(task);
         } catch (IllegalArgumentException ex) {
