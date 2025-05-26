@@ -82,13 +82,7 @@ public class FcmNotificationService {
             int endIndex = Math.min(i + BATCH_SIZE, tokens.size());
             List<String> batchTokens = tokens.subList(i, endIndex);
 
-            BatchResponse response = fcmClient.sendMulticast(
-                batchTokens,
-                message.title(),
-                message.body(),
-                message.imageUrl(),
-                message.data()
-            );
+            BatchResponse response = fcmClient.sendMulticast(message, batchTokens);
 
             log.info("배치 FCM 알림 전송 완료 - 성공: {}, 실패: {}, 총 토큰: {}",
                     response.getSuccessCount(), response.getFailureCount(), batchTokens.size());
@@ -110,13 +104,7 @@ public class FcmNotificationService {
                 .map(FcmToken::getToken)
                 .toList();
 
-        BatchResponse response = fcmClient.sendMulticast(
-            tokenStrings,
-            message.title(),
-            message.body(),
-            message.imageUrl(),
-            message.data()
-        );
+        BatchResponse response = fcmClient.sendMulticast(message, tokenStrings);
 
         log.debug("개인 FCM 알림 전송 완료 - userId: {}, 성공: {}, 실패: {}",
                 userId, response.getSuccessCount(), response.getFailureCount());
@@ -134,7 +122,13 @@ public class FcmNotificationService {
         List<String> successMessageIds = new ArrayList<>();
         for (FcmToken token : tokens) {
             try {
-                String messageId = fcmClient.sendMessage(token.getToken(), request.title(), request.body(), request.imageUrl(), request.data());
+                String messageId = fcmClient.sendMessage(
+                        token.getToken(),
+                        request.title(),
+                        request.body(),
+                        request.imageUrl(),
+                        request.data()
+                );
                 successMessageIds.add(messageId);
             } catch (Exception e) {
                 log.error("Failed to send notification to token: {}", token.getToken(), e);

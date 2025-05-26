@@ -2,7 +2,6 @@ package sleppynavigators.studyupbackend.application.notification;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,19 +69,13 @@ class FcmNotificationServiceTest extends ApplicationBaseTest {
         ChallengeCompleteEvent event = new ChallengeCompleteEvent(
                 "testUser", "testChallenge", testGroup.getId(), 1L, testUser1.getId(), 85.5);
 
-        when(fcmClient.sendMulticast(anyList(), anyString(), anyString(), any(), any()))
+        when(fcmClient.sendMulticast(any(), anyList()))
                 .thenReturn(mockBatchResponse);
 
         // when
         fcmNotificationService.sendNotification(event);
 
         // then
-        verify(fcmClient, times(1)).sendMulticast(
-                anyList(),
-                anyString(),
-                anyString(),
-                any(),
-                any()
-        );
+        verify(fcmClient, times(1)).sendMulticast(any(), anyList());
     }
 }

@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import sleppynavigators.studyupbackend.domain.notification.NotificationMessage;
 import sleppynavigators.studyupbackend.exception.client.InitializeFailedException;
 import sleppynavigators.studyupbackend.exception.client.UnsuccessfulResponseException;
 
@@ -76,19 +77,19 @@ public class FcmClient {
         }
     }
 
-    public BatchResponse sendMulticast(List<String> tokens, String title, String body, URL imageUrl, Map<String, String> data) {
+    public BatchResponse sendMulticast(NotificationMessage message, List<String> tokens) {
         MulticastMessage.Builder messageBuilder = MulticastMessage.builder()
                 .addAllTokens(tokens)
                 .setNotification(
                         Notification.builder()
-                                .setTitle(title)
-                                .setBody(body)
-                                .setImage(imageUrl != null ? imageUrl.toString() : null)
+                                .setTitle(message.title())
+                                .setBody(message.body())
+                                .setImage(message.imageUrl() != null ? message.imageUrl().toString() : null)
                                 .build()
                 );
 
-        if (MapUtils.isNotEmpty(data)) {
-            messageBuilder.putAllData(data);
+        if (MapUtils.isNotEmpty(message.data())) {
+            messageBuilder.putAllData(message.data());
         }
 
         try {
