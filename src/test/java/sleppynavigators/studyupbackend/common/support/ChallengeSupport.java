@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeService;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
+import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
@@ -65,6 +66,33 @@ public class ChallengeSupport {
         return challengeRepository.findById(challengeResponse.id()).orElseThrow();
     }
 
+    /**
+     * <b>Caution!</b> This method does not update the group given as an argument.
+     */
+    public Challenge callToMakeChallengeWithFailedTasks(Group group, Integer numOfFailedTasks, User challenger) {
+        // Create a challenge with tasks
+        ChallengeCreationRequest challengeCreationRequest = new ChallengeCreationRequest(
+                "test-challenge", "test-challenge-description",
+                IntStream.range(0, numOfFailedTasks)
+                        .mapToObj(i -> new TaskRequest("test-task-" + i, ZonedDateTime.now().plusSeconds(1)))
+                        .toList(),
+                10L);
+        ChallengeResponse challengeResponse = challengeService
+                .createChallenge(challenger.getId(), group.getId(), challengeCreationRequest);
+
+        // Wait for the tasks to be failed
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        return challengeRepository.findById(challengeResponse.id()).orElseThrow();
+    }
+
+    /**
+     * <b>Caution!</b> This method does not update the group given as an argument.
+     */
     public Challenge callToMakeCompletedChallengeWithTasks(
             Group group, Integer numOfTotalTasks, User challenger) {
 
@@ -99,6 +127,10 @@ public class ChallengeSupport {
             Thread.currentThread().interrupt();
         }
         return challengeRepository.findById(challengeResponse.id()).orElseThrow();
+    }
+
+    public void callToHuntTask(User hunter, Challenge challenge, Task target) {
+        challengeService.huntTask(hunter.getId(), challenge.getId(), target.getId());
     }
 
     public void callToCancelChallenge(User user, Challenge challenge) {

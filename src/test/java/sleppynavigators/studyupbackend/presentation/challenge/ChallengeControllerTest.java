@@ -33,6 +33,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.ErrorCode;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.HuntingResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse.TaskListItem;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
@@ -194,5 +195,82 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
                     assertThat(this.validator.validate(data)).isEmpty();
                     assertThat(data.certification()).isNotNull();
                 });
+    }
+
+    @Test
+    @DisplayName("챌린지 테스크 헌팅 성공")
+    void huntingTask_Success() {
+        // given
+        User challenger = userSupport.registerUserToDB();
+        Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser, challenger));
+        Challenge challengeToQuery = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupToBelong, 3, challenger);
+        Task taskToHunt = challengeToQuery.getTasks().get(0);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/challenges/{challengeId}/tasks/{taskId}/hunt",
+                        challengeToQuery.getId(), taskToHunt.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", HuntingResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.point())
+                            .isEqualTo(challengeToQuery.getDeposit().getInitialAmount() / 3 / 1);
+                });
+    }
+
+    @Test
+    @DisplayName("챌린지 테스크 헌팅 실패 - 실패하지 않은 테스크는 헌팅할 수 없음")
+    void huntingTask_Fail() {
+        // given
+        User challenger = userSupport.registerUserToDB();
+        Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser, challenger));
+        Challenge challengeToQuery = challengeSupport
+                .callToMakeChallengesWithTasks(groupToBelong, 3, 1, challenger);
+        Task taskToHunt = challengeToQuery.getTasks().get(0);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/challenges/{challengeId}/tasks/{taskId}/hunt",
+                        challengeToQuery.getId(), taskToHunt.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.FORBIDDEN_CONTENT.getCode());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Task is not failed");
+    }
+
+    @Test
+    @DisplayName("챌린지 테스크 헌팅 실패 - 선착순 경쟁에 밀림")
+    void huntingTask_Fail_Competition() {
+        // given
+        User challenger = userSupport.registerUserToDB();
+        User anotherHunter = userSupport.registerUserToDB();
+        Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser, challenger, anotherHunter));
+        Challenge challengeToQuery = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupToBelong, 3, challenger);
+        Task taskToHunt = challengeToQuery.getTasks().get(0);
+        challengeSupport.callToHuntTask(anotherHunter, challengeToQuery, taskToHunt);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/challenges/{challengeId}/tasks/{taskId}/hunt",
+                        challengeToQuery.getId(), taskToHunt.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.FORBIDDEN_CONTENT.getCode());
+        assertThat(response.jsonPath().getString("message"))
+                .contains("Hunting limit reached for this task");
     }
 }
