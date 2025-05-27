@@ -52,7 +52,7 @@ public class ChallengeService {
                     "User cannot create challenge in this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        user.deductEquity(request.deposit());
+        user.deductPoint(request.deposit());
         Challenge challenge = challengeRepository.save(request.toEntity(user, group));
 
         ChallengeCreateEvent event = new ChallengeCreateEvent(

@@ -29,11 +29,11 @@ public class User extends TimeAuditBaseEntity {
         this.point = new Point(INITIAL_POINT);
     }
 
-    public void grantEquity(Long amount) {
+    public void grantPoint(Long amount) {
         point = point.add(amount);
     }
 
-    public void deductEquity(Long amount) {
+    public void deductPoint(Long amount) {
         if (point.getAmount() < amount) {
             throw new InSufficientPointsException(
                     "Insufficient equity to deduct - current equity: " + point.getAmount() + ", requested: " + amount);

@@ -86,7 +86,7 @@ public class Challenge extends TimeAuditBaseEntity {
         }
 
         Point reward = deposit.multiply(1 + REWARD_RATE);
-        owner.grantEquity(reward.getAmount());
+        owner.grantPoint(reward.getAmount());
     }
 
     public Task getRecentCertifiedTask() {
