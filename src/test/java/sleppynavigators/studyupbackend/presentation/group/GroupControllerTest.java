@@ -452,6 +452,32 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
+    @DisplayName("그룹에 챌린지를 등록할 때 포인트가 부족하면 실패한다")
+    void addChallengeToGroup_InsufficientPoints() {
+        // given
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
+
+        ChallengeCreationRequest request = new ChallengeCreationRequest(
+                "test challenge", "test description",
+                List.of(new TaskRequest("test task 1", ZonedDateTime.now().plusHours(3)),
+                        new TaskRequest("test task 2", ZonedDateTime.now().plusHours(6)),
+                        new TaskRequest("test task 3", ZonedDateTime.now().plusHours(9))),
+                10_000L);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .body(request)
+                .when().request(POST, "/groups/{groupId}/challenges", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
+        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INSUFFICIENT_POINTS.getCode());
+        assertThat(response.jsonPath().getString("message")).contains("Insufficient equity to deduct");
+    }
+
+    @Test
     @DisplayName("그룹에 챌린지를 등록할 때 마감일이 현재 시각보다 이전인 테스크가 있으면 오류로 응답한다")
     void addChallengeToGroup_PastTaskDeadline() {
         // given
