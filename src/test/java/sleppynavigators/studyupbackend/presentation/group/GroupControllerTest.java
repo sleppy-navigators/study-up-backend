@@ -452,32 +452,6 @@ public class GroupControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
-    @DisplayName("그룹에 챌린지를 등록할 때 마감일이 현재 시각보다 이전이면 오류로 응답한다")
-    void addChallengeToGroup_PastDeadline() {
-        // given
-        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser));
-
-        ChallengeCreationRequest request = new ChallengeCreationRequest(
-                "test challenge", "test description",
-                List.of(new TaskRequest("test task 1", ZonedDateTime.now().minusHours(3)),
-                        new TaskRequest("test task 2", ZonedDateTime.now().minusHours(6)),
-                        new TaskRequest("test task 3", ZonedDateTime.now().minusHours(9))),
-                10L);
-
-        // when
-        ExtractableResponse<?> response = with()
-                .body(request)
-                .when().request(POST, "/groups/{groupId}/challenges", groupToQuery.getId())
-                .then()
-                .log().all().extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
-        assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getCode());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_PAYLOAD.getDefaultMessage());
-    }
-
-    @Test
     @DisplayName("그룹에 챌린지를 등록할 때 마감일이 현재 시각보다 이전인 테스크가 있으면 오류로 응답한다")
     void addChallengeToGroup_PastTaskDeadline() {
         // given
