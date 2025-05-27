@@ -30,6 +30,6 @@ public record ChallengeResponse(
                 challenge.getDetail().getTitle(),
                 challenge.getDeadline().atZone(ZoneId.systemDefault()),
                 challenge.getDetail().getDescription(),
-                challenge.getDeposit().getAmount());
+                challenge.getDeposit().getRemain().getAmount());
     }
 }

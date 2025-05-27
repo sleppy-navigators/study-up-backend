@@ -23,7 +23,7 @@ public record TaskChallengeDTO(
         return new TaskChallengeDTO(
                 task.getChallenge().getId(),
                 task.getChallenge().getDetail().getTitle(),
-                task.getChallenge().getDeposit().getAmount(),
+                task.getChallenge().getDeposit().getRemain().getAmount(),
                 task.getChallenge().isCompleted());
     }
 }

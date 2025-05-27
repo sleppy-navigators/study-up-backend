@@ -143,7 +143,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
                 .callToMakeCompletedChallengeWithTasks(testGroup, 3, testUser);
         User challenger = challenge.getOwner();
         Long initialChallengerEquity = challenger.getPoint().getAmount();
-        Long remainingDeposit = challenge.getDeposit().getAmount();
+        Long remainingDeposit = challenge.getDeposit().getRemain().getAmount();
 
         // when
         challengeService.settlementReward(challenger.getId(), challenge.getId());
