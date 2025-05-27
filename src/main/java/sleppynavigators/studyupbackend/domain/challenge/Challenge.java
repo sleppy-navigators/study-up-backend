@@ -93,6 +93,10 @@ public class Challenge extends TimeAuditBaseEntity {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Task not found - taskId: " + taskId));
 
+        if (!targetTask.isFailed()) {
+            throw new ForbiddenContentException("Task is not failed - taskId: " + taskId);
+        }
+
         long hunterLimitPerTask = Math.round(group.getNumOfMembers() * HUNTER_LIMIT_PER_TASK_RATIO);
         if (targetTask.getHuntingCount() >= hunterLimitPerTask) { // Be careful with PhantomRead
             throw new ForbiddenContentException("Hunting limit reached for this task - taskId: " + taskId);
