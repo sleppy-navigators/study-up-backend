@@ -18,6 +18,7 @@ import sleppynavigators.studyupbackend.application.challenge.ChallengeService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.HuntingResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
 import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
@@ -64,6 +65,18 @@ public class ChallengeController {
     ) {
         Long userId = userPrincipal.userId();
         TaskResponse response = challengeService.completeTask(userId, challengeId, taskId, taskCertificationRequest);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
+    @PostMapping("/{challengeId}/tasks/{taskId}/hunt")
+    @Operation(summary = "테스크 헌팅", description = "테스크를 헌팅합니다.")
+    public ResponseEntity<SuccessResponse<HuntingResponse>> huntTask(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long challengeId,
+            @PathVariable Long taskId
+    ) {
+        Long userId = userPrincipal.userId();
+        HuntingResponse response = challengeService.huntTask(userId, challengeId, taskId);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }

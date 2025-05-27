@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.application.event.SystemMessageEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
+import sleppynavigators.studyupbackend.domain.challenge.hunting.Hunting;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
 import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
@@ -20,12 +21,14 @@ import sleppynavigators.studyupbackend.exception.database.EntityNotFoundExceptio
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
+import sleppynavigators.studyupbackend.infrastructure.challenge.hunting.HuntingRepository;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.ChallengeCreationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskCertificationRequest;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.ChallengeResponse;
+import sleppynavigators.studyupbackend.presentation.challenge.dto.response.HuntingResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskListResponse;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskResponse;
 
@@ -38,6 +41,7 @@ public class ChallengeService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final HuntingRepository huntingRepository;
     private final SystemMessageEventPublisher systemMessageEventPublisher;
 
     @Transactional
@@ -124,6 +128,22 @@ public class ChallengeService {
         } catch (IllegalArgumentException ex) {
             throw new InvalidPayloadException(ex);
         }
+    }
+
+    @Transactional
+    public HuntingResponse huntTask(Long userId, Long challengeId, Long taskId) {
+        User user = userRepository.findByIdForUpdate(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+        Challenge challenge = challengeRepository.findByIdForUpdate(challengeId)
+                .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
+
+        if (!challenge.canHunt(user)) {
+            throw new ForbiddenContentException(
+                    "User cannot hunt this challenge - userId: " + userId + ", challengeId: " + challengeId);
+        }
+
+        Hunting hunting = huntingRepository.save(challenge.huntTask(taskId, user));
+        return HuntingResponse.fromEntity(hunting);
     }
 
     @Transactional

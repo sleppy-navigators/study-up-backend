@@ -79,8 +79,29 @@ public class Challenge extends TimeAuditBaseEntity {
                 LocalDateTime.now().isBefore(getCreatedAt().plusHours(MODIFIABLE_PERIOD_HOUR));
     }
 
+    public boolean canHunt(User user) {
+        return canAccess(user) && !isOwner(user);
+    }
+
     public boolean canAccess(User user) {
         return group.hasMember(user);
+    }
+
+    public Hunting huntTask(Long taskId, User hunter) {
+        Task targetTask = tasks.stream()
+                .filter(task -> task.getId().equals(taskId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Task not found - taskId: " + taskId));
+
+        long hunterLimitPerTask = Math.round(group.getNumOfMembers() * HUNTER_LIMIT_PER_TASK_RATIO);
+        if (targetTask.getHuntingCount() >= hunterLimitPerTask) { // Be careful with PhantomRead
+            throw new ForbiddenContentException("Hunting limit reached for this task - taskId: " + taskId);
+        }
+
+        Long huntingPoint = deposit.getInitialAmount() / tasks.size() / hunterLimitPerTask;
+        deposit.subtract(huntingPoint);
+        hunter.grantPoint(huntingPoint);
+        return targetTask.addHunting(huntingPoint, hunter);
     }
 
     public void rewardToOwner() {
