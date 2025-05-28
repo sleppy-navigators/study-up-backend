@@ -87,7 +87,7 @@ public class Challenge extends TimeAuditBaseEntity {
         return group.hasMember(user);
     }
 
-    public Hunting huntTask(Long taskId, User hunter) {
+    public Hunting rewardToHunter(Long taskId, User hunter) {
         Task targetTask = tasks.stream()
                 .filter(task -> task.getId().equals(taskId))
                 .findFirst()

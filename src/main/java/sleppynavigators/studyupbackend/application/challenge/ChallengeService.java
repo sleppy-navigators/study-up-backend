@@ -142,7 +142,7 @@ public class ChallengeService {
                     "User cannot hunt this challenge - userId: " + userId + ", challengeId: " + challengeId);
         }
 
-        Hunting hunting = huntingRepository.save(challenge.huntTask(taskId, user));
+        Hunting hunting = huntingRepository.save(challenge.rewardToHunter(taskId, user));
         return HuntingResponse.fromEntity(hunting);
     }
 
