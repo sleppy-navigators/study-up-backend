@@ -142,8 +142,13 @@ public class ChallengeService {
                     "User cannot hunt this challenge - userId: " + userId + ", challengeId: " + challengeId);
         }
 
-        Hunting hunting = huntingRepository.save(challenge.rewardToHunter(taskId, user));
-        return HuntingResponse.fromEntity(hunting);
+        // Caution!
+        // This includes calculating the cap on the number of hunters per task,
+        // which requires you to watch out for Phantom Leads.
+        // (We use InnoDB's Repeatable Read isolation level)
+        Hunting hunting = challenge.rewardToHunter(taskId, user);
+        Hunting saved = huntingRepository.save(hunting);
+        return HuntingResponse.fromEntity(saved);
     }
 
     @Transactional

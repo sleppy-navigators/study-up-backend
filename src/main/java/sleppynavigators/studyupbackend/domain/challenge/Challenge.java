@@ -98,7 +98,7 @@ public class Challenge extends TimeAuditBaseEntity {
         }
 
         long hunterLimitPerTask = Math.round(group.getNumOfMembers() * HUNTER_LIMIT_PER_TASK_RATIO);
-        if (targetTask.getHuntingCount() >= hunterLimitPerTask) { // Be careful with PhantomRead
+        if (targetTask.getHuntingCount() >= hunterLimitPerTask) {
             throw new ForbiddenContentException("Hunting limit reached for this task - taskId: " + taskId);
         }
 
