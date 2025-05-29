@@ -188,24 +188,24 @@ public class GroupService {
         }
 
         List<GroupMember> members = groupMemberRepository.findAllByGroupId(group.getId());
-        GroupMemberListResponse response = GroupMemberListResponse.fromEntities(members);
-        sortGroupMemberListResponse(response, groupMemberSearch.sortBy());
-        return response;
+        List<GroupMember> sortedMembers = sortGroupMemberListResponse(members, groupMemberSearch.sortBy());
+        return GroupMemberListResponse.fromEntities(sortedMembers);
     }
 
-    private void sortGroupMemberListResponse(GroupMemberListResponse response, GroupMemberSortType sortType) {
-        switch (sortType) {
-            case POINT -> response.members()
-                    .sort((m1, m2) -> Long.compare(m2.points(), m1.points()));
-            case AVERAGE_CHALLENGE_COMPLETION_RATE -> response.members()
-                    .sort((m1, m2) ->
-                            Double.compare(m2.averageChallengeCompletionRate(), m1.averageChallengeCompletionRate()));
-            case HUNTING_COUNT -> response.members()
-                    .sort((m1, m2) -> Long.compare(m2.huntingCount(), m1.huntingCount()));
-            case NONE -> {
-                // No sorting
-            }
-            default -> throw new IllegalArgumentException("Invalid sort type: " + sortType);
-        }
+    private List<GroupMember> sortGroupMemberListResponse(List<GroupMember> members, GroupMemberSortType sortType) {
+        return switch (sortType) {
+            case POINT -> members.stream()
+                    .sorted((m1, m2) -> Long.compare(m2.getPoints(), m1.getPoints()))
+                    .toList();
+            case AVERAGE_CHALLENGE_COMPLETION_RATE -> members.stream()
+                    .sorted((m1, m2) ->
+                            Double.compare(m2.calcAvgChallengeCompletionRate(), m1.calcAvgChallengeCompletionRate()))
+                    .toList();
+            case HUNTING_COUNT -> members.stream()
+                    .sorted((m1, m2) ->
+                            Long.compare(m2.calcHuntingCount(), m1.calcHuntingCount()))
+                    .toList();
+            case NONE -> members; // No sorting, return as is
+        };
     }
 }
