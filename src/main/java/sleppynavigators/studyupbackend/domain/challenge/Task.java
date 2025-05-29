@@ -1,10 +1,12 @@
 package sleppynavigators.studyupbackend.domain.challenge;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.SoftDelete;
+import sleppynavigators.studyupbackend.domain.challenge.hunting.Hunting;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskCertification;
 import sleppynavigators.studyupbackend.domain.challenge.vo.TaskDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
@@ -38,6 +41,9 @@ public class Task extends TimeAuditBaseEntity {
     @JoinColumn(name = "challenge_id", nullable = false)
     private Challenge challenge;
 
+    @OneToMany(mappedBy = "target", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Hunting> huntings = new ArrayList<>();
+
     public Task(String title, LocalDateTime deadline, Challenge challenge) {
         this.detail = new TaskDetail(title, deadline);
         this.challenge = challenge;
@@ -57,6 +63,20 @@ public class Task extends TimeAuditBaseEntity {
         this.certification = new TaskCertification(externalLinks, imageUrls, LocalDateTime.now());
     }
 
+    public Integer getHuntingCount() {
+        return huntings.size();
+    }
+
+    public Hunting addHunting(Long amount, User hunter) {
+        if (isHunter(hunter)) {
+            throw new ForbiddenContentException("User has already hunted this task. - userId: " + hunter.getId());
+        }
+
+        Hunting hunting = new Hunting(amount, this, hunter);
+        huntings.add(hunting);
+        return hunting;
+    }
+
     public boolean isCompleted() {
         return isSucceed() || isFailed();
     }
@@ -67,5 +87,10 @@ public class Task extends TimeAuditBaseEntity {
 
     public boolean isFailed() {
         return detail.isOverdue() && !certification.isCertified();
+    }
+
+    public boolean isHunter(User user) {
+        return huntings.stream()
+                .anyMatch(hunting -> hunting.isHunter(user));
     }
 }

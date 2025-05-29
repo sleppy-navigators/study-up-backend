@@ -59,7 +59,7 @@ public record GroupChallengeListResponse(
                     challenge.getDetail().getTitle(),
                     challenge.getDeadline().atZone(ZoneId.systemDefault()),
                     challenge.getDetail().getDescription(),
-                    challenge.getDeposit().getAmount(),
+                    challenge.getDeposit().getRemain().getAmount(),
                     challenge.isCompleted(),
                     ChallengerDTO.fromEntity(challenge),
                     (recentCertifiedTask != null) ?

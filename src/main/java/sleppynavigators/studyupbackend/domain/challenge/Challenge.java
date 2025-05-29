@@ -16,12 +16,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.SoftDelete;
+import sleppynavigators.studyupbackend.domain.challenge.hunting.Hunting;
+import sleppynavigators.studyupbackend.domain.challenge.hunting.vo.Deposit;
 import sleppynavigators.studyupbackend.domain.challenge.vo.ChallengeDetail;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.point.vo.Point;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ChallengeInProgressException;
+import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
 
 @SoftDelete
 @Entity(name = "challenges")
@@ -29,8 +32,8 @@ import sleppynavigators.studyupbackend.exception.business.ChallengeInProgressExc
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Challenge extends TimeAuditBaseEntity {
 
-    private static final double REWARD_RATE = 0.1;
     private static final long MODIFIABLE_PERIOD_HOUR = 24L;
+    private static final double HUNTER_LIMIT_PER_TASK_RATIO = 0.3;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false, updatable = false)
@@ -45,7 +48,7 @@ public class Challenge extends TimeAuditBaseEntity {
     private ChallengeDetail detail;
 
     @Embedded
-    private Point deposit;
+    private Deposit deposit;
 
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Task> tasks;
@@ -55,7 +58,7 @@ public class Challenge extends TimeAuditBaseEntity {
         this.owner = owner;
         this.group = group;
         this.detail = new ChallengeDetail(title, description);
-        this.deposit = new Point(deposit);
+        this.deposit = new Deposit(deposit);
         this.tasks = new ArrayList<>();
     }
 
@@ -76,8 +79,33 @@ public class Challenge extends TimeAuditBaseEntity {
                 LocalDateTime.now().isBefore(getCreatedAt().plusHours(MODIFIABLE_PERIOD_HOUR));
     }
 
+    public boolean canHunt(User user) {
+        return canAccess(user) && !isOwner(user);
+    }
+
     public boolean canAccess(User user) {
         return group.hasMember(user);
+    }
+
+    public Hunting rewardToHunter(Long taskId, User hunter) {
+        Task targetTask = tasks.stream()
+                .filter(task -> task.getId().equals(taskId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Task not found - taskId: " + taskId));
+
+        if (!targetTask.isFailed()) {
+            throw new ForbiddenContentException("Task is not failed - taskId: " + taskId);
+        }
+
+        long hunterLimitPerTask = Math.round(group.getNumOfMembers() * HUNTER_LIMIT_PER_TASK_RATIO);
+        if (targetTask.getHuntingCount() >= hunterLimitPerTask) {
+            throw new ForbiddenContentException("Hunting limit reached for this task - taskId: " + taskId);
+        }
+
+        Long huntingPoint = deposit.getInitialAmount() / tasks.size() / hunterLimitPerTask;
+        deposit.subtract(huntingPoint);
+        hunter.grantPoint(huntingPoint);
+        return targetTask.addHunting(huntingPoint, hunter);
     }
 
     public void rewardToOwner() {
@@ -85,8 +113,8 @@ public class Challenge extends TimeAuditBaseEntity {
             throw new ChallengeInProgressException();
         }
 
-        Point reward = deposit.multiply(1 + REWARD_RATE);
-        owner.grantEquity(reward.getAmount());
+        Point reward = deposit.calculateReward();
+        owner.grantPoint(reward.getAmount());
     }
 
     public Task getRecentCertifiedTask() {
