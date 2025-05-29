@@ -7,6 +7,8 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
+import sleppynavigators.studyupbackend.domain.challenge.Challenge;
+import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.user.User;
 
@@ -30,5 +32,24 @@ public class GroupMember extends TimeAuditBaseEntity {
     public GroupMember(Group group, User user) {
         this.group = group;
         this.user = user;
+    }
+
+    public Double calcAvgChallengeCompletionRate() {
+        return group.getChallenges().stream()
+                .filter(challenge -> challenge.isOwner(user))
+                .filter(Challenge::isCompleted)
+                .mapToDouble(Challenge::calcCompletionRate)
+                .average()
+                .orElse(0.0);
+    }
+
+    public Integer calcHuntingCount() {
+        return group.getChallenges().stream()
+                .filter(challenge -> !challenge.isOwner(user))
+                .flatMap(challenge -> challenge.getTasks().stream())
+                .filter(Task::isFailed)
+                .filter(task -> task.isHunter(user))
+                .toList()
+                .size();
     }
 }

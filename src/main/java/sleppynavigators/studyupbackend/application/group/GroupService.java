@@ -34,8 +34,10 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupMemberSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupMemberListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
 
@@ -172,5 +174,38 @@ public class GroupService {
                 .and(TaskQueryOptions.getStatusPredicate(search.status()));
         List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return GroupTaskListResponse.fromEntities(tasks);
+    }
+
+    public GroupMemberListResponse getGroupMembers(Long userId, Long groupId, GroupMemberSearch groupMemberSearch) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+
+        if (!group.hasMember(user)) {
+            throw new ForbiddenContentException(
+                    "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
+        }
+
+        List<GroupMember> members = groupMemberRepository.findAllByGroupId(group.getId());
+        GroupMemberListResponse response = GroupMemberListResponse.fromEntities(members);
+        sortGroupMemberListResponse(response, groupMemberSearch.sortBy());
+        return response;
+    }
+
+    private void sortGroupMemberListResponse(GroupMemberListResponse response, GroupMemberSortType sortType) {
+        switch (sortType) {
+            case POINT -> response.members()
+                    .sort((m1, m2) -> Long.compare(m2.points(), m1.points()));
+            case AVERAGE_CHALLENGE_COMPLETION_RATE -> response.members()
+                    .sort((m1, m2) ->
+                            Double.compare(m2.averageChallengeCompletionRate(), m1.averageChallengeCompletionRate()));
+            case HUNTING_COUNT -> response.members()
+                    .sort((m1, m2) -> Long.compare(m2.huntingCount(), m1.huntingCount()));
+            case NONE -> {
+                // No sorting
+            }
+            default -> throw new IllegalArgumentException("Invalid sort type: " + sortType);
+        }
     }
 }
