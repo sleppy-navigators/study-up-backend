@@ -64,13 +64,13 @@ public class User extends TimeAuditBaseEntity {
         followee.getFollowers().add(following);
     }
 
-    public void stopFollowing(User following) {
+    public void stopFollowing(User followee) {
         followings.stream()
-                .filter(f -> f.getFollowee().equals(following))
+                .filter(f -> f.getFollowee().equals(followee))
                 .findFirst()
                 .ifPresent(f -> {
                     followings.remove(f);
-                    following.getFollowers().remove(f);
+                    followee.getFollowers().remove(f);
                 });
     }
 

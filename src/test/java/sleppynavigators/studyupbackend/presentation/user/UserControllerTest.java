@@ -352,7 +352,7 @@ public class UserControllerTest extends RestAssuredBaseTest {
 
         // when
         ExtractableResponse<?> response = with()
-                .when().request(DELETE, "/users/me/followers/{flooweeId}", userToUnfollow.getId())
+                .when().request(DELETE, "/users/me/followers/{followeeId}", userToUnfollow.getId())
                 .then()
                 .log().all().extract();
 
