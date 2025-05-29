@@ -1,12 +1,18 @@
 package sleppynavigators.studyupbackend.domain.user;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
 import sleppynavigators.studyupbackend.domain.common.TimeAuditBaseEntity;
 import sleppynavigators.studyupbackend.domain.point.vo.Point;
+import sleppynavigators.studyupbackend.domain.user.following.Following;
 import sleppynavigators.studyupbackend.domain.user.vo.UserProfile;
 import sleppynavigators.studyupbackend.exception.business.InSufficientPointsException;
 
@@ -24,6 +30,12 @@ public class User extends TimeAuditBaseEntity {
     @Embedded
     private Point point;
 
+    @OneToMany(mappedBy = "followee", fetch = FetchType.LAZY)
+    private List<Following> followers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Following> followings = new ArrayList<>();
+
     public User(String username, String email) {
         this.userProfile = new UserProfile(username, email);
         this.point = new Point(INITIAL_POINT);
@@ -40,5 +52,30 @@ public class User extends TimeAuditBaseEntity {
         }
 
         point = point.subtract(amount);
+    }
+
+    public void startFollowing(User followee) {
+        if (isCurrentlyFollowing(followee)) {
+            return;
+        }
+
+        Following following = new Following(this, followee);
+        followings.add(following);
+        followee.getFollowers().add(following);
+    }
+
+    public void stopFollowing(User following) {
+        followings.stream()
+                .filter(f -> f.getFollowee().equals(following))
+                .findFirst()
+                .ifPresent(f -> {
+                    followings.remove(f);
+                    following.getFollowers().remove(f);
+                });
+    }
+
+    private boolean isCurrentlyFollowing(User user) {
+        return followings.stream()
+                .anyMatch(following -> following.getFollowee().equals(user));
     }
 }
