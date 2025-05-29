@@ -38,6 +38,7 @@ public class GroupMember extends TimeAuditBaseEntity {
         return user.getPoint().getAmount();
     }
 
+    // TODO: De-normalize this if performance becomes an issue.
     public Double calcAvgChallengeCompletionRate() {
         return group.getChallenges().stream()
                 .filter(challenge -> challenge.isOwner(user))
@@ -47,6 +48,7 @@ public class GroupMember extends TimeAuditBaseEntity {
                 .orElse(0.0);
     }
 
+    // TODO: De-normalize this if performance becomes an issue.
     public Integer calcHuntingCount() {
         return group.getChallenges().stream()
                 .filter(challenge -> !challenge.isOwner(user))
