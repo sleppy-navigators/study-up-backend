@@ -128,7 +128,7 @@ public class Challenge extends TimeAuditBaseEntity {
         return detail.isOverdue();
     }
 
-    public double calcCompletionRate() {
+    public double calcSuccessRate() {
         if (tasks.isEmpty()) {
             return 0.0;
         }

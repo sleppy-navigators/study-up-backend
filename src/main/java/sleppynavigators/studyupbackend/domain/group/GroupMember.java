@@ -43,19 +43,18 @@ public class GroupMember extends TimeAuditBaseEntity {
         return group.getChallenges().stream()
                 .filter(challenge -> challenge.isOwner(user))
                 .filter(Challenge::isCompleted)
-                .mapToDouble(Challenge::calcCompletionRate)
+                .mapToDouble(Challenge::calcSuccessRate)
                 .average()
                 .orElse(0.0);
     }
 
     // TODO: De-normalize this if performance becomes an issue.
-    public Integer calcHuntingCount() {
+    public Long calcHuntingCount() {
         return group.getChallenges().stream()
                 .filter(challenge -> !challenge.isOwner(user))
                 .flatMap(challenge -> challenge.getTasks().stream())
                 .filter(Task::isFailed)
                 .filter(task -> task.isHunter(user))
-                .toList()
-                .size();
+                .count();
     }
 }

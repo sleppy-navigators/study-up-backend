@@ -192,6 +192,7 @@ public class GroupService {
         return GroupMemberListResponse.fromEntities(sortedMembers);
     }
 
+    // TODO: Consider de-normalizing the GroupMember entity and sorting directly in the database query.
     private List<GroupMember> sortGroupMemberListResponse(List<GroupMember> members, GroupMemberSortType sortType) {
         return switch (sortType) {
             case POINT -> members.stream()

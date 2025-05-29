@@ -43,7 +43,7 @@ public record GroupMemberListResponse(
                     groupMember.getUser().getUserProfile().getUsername(),
                     groupMember.getUser().getPoint().getAmount(),
                     groupMember.calcAvgChallengeCompletionRate(),
-                    groupMember.calcHuntingCount().longValue()
+                    groupMember.calcHuntingCount()
             );
         }
     }
