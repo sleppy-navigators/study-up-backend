@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeSortType;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
+import sleppynavigators.studyupbackend.application.group.GroupMemberSortType;
 import sleppynavigators.studyupbackend.common.RestAssuredBaseTest;
 import sleppynavigators.studyupbackend.common.support.AuthSupport;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
@@ -48,6 +49,8 @@ import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvit
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse.GroupChallengeListItem;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupMemberListResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupMemberListResponse.GroupMemberListItem;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse.GroupTaskListItem;
@@ -747,6 +750,150 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.currentPage()).isEqualTo(0);
                     assertThat(data.pageCount()).isEqualTo(0);
                     assertThat(data.chatMessageCount()).isEqualTo(0);
+                });
+    }
+
+    @Test
+    @DisplayName("그룹 멤버 목록 조회에 성공한다")
+    void getGroupMembers_Success() {
+        // given
+        User anotherMember1 = userSupport.registerUserToDB();
+        User anotherMember2 = userSupport.registerUserToDB();
+        User anotherMember3 = userSupport.registerUserToDB();
+        User anotherMember4 = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(
+                List.of(currentUser, anotherMember1, anotherMember2, anotherMember3, anotherMember4));
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/groups/{groupId}/members", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupMemberListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.members()).hasSize(5);
+                });
+    }
+
+    @Test
+    @DisplayName("그룹 멤버 목록 조회 - 보유 포인트 기준 정렬")
+    void getGroupMembers_Success_OrderedByPoints() {
+        // given
+        User has1500PointMember = userSupport.registerUserToDBWithPoints(1500L);
+        User has2000PointMember = userSupport.registerUserToDBWithPoints(2000L);
+        User has500PointMember = userSupport.registerUserToDBWithPoints(500L);
+        User has800PointMember = userSupport.registerUserToDBWithPoints(800L);
+        Group groupToQuery = groupSupport.callToMakeGroup(
+                List.of(currentUser, has1500PointMember, has2000PointMember, has500PointMember, has800PointMember));
+
+        // when
+        ExtractableResponse<?> response = with()
+                .queryParam("sortBy", GroupMemberSortType.POINT)
+                .when().request(GET, "/groups/{groupId}/members", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupMemberListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.members()).hasSize(5);
+                    assertThat(data.members())
+                            .map(GroupMemberListItem::userId)
+                            .containsExactly(
+                                    has2000PointMember.getId(),
+                                    has1500PointMember.getId(),
+                                    currentUser.getId(),
+                                    has800PointMember.getId(),
+                                    has500PointMember.getId());
+                });
+    }
+
+    @Test
+    @DisplayName("그룹 멤버 목록 조회 - 챌린지 평균 완수율 기준 정렬")
+    void getGroupMembers_Success_OrderedByChallengeCompletionRate() {
+        // given
+        User lowRateUser = userSupport.registerUserToDB();
+        User highRateUser = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser, highRateUser, lowRateUser));
+
+        Challenge lowRateSucceedChallenge = challengeSupport
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 3, lowRateUser);
+        Challenge lowRateFailedChallenge1 = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupToQuery, 5, lowRateUser);
+        Challenge lowRateFailedChallenge2 = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupToQuery, 5, lowRateUser);
+
+        Challenge highRateSucceedChallenge = challengeSupport
+                .callToMakeCompletedChallengeWithTasks(groupToQuery, 5, highRateUser);
+        Challenge highRateFailedChallenge = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupToQuery, 1, highRateUser);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .queryParam("sortBy", GroupMemberSortType.AVERAGE_CHALLENGE_COMPLETION_RATE)
+                .when().request(GET, "/groups/{groupId}/members", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupMemberListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.members()).hasSize(3);
+                    assertThat(data.members())
+                            .map(GroupMemberListItem::userId)
+                            .containsExactly(
+                                    highRateUser.getId(),
+                                    lowRateUser.getId(),
+                                    currentUser.getId());
+                });
+    }
+
+    @Test
+    @DisplayName("그룹 멤버 목록 조회 - 헌팅 횟수 기준 정렬")
+    void getGroupMembers_Success_OrderedByHuntingCount() {
+        // given
+        User lowHuntingUser = userSupport.registerUserToDB();
+        User highHuntingUser = userSupport.registerUserToDB();
+        Group groupToQuery = groupSupport.callToMakeGroup(List.of(currentUser, highHuntingUser, lowHuntingUser));
+
+        Challenge failedChallengeForHunting = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupToQuery, 5, currentUser);
+
+        challengeSupport.callToHuntTask(lowHuntingUser, failedChallengeForHunting,
+                failedChallengeForHunting.getTasks().get(0));
+
+        challengeSupport.callToHuntTask(highHuntingUser, failedChallengeForHunting,
+                failedChallengeForHunting.getTasks().get(1));
+        challengeSupport.callToHuntTask(highHuntingUser, failedChallengeForHunting,
+                failedChallengeForHunting.getTasks().get(2));
+
+        // when
+        ExtractableResponse<?> response = with()
+                .queryParam("sortBy", GroupMemberSortType.HUNTING_COUNT)
+                .when().request(GET, "/groups/{groupId}/members", groupToQuery.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", GroupMemberListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.members()).hasSize(3);
+                    assertThat(data.members())
+                            .map(GroupMemberListItem::userId)
+                            .containsExactly(
+                                    highHuntingUser.getId(),
+                                    lowHuntingUser.getId(),
+                                    currentUser.getId());
                 });
     }
 }
