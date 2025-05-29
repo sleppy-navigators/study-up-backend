@@ -1,7 +1,9 @@
 package sleppynavigators.studyupbackend.presentation.user;
 
 import static io.restassured.RestAssured.with;
+import static io.restassured.http.Method.DELETE;
 import static io.restassured.http.Method.GET;
+import static io.restassured.http.Method.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -9,6 +11,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.ExtractableResponse;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +30,7 @@ import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskGroupDTO;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.FollowerListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskListItem;
@@ -255,6 +259,154 @@ public class UserControllerTest extends RestAssuredBaseTest {
                             .map(UserTaskListItem::groupDetail)
                             .map(TaskGroupDTO::currentlyJoined)
                             .containsExactly(true, true, true, true, true);
+                });
+    }
+
+    @Test
+    @DisplayName("사용자 팔로우 목록 조회에 성공한다")
+    void getFollowerList_Success() {
+        // given
+        User following1 = userSupport.registerUserToDB();
+        User following2 = userSupport.registerUserToDB();
+        User following3 = userSupport.registerUserToDB();
+
+        User follower1 = userSupport.registerUserToDB();
+        User follower2 = userSupport.registerUserToDB();
+
+        userSupport.callToFollowUser(currentUser, following1);
+        userSupport.callToFollowUser(currentUser, following2);
+        userSupport.callToFollowUser(currentUser, following3);
+
+        userSupport.callToFollowUser(follower1, currentUser);
+        userSupport.callToFollowUser(follower2, currentUser);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/users/me/followers")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", FollowerListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.followings()).hasSize(3);
+                    assertThat(data.followers()).hasSize(2);
+                });
+    }
+
+    @Test
+    @DisplayName("사용자 팔로우에 성공한다")
+    void followUser_Success() {
+        // given
+        User userToFollow = userSupport.registerUserToDB("follow-user", "follow-email");
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/users/me/followers/{followeeId}", userToFollow.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(Optional.ofNullable(response.jsonPath().get("data"))).isEmpty();
+        assertThat(userSupport.getFollowerListResponse(currentUser))
+                .satisfies(data -> {
+                    assertThat(data.followings()).hasSize(1);
+                    assertThat(data.followings().get(0).id()).isEqualTo(userToFollow.getId());
+                    assertThat(data.followers()).isEmpty();
+                });
+    }
+
+    @Test
+    @DisplayName("사용자 팔로우 - 이미 팔로우한 사용자")
+    void followUser_AlreadyFollowed() {
+        // given
+        User userToFollow = userSupport.registerUserToDB("follow-user", "follow-email");
+        userSupport.callToFollowUser(currentUser, userToFollow);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/users/me/followers/{followeeId}", userToFollow.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(Optional.ofNullable(response.jsonPath().get("data"))).isEmpty();
+        assertThat(userSupport.getFollowerListResponse(currentUser))
+                .satisfies(data -> {
+                    assertThat(data.followings()).hasSize(1);
+                    assertThat(data.followings().get(0).id()).isEqualTo(userToFollow.getId());
+                    assertThat(data.followers()).isEmpty();
+                });
+    }
+
+    @Test
+    @DisplayName("사용자 언팔로우에 성공한다")
+    void unfollowUser_Success() {
+        // given
+        User userToUnfollow = userSupport.registerUserToDB("unfollow-user", "unfollow-email");
+        userSupport.callToFollowUser(currentUser, userToUnfollow);
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(DELETE, "/users/me/followers/{flooweeId}", userToUnfollow.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(Optional.ofNullable(response.jsonPath().get("data"))).isEmpty();
+        assertThat(userSupport.getFollowerListResponse(currentUser))
+                .satisfies(data -> {
+                    assertThat(data.followings()).isEmpty();
+                    assertThat(data.followers()).isEmpty();
+                });
+    }
+
+    @Test
+    @DisplayName("사용자 언팔로우 - 팔로우하지 않은 사용자")
+    void unfollowUser_NotFollowed() {
+        // given
+        User userToUnfollow = userSupport.registerUserToDB("unfollow-user", "unfollow-email");
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(DELETE, "/users/me/followers/{followeeId}", userToUnfollow.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(Optional.ofNullable(response.jsonPath().get("data"))).isEmpty();
+        assertThat(userSupport.getFollowerListResponse(currentUser))
+                .satisfies(data -> {
+                    assertThat(data.followings()).isEmpty();
+                    assertThat(data.followers()).isEmpty();
+                });
+    }
+
+    @Test
+    @DisplayName("다른 사용자가 나를 팔로우했을 때, 팔로워 목록에 포함된다")
+    void getFollowerList_IncludesOtherUser() {
+        // given
+        User anotherUser = userSupport.registerUserToDB("another-user", "another-email");
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(POST, "/users/me/followers/{followeeId}", anotherUser.getId())
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(userSupport.getFollowerListResponse(anotherUser))
+                .satisfies(data -> {
+                    assertThat(data.followings()).isEmpty();
+                    assertThat(data.followers()).hasSize(1);
+                    assertThat(data.followers().get(0).id()).isEqualTo(currentUser.getId());
                 });
     }
 }
