@@ -34,6 +34,10 @@ public class GroupMember extends TimeAuditBaseEntity {
         this.user = user;
     }
 
+    public Long getPoints() {
+        return user.getPoint().getAmount();
+    }
+
     public Double calcAvgChallengeCompletionRate() {
         return group.getChallenges().stream()
                 .filter(challenge -> challenge.isOwner(user))
