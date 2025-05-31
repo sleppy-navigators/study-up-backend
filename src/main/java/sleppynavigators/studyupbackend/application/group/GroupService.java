@@ -34,8 +34,10 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.Challe
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupMemberSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupMemberListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
 
@@ -172,5 +174,39 @@ public class GroupService {
                 .and(TaskQueryOptions.getStatusPredicate(search.status()));
         List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return GroupTaskListResponse.fromEntities(tasks);
+    }
+
+    public GroupMemberListResponse getGroupMembers(Long userId, Long groupId, GroupMemberSearch groupMemberSearch) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found - groupId: " + groupId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+
+        if (!group.hasMember(user)) {
+            throw new ForbiddenContentException(
+                    "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
+        }
+
+        List<GroupMember> members = groupMemberRepository.findAllByGroupId(group.getId());
+        List<GroupMember> sortedMembers = sortGroupMemberListResponse(members, groupMemberSearch.sortBy());
+        return GroupMemberListResponse.fromEntities(sortedMembers);
+    }
+
+    // TODO: Consider de-normalizing the GroupMember entity and sorting directly in the database query.
+    private List<GroupMember> sortGroupMemberListResponse(List<GroupMember> members, GroupMemberSortType sortType) {
+        return switch (sortType) {
+            case POINT -> members.stream()
+                    .sorted((m1, m2) -> Long.compare(m2.getPoints(), m1.getPoints()))
+                    .toList();
+            case AVERAGE_CHALLENGE_COMPLETION_RATE -> members.stream()
+                    .sorted((m1, m2) ->
+                            Double.compare(m2.calcAvgChallengeCompletionRate(), m1.calcAvgChallengeCompletionRate()))
+                    .toList();
+            case HUNTING_COUNT -> members.stream()
+                    .sorted((m1, m2) ->
+                            Long.compare(m2.calcHuntingCount(), m1.calcHuntingCount()))
+                    .toList();
+            case NONE -> members; // No sorting, return as is
+        };
     }
 }

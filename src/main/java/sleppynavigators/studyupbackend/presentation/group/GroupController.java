@@ -27,8 +27,10 @@ import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
+import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupMemberSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupInvitationResponse;
+import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupMemberListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupTaskListResponse;
 
@@ -143,6 +145,18 @@ public class GroupController {
         Long userId = userPrincipal.userId();
         ChatMessageListResponse response = chatMessageService
                 .getMessages(userId, groupId, chatMessageSearch);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
+    @GetMapping("/{groupId}/members")
+    @Operation(summary = "그룹 멤버 조회", description = "그룹의 멤버 목록을 조회합니다.")
+    public ResponseEntity<SuccessResponse<GroupMemberListResponse>> getGroupMembers(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long groupId,
+            @SearchParam @Valid GroupMemberSearch groupMemberSearch
+    ) {
+        Long userId = userPrincipal.userId();
+        GroupMemberListResponse response = groupService.getGroupMembers(userId, groupId, groupMemberSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 }

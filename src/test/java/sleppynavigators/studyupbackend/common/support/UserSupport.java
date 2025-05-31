@@ -42,4 +42,11 @@ public class UserSupport {
         User user = new User(username, email);
         return userRepository.save(user);
     }
+
+    public User registerUserToDBWithPoints(Long points) {
+        User user = new User("test-user", "test-email");
+        user.deductPoint(user.getPoint().getAmount());
+        user.grantPoint(points);
+        return userRepository.save(user);
+    }
 }

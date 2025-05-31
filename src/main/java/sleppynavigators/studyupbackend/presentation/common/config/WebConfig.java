@@ -6,6 +6,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import sleppynavigators.studyupbackend.presentation.common.argument.ChallengeSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.common.argument.ChatMessageSearchArgumentResolver;
+import sleppynavigators.studyupbackend.presentation.common.argument.GroupMemberSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.common.argument.GroupSearchArgumentResolver;
 import sleppynavigators.studyupbackend.presentation.common.argument.TaskSearchArgumentResolver;
 
@@ -19,6 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
                         new ChatMessageSearchArgumentResolver(),
                         new TaskSearchArgumentResolver(),
                         new ChallengeSearchArgumentResolver(),
-                        new GroupSearchArgumentResolver()));
+                        new GroupSearchArgumentResolver(),
+                        new GroupMemberSearchArgumentResolver()));
     }
 }

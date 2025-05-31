@@ -128,12 +128,12 @@ public class Challenge extends TimeAuditBaseEntity {
         return detail.isOverdue();
     }
 
-    public double calcCompletionRate() {
+    public double calcSuccessRate() {
         if (tasks.isEmpty()) {
             return 0.0;
         }
 
-        long completedTasks = tasks.stream().filter(Task::isCompleted).count();
+        long completedTasks = tasks.stream().filter(Task::isSucceed).count();
         return (double) completedTasks / tasks.size() * 100;
     }
 
