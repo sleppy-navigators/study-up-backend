@@ -21,6 +21,7 @@ import sleppynavigators.studyupbackend.infrastructure.user.UserRepository;
 import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.FollowerListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 
@@ -56,5 +57,31 @@ public class UserService {
                 .and(TaskQueryOptions.getStatusPredicate(search.status()));
         List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return UserTaskListResponse.fromEntities(tasks);
+    }
+
+    public FollowerListResponse getFollowers(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+        return FollowerListResponse.fromEntity(user);
+    }
+
+    @Transactional
+    public void followUser(Long userId, Long followeeId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(() -> new EntityNotFoundException("Followee not found - followeeId: " + followeeId));
+
+        user.startFollowing(followee);
+    }
+
+    @Transactional
+    public void unfollowUser(Long userId, Long followeeId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(() -> new EntityNotFoundException("Followee not found - followeeId: " + followeeId));
+
+        user.stopFollowing(followee);
     }
 }

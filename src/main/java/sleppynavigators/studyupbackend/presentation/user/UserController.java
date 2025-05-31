@@ -7,8 +7,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.user.UserService;
@@ -18,6 +20,7 @@ import sleppynavigators.studyupbackend.presentation.common.SuccessResponse;
 import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.FollowerListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 
@@ -55,5 +58,34 @@ public class UserController {
         Long userId = userPrincipal.userId();
         UserTaskListResponse response = userService.getTasks(userId, taskSearch);
         return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
+    @GetMapping("/me/followers")
+    @Operation(summary = "유저의 팔로워 목록 조회", description = "유저의 팔로워 목록을 조회합니다.")
+    public ResponseEntity<SuccessResponse<FollowerListResponse>> getFollowers(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        Long userId = userPrincipal.userId();
+        FollowerListResponse response = userService.getFollowers(userId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
+    @PostMapping("/me/followers/{followeeId}")
+    @Operation(summary = "유저 팔로우", description = "유저를 팔로우합니다.")
+    public ResponseEntity<SuccessResponse<Void>> followUser(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long followeeId) {
+        Long userId = userPrincipal.userId();
+        userService.followUser(userId, followeeId);
+        return ResponseEntity.ok(new SuccessResponse<>(null));
+    }
+
+    @DeleteMapping("/me/followers/{followeeId}")
+    @Operation(summary = "유저 언팔로우", description = "유저를 언팔로우합니다.")
+    public ResponseEntity<SuccessResponse<Void>> unfollowUser(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long followeeId) {
+        Long userId = userPrincipal.userId();
+        userService.unfollowUser(userId, followeeId);
+        return ResponseEntity.ok(new SuccessResponse<>(null));
     }
 }
