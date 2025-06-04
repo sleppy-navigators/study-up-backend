@@ -120,7 +120,8 @@ public class ChallengeService {
                     user.getUserProfile().getUsername(),
                     task.getDetail().getTitle(),
                     task.getChallenge().getDetail().getTitle(),
-                    task.getChallenge().getGroup().getId()
+                    task.getChallenge().getGroup().getId(),
+                    task.getId()
             );
             eventPublisher.publishEvent(event);
 
