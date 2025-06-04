@@ -30,16 +30,16 @@ public class TaskScheduler {
     @Scheduled(cron = "${scheduler.challenge.check-expiration.cron}", zone = "Asia/Seoul")
     @Transactional
     public void checkFailedTasks() {
-        log.info("ChallengeScheduler - checkExpiredTasks() started");
+        log.info("TaskScheduler - checkFailedTasks() started");
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime baseTime = now.minusMinutes(challengeCheckIntervalMinutes);
         BooleanExpression predicate = TaskQueryOptions.getCompletedBetweenPredicate(baseTime, now)
                 .and(TaskQueryOptions.getStatusPredicate(TaskCertificationStatus.FAILED));
-        List<Task> expiredTasks = taskRepository.findAll(predicate);
+        List<Task> failedTasks = taskRepository.findAll(predicate);
 
-        for (Task task : expiredTasks) {
-            log.info("ChallengeScheduler - Processing expired task: {}", task.getId());
+        for (Task task : failedTasks) {
+            log.info("TaskScheduler - Processing failed task: {}", task.getId());
             TaskFailEvent event = new TaskFailEvent(
                     task.getChallenge().getOwner().getUserProfile().getUsername(),
                     task.getChallenge().getDetail().getTitle(),
@@ -49,6 +49,6 @@ public class TaskScheduler {
             );
             notificationEventPublisher.publish(event);
         }
-        log.info("ChallengeScheduler - checkExpiredTasks() completed");
+        log.info("TaskScheduler - checkFailedTasks() completed");
     }
 }
