@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.presentation.group.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import java.net.URL;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.InvalidPayloadException;
@@ -15,7 +16,7 @@ public record GroupCreationRequest(
         @NotBlank String description,
 
         @Schema(description = "그룹 썸네일 URL", example = "https://example.com/thumbnail.jpg")
-        String thumbnailUrl) {
+        URL thumbnailUrl) {
 
     public Group toEntity(User creator) {
         try {

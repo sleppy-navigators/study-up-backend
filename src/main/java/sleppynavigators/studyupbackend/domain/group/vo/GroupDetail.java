@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.domain.group.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.net.URL;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,9 +24,9 @@ public class GroupDetail {
     String description;
 
     @Column
-    String thumbnailUrl;
+    URL thumbnailUrl;
 
-    public GroupDetail(String name, String description, String thumbnailUrl) {
+    public GroupDetail(String name, String description, URL thumbnailUrl) {
         validateName(name);
         validateDescription(description);
 
