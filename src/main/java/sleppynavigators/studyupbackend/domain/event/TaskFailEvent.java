@@ -1,7 +1,7 @@
 package sleppynavigators.studyupbackend.domain.event;
 
 public record TaskFailEvent(
-        String userName, String challengeName, Long groupId, Long challengeId, Long challengerId)
+        String userName, String challengeName, String taskName, Long groupId)
         implements SystemMessageEvent, GroupNotificationEvent {
 
     @Override

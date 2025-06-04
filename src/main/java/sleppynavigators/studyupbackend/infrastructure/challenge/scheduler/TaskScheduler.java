@@ -43,9 +43,8 @@ public class TaskScheduler {
             TaskFailEvent event = new TaskFailEvent(
                     task.getChallenge().getOwner().getUserProfile().getUsername(),
                     task.getChallenge().getDetail().getTitle(),
-                    task.getChallenge().getGroup().getId(),
-                    task.getChallenge().getId(),
-                    task.getChallenge().getOwner().getId()
+                    task.getDetail().getTitle(),
+                    task.getChallenge().getGroup().getId()
             );
             notificationEventPublisher.publish(event);
         }
