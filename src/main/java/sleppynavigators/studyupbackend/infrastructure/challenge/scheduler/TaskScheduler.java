@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.application.event.NotificationEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.event.TaskFailEvent;
@@ -33,7 +34,8 @@ public class TaskScheduler {
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime baseTime = now.minusMinutes(challengeCheckIntervalMinutes);
-        BooleanExpression predicate = TaskQueryOptions.getCompletedBetweenPredicate(baseTime, now);
+        BooleanExpression predicate = TaskQueryOptions.getCompletedBetweenPredicate(baseTime, now)
+                .and(TaskQueryOptions.getStatusPredicate(TaskCertificationStatus.FAILED));
         List<Task> expiredTasks = taskRepository.findAll(predicate);
 
         for (Task task : expiredTasks) {
