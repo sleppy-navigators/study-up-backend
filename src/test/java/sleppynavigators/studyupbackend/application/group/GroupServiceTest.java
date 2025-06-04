@@ -77,7 +77,7 @@ class GroupServiceTest extends ApplicationBaseTest {
 
         // then
         verify(systemEventListener).handleSystemMessageEvent(any(GroupCreateEvent.class));
-        verify(groupEventListener).handleGroupCreatEvent(any(GroupCreateEvent.class));
+        verify(groupEventListener).handleGroupCreateEvent(any(GroupCreateEvent.class));
     }
 
     @Test

@@ -22,7 +22,7 @@ public class GroupEventListener {
     private final MediumService mediumService;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void handleGroupCreatEvent(GroupCreateEvent event) {
+    public void handleGroupCreateEvent(GroupCreateEvent event) {
         try {
             Group group = groupRepository.findById(event.groupId())
                     .orElseThrow(() -> new EntityNotFoundException("Group not found: " + event.groupId()));
