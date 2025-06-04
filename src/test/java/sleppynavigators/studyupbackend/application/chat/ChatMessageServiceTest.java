@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.BotSupport;
@@ -53,7 +53,7 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
     private BotSupport botSupport;
 
     @MockitoBean
-    private SimpMessageSendingOperations messagingTemplate;
+    private SimpMessagingTemplate messagingTemplate;
 
     @BeforeEach
     void setUp() {
