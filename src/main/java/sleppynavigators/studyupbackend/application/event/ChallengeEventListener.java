@@ -16,11 +16,15 @@ import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChallengeEventListener {
 
-  private final ChallengeService challengeService;
+    private final ChallengeService challengeService;
 
-  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void handleChallengeCompleteEvent(ChallengeCompleteEvent event) {
-    challengeService.settlementReward(event.challengerId(), event.challengeId());
-  }
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handleChallengeCompleteEvent(ChallengeCompleteEvent event) {
+        try {
+            challengeService.settlementReward(event.challengerId(), event.challengeId());
+        } catch (Exception e) {
+            log.error("Error handling ChallengeCompleteEvent: {}", e.getMessage(), e);
+        }
+    }
 }
