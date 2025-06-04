@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.domain.event;
 
 public record ChallengeCompleteEvent(
         String userName, String challengeName, Long groupId, Long challengeId, Long challengerId, Double percentage)
-        implements SystemMessageEvent, GroupNotificationEvent {
+        implements SystemMessageEvent, PersonalNotificationEvent {
 
     @Override
     public EventType getType() {
@@ -12,5 +12,10 @@ public record ChallengeCompleteEvent(
     @Override
     public Long getGroupId() {
         return groupId;
+    }
+
+    @Override
+    public Long getUserId() {
+        return challengerId;
     }
 }
