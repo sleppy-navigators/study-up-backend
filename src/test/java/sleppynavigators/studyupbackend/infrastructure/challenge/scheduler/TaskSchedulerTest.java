@@ -10,8 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import sleppynavigators.studyupbackend.application.event.NotificationEventPublisher;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import sleppynavigators.studyupbackend.application.event.NotificationEventListener;
+import sleppynavigators.studyupbackend.application.event.SystemMessageEventListener;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
@@ -36,8 +37,11 @@ public class TaskSchedulerTest extends ApplicationBaseTest {
     @Autowired
     private ChallengeSupport challengeSupport;
 
-    @MockitoBean
-    private NotificationEventPublisher notificationEventPublisher;
+    @MockitoSpyBean
+    private SystemMessageEventListener systemEventListener;
+
+    @MockitoSpyBean
+    private NotificationEventListener notificationEventListener;
 
     private User currentUser;
 
@@ -57,13 +61,16 @@ public class TaskSchedulerTest extends ApplicationBaseTest {
         Challenge withCertifiedTasks = challengeSupport.callToMakeCompletedChallengeWithTasks(
                 groupToBelong, 10, currentUser);
 
-        clearInvocations(notificationEventPublisher);
+        clearInvocations(systemEventListener);
+        clearInvocations(notificationEventListener);
 
         // when
         taskScheduler.checkFailedTasks();
 
         // then
-        verify(notificationEventPublisher, times(5))
-                .publish(any(TaskFailEvent.class));
+        verify(systemEventListener, times(5))
+                .handleSystemMessageEvent(any(TaskFailEvent.class));
+        verify(notificationEventListener, times(5))
+                .handleNotificationEvent(any(TaskFailEvent.class));
     }
 }

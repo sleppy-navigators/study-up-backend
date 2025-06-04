@@ -10,9 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import sleppynavigators.studyupbackend.application.event.ChallengeEventPublisher;
-import sleppynavigators.studyupbackend.application.event.NotificationEventPublisher;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import sleppynavigators.studyupbackend.application.event.ChallengeEventListener;
+import sleppynavigators.studyupbackend.application.event.NotificationEventListener;
+import sleppynavigators.studyupbackend.application.event.SystemMessageEventListener;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
@@ -37,11 +38,14 @@ public class ChallengeSchedulerTest extends ApplicationBaseTest {
     @Autowired
     private ChallengeSupport challengeSupport;
 
-    @MockitoBean
-    private ChallengeEventPublisher challengeEventPublisher;
+    @MockitoSpyBean
+    private SystemMessageEventListener systemEventListener;
 
-    @MockitoBean
-    private NotificationEventPublisher notificationEventPublisher;
+    @MockitoSpyBean
+    private NotificationEventListener notificationEventListener;
+
+    @MockitoSpyBean
+    private ChallengeEventListener challengeEventListener;
 
     private User currentUser;
 
@@ -63,16 +67,19 @@ public class ChallengeSchedulerTest extends ApplicationBaseTest {
         Challenge notCompleted = challengeSupport.callToMakeChallengesWithTasks(
                 groupToBelong, 10, 0, currentUser);
 
-        clearInvocations(challengeEventPublisher);
-        clearInvocations(notificationEventPublisher);
+        clearInvocations(systemEventListener);
+        clearInvocations(notificationEventListener);
+        clearInvocations(challengeEventListener);
 
         // when
         challengeScheduler.checkExpiredChallenges();
 
         // then
-        verify(challengeEventPublisher, times(2))
-                .publishChallengeCompleteEvent(any(ChallengeCompleteEvent.class));
-        verify(notificationEventPublisher, times(2))
-                .publish(any(ChallengeCompleteEvent.class));
+        verify(systemEventListener, times(2))
+                .handleSystemMessageEvent(any(ChallengeCompleteEvent.class));
+        verify(notificationEventListener, times(2))
+                .handleNotificationEvent(any(ChallengeCompleteEvent.class));
+        verify(challengeEventListener, times(2))
+                .handleChallengeCompleteEvent(any(ChallengeCompleteEvent.class));
     }
 }
