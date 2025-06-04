@@ -1,10 +1,12 @@
 package sleppynavigators.studyupbackend.infrastructure.medium;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "spring.cloud.aws.s3")
-public record S3Properties(String bucket, Long expirationInMinutes) {
+public record S3Properties(@Value("${spring.cloud.aws.region.static}") String region,
+                           String bucket, Long expirationInMinutes) {
 
     public S3Properties {
         validateBucket(bucket);
