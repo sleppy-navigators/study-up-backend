@@ -11,7 +11,7 @@ public class TaskFailSystemMessageGeneratorTest {
     private final TaskFailSystemMessageGenerator generator = new TaskFailSystemMessageGenerator();
 
     @Test
-    void getEventType_ShouldReturnTaskCertify() {
+    void getEventType_ShouldReturnTaskFail() {
         // when
         EventType eventType = generator.supportedEventType();
 
