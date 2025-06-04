@@ -24,15 +24,19 @@ public class Deposit {
     private Point remain;
 
     public Deposit(Long initialAmount) {
+        this(initialAmount, new Point(initialAmount));
+    }
+
+    private Deposit(Long initialAmount, Point remain) {
         this.initialAmount = initialAmount;
-        this.remain = new Point(initialAmount);
+        this.remain = remain;
     }
 
     public Point calculateReward() {
         return remain.multiply(1 + REWARD_RATE);
     }
 
-    public void subtract(Long amount) {
-        remain = remain.subtract(amount);
+    public Deposit subtract(Long amount) {
+        return new Deposit(initialAmount, remain.subtract(amount));
     }
 }
