@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import sleppynavigators.studyupbackend.application.event.GroupEventListener;
 import sleppynavigators.studyupbackend.application.event.SystemMessageEventListener;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.BotSupport;
@@ -44,6 +45,9 @@ class GroupServiceTest extends ApplicationBaseTest {
     @MockitoSpyBean
     private SystemMessageEventListener systemEventListener;
 
+    @MockitoSpyBean
+    private GroupEventListener groupEventListener;
+
     private User testUser;
 
     private Group testGroup;
@@ -66,12 +70,14 @@ class GroupServiceTest extends ApplicationBaseTest {
         GroupCreationRequest request = new GroupCreationRequest("스터디하기", "스터디 설명", null);
 
         clearInvocations(systemEventListener);
+        clearInvocations(groupEventListener);
 
         // when
         GroupResponse response = groupService.createGroup(creator.getId(), request);
 
         // then
         verify(systemEventListener).handleSystemMessageEvent(any(GroupCreateEvent.class));
+        verify(groupEventListener).handleGroupCreatEvent(any(GroupCreateEvent.class));
     }
 
     @Test
