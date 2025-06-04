@@ -5,9 +5,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.application.event.SystemMessageEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
@@ -53,7 +53,7 @@ public class GroupService {
     private final ChallengeRepository challengeRepository;
     private final TaskRepository taskRepository;
     private final BotRepository botRepository;
-    private final SystemMessageEventPublisher systemMessageEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     public GroupResponse getGroup(Long groupId) {
         Group group = groupRepository.findById(groupId)
@@ -74,7 +74,7 @@ public class GroupService {
                 creator.getUserProfile().getUsername(),
                 savedGroup.getGroupDetail().getName(),
                 savedGroup.getId());
-        systemMessageEventPublisher.publish(event);
+        eventPublisher.publishEvent(event);
 
         return GroupResponse.fromEntity(savedGroup);
     }
@@ -91,7 +91,7 @@ public class GroupService {
                 groupRepository.delete(group);
             } else {
                 UserLeaveEvent event = new UserLeaveEvent(user.getUserProfile().getUsername(), groupId);
-                systemMessageEventPublisher.publish(event);
+                eventPublisher.publishEvent(event);
             }
         });
     }
@@ -133,7 +133,7 @@ public class GroupService {
         invitation.getGroup().addMember(user);
 
         UserJoinEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
-        systemMessageEventPublisher.publish(event);
+        eventPublisher.publishEvent(event);
 
         return GroupInvitationResponse.fromEntity(invitation);
     }
