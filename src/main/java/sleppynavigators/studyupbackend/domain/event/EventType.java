@@ -7,5 +7,6 @@ public enum EventType {
     CHALLENGE_COMPLETE,
     CHALLENGE_CANCEL,
     GROUP_CREATE,
-    TASK_CERTIFY
+    TASK_CERTIFY,
+    TASK_FAIL,
 }
