@@ -39,6 +39,7 @@ public class ChallengeScheduler {
         List<Challenge> completedChallenges = challengeRepository.findAll(predicate);
 
         for (Challenge challenge : completedChallenges) {
+            log.info("ChallengeScheduler - Processing completed challenge: {}", challenge.getId());
             ChallengeCompleteEvent event = new ChallengeCompleteEvent(
                     challenge.getOwner().getUserProfile().getUsername(),
                     challenge.getDetail().getTitle(),

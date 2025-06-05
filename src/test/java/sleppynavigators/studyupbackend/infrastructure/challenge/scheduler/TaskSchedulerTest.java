@@ -11,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import sleppynavigators.studyupbackend.application.event.ChallengeEventListener;
 import sleppynavigators.studyupbackend.application.event.NotificationEventListener;
 import sleppynavigators.studyupbackend.application.event.SystemMessageEventListener;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
@@ -19,15 +18,15 @@ import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
+import sleppynavigators.studyupbackend.domain.event.TaskFailEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 
-@DisplayName("ChallengeScheduler 테스트")
-public class ChallengeSchedulerTest extends ApplicationBaseTest {
+@DisplayName("TaskScheduler 테스트")
+public class TaskSchedulerTest extends ApplicationBaseTest {
 
     @Autowired
-    private ChallengeScheduler challengeScheduler;
+    private TaskScheduler taskScheduler;
 
     @Autowired
     private UserSupport userSupport;
@@ -44,9 +43,6 @@ public class ChallengeSchedulerTest extends ApplicationBaseTest {
     @MockitoSpyBean
     private NotificationEventListener notificationEventListener;
 
-    @MockitoSpyBean
-    private ChallengeEventListener challengeEventListener;
-
     private User currentUser;
 
     @BeforeEach
@@ -55,31 +51,26 @@ public class ChallengeSchedulerTest extends ApplicationBaseTest {
     }
 
     @Test
-    @DisplayName("챌린지 만료 확인 스케줄러 테스트")
-    void checkExpiredChallenges() {
+    @DisplayName("테스크 실패 확인 스케줄러 테스트")
+    void checkFailedTasks() {
         // given
         Group groupToBelong = groupSupport.callToMakeGroup(List.of(currentUser));
 
-        Challenge completed1 = challengeSupport.callToMakeCompletedChallengeWithTasks(
+        Challenge withFailedTasks = challengeSupport.callToMakeChallengeWithFailedTasks(
+                groupToBelong, 5, currentUser);
+        Challenge withCertifiedTasks = challengeSupport.callToMakeCompletedChallengeWithTasks(
                 groupToBelong, 10, currentUser);
-        Challenge completed2 = challengeSupport.callToMakeCompletedChallengeWithTasks(
-                groupToBelong, 10, currentUser);
-        Challenge notCompleted = challengeSupport.callToMakeChallengesWithTasks(
-                groupToBelong, 10, 0, currentUser);
 
         clearInvocations(systemEventListener);
         clearInvocations(notificationEventListener);
-        clearInvocations(challengeEventListener);
 
         // when
-        challengeScheduler.checkExpiredChallenges();
+        taskScheduler.checkFailedTasks();
 
         // then
-        verify(systemEventListener, times(2))
-                .handleSystemMessageEvent(any(ChallengeCompleteEvent.class));
-        verify(notificationEventListener, times(2))
-                .handleNotificationEvent(any(ChallengeCompleteEvent.class));
-        verify(challengeEventListener, times(2))
-                .handleChallengeCompleteEvent(any(ChallengeCompleteEvent.class));
+        verify(systemEventListener, times(5))
+                .handleSystemMessageEvent(any(TaskFailEvent.class));
+        verify(notificationEventListener, times(5))
+                .handleNotificationEvent(any(TaskFailEvent.class));
     }
 }

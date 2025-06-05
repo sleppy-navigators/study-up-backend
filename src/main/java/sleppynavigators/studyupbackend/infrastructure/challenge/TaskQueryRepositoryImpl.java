@@ -14,6 +14,15 @@ public class TaskQueryRepositoryImpl implements TaskQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public List<Task> findAll(Predicate predicate) {
+        QTask task = QTask.task;
+        return queryFactory
+                .selectFrom(task)
+                .where(predicate)
+                .fetch();
+    }
+
+    @Override
     public List<Task> findAll(Predicate predicate, Long pageNum, Integer pageSize) {
         QTask task = QTask.task;
         return queryFactory

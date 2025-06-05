@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.group;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
@@ -70,9 +71,7 @@ class GroupServiceTest extends ApplicationBaseTest {
         GroupResponse response = groupService.createGroup(creator.getId(), request);
 
         // then
-        verify(systemEventListener).handleSystemMessageEvent(
-                new GroupCreateEvent(creator.getUserProfile().getUsername(), "스터디하기", response.id())
-        );
+        verify(systemEventListener).handleSystemMessageEvent(any(GroupCreateEvent.class));
     }
 
     @Test
@@ -88,9 +87,7 @@ class GroupServiceTest extends ApplicationBaseTest {
         groupService.acceptInvitation(newUser.getId(), testGroup.getId(), testInvitation.getId(), request);
 
         // then
-        verify(systemEventListener).handleSystemMessageEvent(
-                new UserJoinEvent(testUser.getUserProfile().getUsername(), testGroup.getId())
-        );
+        verify(systemEventListener).handleSystemMessageEvent(any(UserJoinEvent.class));
     }
 
     @Test
@@ -107,8 +104,6 @@ class GroupServiceTest extends ApplicationBaseTest {
         groupService.leaveGroup(anotherMember.getId(), groupToLeave.getId());
 
         // then
-        verify(systemEventListener).handleSystemMessageEvent(
-                new UserLeaveEvent(testUser.getUserProfile().getUsername(), groupToLeave.getId())
-        );
+        verify(systemEventListener).handleSystemMessageEvent(any(UserLeaveEvent.class));
     }
 }

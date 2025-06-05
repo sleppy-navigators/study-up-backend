@@ -36,4 +36,9 @@ public class TaskQueryOptions {
         QTask task = QTask.task;
         return task.challenge.owner.id.eq(ownerId);
     }
+
+    public static BooleanExpression getCompletedBetweenPredicate(LocalDateTime start, LocalDateTime end) {
+        QTask task = QTask.task;
+        return task.detail.deadline.between(start, end);
+    }
 }

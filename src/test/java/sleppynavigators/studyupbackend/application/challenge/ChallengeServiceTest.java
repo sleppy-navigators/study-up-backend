@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.application.challenge;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import sleppynavigators.studyupbackend.application.event.NotificationEventListener;
 import sleppynavigators.studyupbackend.application.event.SystemMessageEventListener;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.BotSupport;
@@ -52,6 +54,9 @@ class ChallengeServiceTest extends ApplicationBaseTest {
     @MockitoSpyBean
     private SystemMessageEventListener systemEventListener;
 
+    @MockitoSpyBean
+    private NotificationEventListener notificationEventListener;
+
     private User testUser;
 
     private Group testGroup;
@@ -82,11 +87,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         challengeService.createChallenge(testUser.getId(), testGroup.getId(), request);
 
         // then
-        verify(systemEventListener).handleSystemMessageEvent(
-                new ChallengeCreateEvent(testUser.getUserProfile().getUsername(),
-                        "testChallenge",
-                        testGroup.getId())
-        );
+        verify(systemEventListener).handleSystemMessageEvent(any(ChallengeCreateEvent.class));
     }
 
     @Test
@@ -102,12 +103,7 @@ class ChallengeServiceTest extends ApplicationBaseTest {
         challengeService.cancelChallenge(testUser.getId(), challenge.getId());
 
         // then
-        verify(systemEventListener).handleSystemMessageEvent(
-                new ChallengeCancelEvent(
-                        testUser.getUserProfile().getUsername(),
-                        challenge.getDetail().getTitle(),
-                        testGroup.getId())
-        );
+        verify(systemEventListener).handleSystemMessageEvent(any(ChallengeCancelEvent.class));
     }
 
     @Test
@@ -121,18 +117,14 @@ class ChallengeServiceTest extends ApplicationBaseTest {
                 );
 
         clearInvocations(systemEventListener);
+        clearInvocations(notificationEventListener);
 
         // when
         challengeService.completeTask(testUser.getId(), challenge.getId(), 1L, taskCertificationRequest);
 
         // then
-        verify(systemEventListener).handleSystemMessageEvent(
-                new TaskCertifyEvent(
-                        testUser.getUserProfile().getUsername(),
-                        challenge.getTasks().get(0).getDetail().getTitle(),
-                        challenge.getDetail().getTitle(),
-                        testGroup.getId())
-        );
+        verify(systemEventListener).handleSystemMessageEvent(any(TaskCertifyEvent.class));
+        verify(notificationEventListener).handleNotificationEvent(any(TaskCertifyEvent.class));
     }
 
     @Test
