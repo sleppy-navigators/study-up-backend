@@ -4,7 +4,6 @@ import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Template;
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,7 @@ import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class S3StorageClient implements MediumStorageClient {
 
-    private static final String S3_KEY_PATTERN = "%s/%s-%s";
+    private static final String S3_KEY_PATTERN = "%s/%s";
     private static final String S3_HOST_SUFFIX = ".s3";
     private static final String AWS_HOST_SUFFIX = ".amazonaws.com";
 
@@ -74,7 +73,7 @@ public class S3StorageClient implements MediumStorageClient {
     }
 
     private String generateKey(Long userId, String filename) {
-        return String.format(S3_KEY_PATTERN, userId, LocalDateTime.now(), filename);
+        return String.format(S3_KEY_PATTERN, userId, filename);
     }
 
     private String getObjectKey(URL mediaUrl) {
