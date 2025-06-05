@@ -30,7 +30,6 @@ public enum ErrorCode {
     ACTION_REQUIRED_BEFORE(400, "B45", "Some actions required before"),
     CHALLENGE_IN_PROGRESS(400, "B46", "Challenge in progress"),
     INSUFFICIENT_POINTS(400, "B47", "Insufficient points"),
-    EVENT_PROCESSING_FAILED(500, "G51", "Event processing failed"),
 
     // global exceptions
     INTERNAL_SERVER_ERROR(500, "G50", "Internal server error"),

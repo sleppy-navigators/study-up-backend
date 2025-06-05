@@ -9,7 +9,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import sleppynavigators.studyupbackend.application.medium.MediumService;
 import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
-import sleppynavigators.studyupbackend.exception.business.EventProcessingFailedException;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;
 
@@ -21,7 +20,8 @@ public class GroupEventListener {
     private final GroupRepository groupRepository;
     private final MediumService mediumService;
 
-    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    // NOTE: Transaction in this method cannot be committed
     public void handleGroupCreateEvent(GroupCreateEvent event) {
         try {
             Group group = groupRepository.findById(event.groupId())
@@ -29,7 +29,6 @@ public class GroupEventListener {
             mediumService.storeMedia(group.getGroupDetail().getThumbnailUrl());
         } catch (Exception e) {
             log.error("Error handling GroupCreateEvent event: {}", e.getMessage(), e);
-            throw new EventProcessingFailedException("Failed to process GroupCreateEvent", e);
         }
     }
 }
