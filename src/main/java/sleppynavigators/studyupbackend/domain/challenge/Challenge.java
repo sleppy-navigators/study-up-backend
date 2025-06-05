@@ -103,7 +103,7 @@ public class Challenge extends TimeAuditBaseEntity {
         }
 
         Long huntingPoint = deposit.getInitialAmount() / tasks.size() / hunterLimitPerTask;
-        deposit.subtract(huntingPoint);
+        deposit = deposit.subtract(huntingPoint);
         hunter.grantPoint(huntingPoint);
         return targetTask.addHunting(huntingPoint, hunter);
     }
