@@ -12,8 +12,8 @@ public class MediumService {
 
     private final MediumStorageClient mediumStorageClient;
 
-    public URL getStagingUploadUrl(Long userId, String filename) {
-        return mediumStorageClient.getUploadUrl(userId, filename, "status=" + MediaStatus.STAGING);
+    public URL getUploadUrl(Long userId, String filename) {
+        return mediumStorageClient.getUploadUrl(userId, filename);
     }
 
     // TODO: implement a batch method to make multiple media permanent at once

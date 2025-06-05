@@ -29,7 +29,7 @@ public class MediumController {
     @Operation(summary = "S3 pre-signed URL 발급", description = "S3 pre-signed URL을 발급합니다.")
     public ResponseEntity<SuccessResponse<UploadUrlResponse>> getPreSignedUploadUrl(
             @AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam @NotBlank String filename) {
-        URL uploadUrl = mediumService.getStagingUploadUrl(userPrincipal.userId(), filename);
+        URL uploadUrl = mediumService.getUploadUrl(userPrincipal.userId(), filename);
         UploadUrlResponse response = new UploadUrlResponse(uploadUrl);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }

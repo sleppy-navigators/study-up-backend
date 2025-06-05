@@ -1,6 +1,5 @@
 package sleppynavigators.studyupbackend.infrastructure.medium;
 
-import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Template;
 import java.net.URL;
 import java.time.Duration;
@@ -13,6 +12,7 @@ import sleppynavigators.studyupbackend.exception.client.UnsuccessfulResponseExce
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.CopyObjectResponse;
+import software.amazon.awssdk.services.s3.model.TaggingDirective;
 
 @Slf4j
 @Component
@@ -28,17 +28,14 @@ public class S3StorageClient implements MediumStorageClient {
     private final S3Properties s3Properties;
 
     @Override
-    public URL getUploadUrl(Long userId, String filename, String tagging) {
+    public URL getUploadUrl(Long userId, String filename) {
         String key = generateKey(userId, filename);
         String bucketName = s3Properties.bucket();
         Duration expirationTime = Duration.ofMinutes(s3Properties.expirationInMinutes());
-        ObjectMetadata metadata = ObjectMetadata.builder()
-                .tagging(tagging)
-                .build();
 
         log.info("Creating upload URL - bucket: {}, key: {}, expires in: {}",
                 bucketName, key, expirationTime);
-        return s3Template.createSignedPutURL(s3Properties.bucket(), key, expirationTime, metadata, null);
+        return s3Template.createSignedPutURL(s3Properties.bucket(), key, expirationTime);
     }
 
     @Override
@@ -49,14 +46,15 @@ public class S3StorageClient implements MediumStorageClient {
                 .sourceKey(objectKey)
                 .destinationBucket(s3Properties.bucket())
                 .destinationKey(objectKey)
+                .taggingDirective(TaggingDirective.REPLACE)
                 .tagging(tagging)
                 .build();
 
         CopyObjectResponse response = s3Client.copyObject(copyObjectRequest);
         if (response.sdkHttpResponse().isSuccessful()) {
-            log.info("Successfully update media: object={}, tagging={}", objectKey, tagging);
+            log.info("Successfully tag media: object={}, tagging={}", objectKey, tagging);
         } else {
-            log.error("Failed to update media tag: object={}, response={}", objectKey, response);
+            log.error("Failed to tag media: object={}, response={}", objectKey, response);
             throw new UnsuccessfulResponseException("Failed to update media tag - object:" + objectKey);
         }
     }

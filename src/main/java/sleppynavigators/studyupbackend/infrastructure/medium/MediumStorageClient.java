@@ -13,10 +13,9 @@ public interface MediumStorageClient {
      *
      * @param userId   the ID of the user uploading the media
      * @param filename the name of the file to be uploaded
-     * @param tagging  tag information for the media. format: <code>key=value</code>
      * @return a signed URL for uploading the media file
      */
-    URL getUploadUrl(Long userId, String filename, String tagging);
+    URL getUploadUrl(Long userId, String filename);
 
     /**
      * Updates the tag information of an existing media file.
