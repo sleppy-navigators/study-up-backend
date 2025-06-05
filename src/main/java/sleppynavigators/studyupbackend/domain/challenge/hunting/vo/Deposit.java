@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.With;
 import sleppynavigators.studyupbackend.domain.point.vo.Point;
 
 @Embeddable
@@ -20,6 +21,7 @@ public class Deposit {
     @Column(nullable = false, updatable = false)
     private Long initialAmount;
 
+    @With
     @Embedded
     private Point remain;
 
@@ -37,6 +39,6 @@ public class Deposit {
     }
 
     public Deposit subtract(Long amount) {
-        return new Deposit(initialAmount, remain.subtract(amount));
+        return withRemain(remain.subtract(amount));
     }
 }
