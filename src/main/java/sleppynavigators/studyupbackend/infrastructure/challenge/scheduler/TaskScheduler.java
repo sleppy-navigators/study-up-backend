@@ -6,11 +6,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
-import sleppynavigators.studyupbackend.application.event.NotificationEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.event.TaskFailEvent;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
@@ -21,7 +21,7 @@ import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 @RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class TaskScheduler {
 
-    private final NotificationEventPublisher notificationEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
     private final TaskRepository taskRepository;
 
     @Value("${scheduler.challenge.check-expiration.interval-minutes}")
@@ -46,7 +46,7 @@ public class TaskScheduler {
                     task.getDetail().getTitle(),
                     task.getChallenge().getGroup().getId()
             );
-            notificationEventPublisher.publish(event);
+            eventPublisher.publishEvent(event);
         }
         log.info("TaskScheduler - checkFailedTasks() completed");
     }
