@@ -9,7 +9,7 @@ import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 
 @Component
-public class ChallengeComplteChatActionListGenerator implements ChatActionListGenerator<ChallengeCompleteEvent> {
+public class ChallengeCompleteChatActionListGenerator implements ChatActionListGenerator<ChallengeCompleteEvent> {
 
     @Override
     public List<ChatAction> generate(ChallengeCompleteEvent event) {
