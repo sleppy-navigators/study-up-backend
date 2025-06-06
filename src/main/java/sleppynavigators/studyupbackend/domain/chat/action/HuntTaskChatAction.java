@@ -1,7 +1,5 @@
 package sleppynavigators.studyupbackend.domain.chat.action;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,8 +23,8 @@ public class HuntTaskChatAction extends ChatAction {
     }
 
     @Override
-    public URL getUrl() throws MalformedURLException {
-        return new URL("/challenges/" + challengeId + "/tasks/" + taskId + "/hunt");
+    public String getUrl() {
+        return "/challenges/" + challengeId + "/tasks/" + taskId + "/hunt";
     }
 
     @Override

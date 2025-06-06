@@ -3,13 +3,10 @@ package sleppynavigators.studyupbackend.presentation.chat.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.Builder;
-import org.springframework.http.HttpMethod;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.SenderType;
 import sleppynavigators.studyupbackend.domain.chat.action.ChatAction;
@@ -43,22 +40,21 @@ public record ChatMessageResponse(
             @Schema(description = "액션 타입", example = "HUNT_TASK")
             @NotBlank ChatActionType type,
 
-            @Schema(description = "URL", example = "https://api.study-up.site/users/1")
-            @NotBlank URL url,
+            @Schema(description = "URL", example = "/users/1")
+            @NotBlank String url,
 
             @Schema(description = "HTTP 메소드", example = "GET")
-            @NotBlank HttpMethod httpMethod
+            @NotBlank String httpMethod
     ) {
 
         public static ChatActionItem fromEntity(ChatAction chatAction) {
-            try {
-                return new ChatActionItem(
-                        chatAction.getType(),
-                        chatAction.getUrl(),
-                        chatAction.getHttpMethod());
-            } catch (MalformedURLException e) {
-                throw new RuntimeException("Invalid URL in chat action", e);
-            }
+            String httpMethod = chatAction.getHttpMethod() != null
+                    ? chatAction.getHttpMethod().toString()
+                    : null;
+            return new ChatActionItem(
+                    chatAction.getType(),
+                    chatAction.getUrl(),
+                    httpMethod);
         }
     }
 

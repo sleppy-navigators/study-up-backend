@@ -15,6 +15,7 @@ import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.chat.action.HuntTaskChatAction;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 
@@ -45,7 +46,8 @@ public class GroupChatMessageAggregatorTest extends ApplicationBaseTest {
                 .toList();
         List<ChatMessage> chatMessageList = IntStream.range(0, 5)
                 .mapToObj((idx) -> groupSupport
-                        .registerChatMessagesToDB(groupList.get(idx), testUser, List.of("test1", "test2")))
+                        .registerChatMessagesToDB(groupList.get(idx), testUser, List.of("test1", "test2"),
+                                List.of(List.of(), List.of(), List.of(new HuntTaskChatAction(1L, 1L)))))
                 .flatMap(Collection::stream)
                 .toList();
 
@@ -70,7 +72,8 @@ public class GroupChatMessageAggregatorTest extends ApplicationBaseTest {
                 .toList();
         List<ChatMessage> chatMessageList = IntStream.range(0, 5)
                 .mapToObj((idx) -> groupSupport
-                        .registerChatMessagesToDB(groupList.get(idx), testUser, List.of("test1", "test2")))
+                        .registerChatMessagesToDB(groupList.get(idx), testUser, List.of("test1", "test2"),
+                                List.of(List.of(), List.of(), List.of(new HuntTaskChatAction(1L, 1L)))))
                 .flatMap(Collection::stream)
                 .toList();
 

@@ -1,7 +1,5 @@
 package sleppynavigators.studyupbackend.domain.chat.action;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +21,7 @@ public class ChatAction {
         return type;
     }
 
-    public URL getUrl() throws MalformedURLException {
+    public String getUrl() {
         return null;
     }
 

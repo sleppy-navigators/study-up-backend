@@ -29,6 +29,8 @@ import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
+import sleppynavigators.studyupbackend.domain.chat.action.HuntTaskChatAction;
+import sleppynavigators.studyupbackend.domain.chat.action.ViewTaskDetailChatAction;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -44,6 +46,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.response.Chall
 import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskChallengeDTO;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageListResponse;
 import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse;
+import sleppynavigators.studyupbackend.presentation.chat.dto.response.ChatMessageResponse.ChatActionItem;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupCreationRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupInvitationAcceptRequest;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupChallengeListResponse;
@@ -682,7 +685,9 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Long pageNumber = 0L;
         Long pageSize = 2L;
         List<ChatMessage> messages = groupSupport.registerChatMessagesToDB(groupToQuery, currentUser,
-                List.of("첫 번째 메시지", "두 번째 메시지", "세 번째 메시지"));
+                List.of("첫 번째 메시지", "두 번째 메시지", "세 번째 메시지"),
+                List.of(List.of(), List.of(),
+                        List.of(new HuntTaskChatAction(1L, 1L), new ViewTaskDetailChatAction(1L, 1L))));
 
         // when
         ExtractableResponse<?> response = with()
@@ -702,6 +707,11 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.currentPage()).isEqualTo(0);
                     assertThat(data.pageCount()).isEqualTo(2);
                     assertThat(data.chatMessageCount()).isEqualTo(3);
+                    assertThat(data.messages().stream().map(ChatMessageResponse::chatActionList).toList())
+                            .satisfies(actions -> {
+                                assertThat(actions).isNotEmpty().hasSize(2);
+                                assertThat(actions.get(0)).hasOnlyElementsOfType(ChatActionItem.class);
+                            });
                     assertThat(data.messages().stream().map(ChatMessageResponse::content).toList())
                             .containsExactly("세 번째 메시지", "두 번째 메시지"); // 최신순 정렬 확인
                 });
