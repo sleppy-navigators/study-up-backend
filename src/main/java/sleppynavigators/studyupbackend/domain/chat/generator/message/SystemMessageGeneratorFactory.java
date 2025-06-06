@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.domain.chat.systemmessage;
+package sleppynavigators.studyupbackend.domain.chat.generator.message;
 
 import java.util.List;
 import java.util.Map;
@@ -9,14 +9,14 @@ import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 
 @Component
 public class SystemMessageGeneratorFactory {
+
     private final Map<EventType, SystemMessageGenerator<?>> generatorMap;
 
     public SystemMessageGeneratorFactory(List<SystemMessageGenerator<? extends SystemMessageEvent>> generators) {
         this.generatorMap = generators.stream()
                 .collect(Collectors.toMap(
                         SystemMessageGenerator::supportedEventType,
-                        generator -> generator
-                ));
+                        generator -> generator));
     }
 
     @SuppressWarnings("unchecked")
@@ -24,7 +24,7 @@ public class SystemMessageGeneratorFactory {
         SystemMessageGenerator<?> generator = generatorMap.get(event.getType());
 
         if (generator == null) {
-            throw new IllegalArgumentException("No generator found for event type: " + event.getType());
+            throw new IllegalStateException("No generator found for event type: " + event.getType());
         }
 
         return (SystemMessageGenerator<T>) generator;

@@ -1,4 +1,4 @@
-package sleppynavigators.studyupbackend.domain.chat.systemmessage;
+package sleppynavigators.studyupbackend.domain.chat.generator.message;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
