@@ -38,13 +38,13 @@ public record ChatMessageResponse(
     public record ChatActionItem(
 
             @Schema(description = "액션 타입", example = "HUNT_TASK")
-            @NotBlank ChatActionType type,
+            @NotNull ChatActionType type,
 
             @Schema(description = "URL", example = "/users/1")
-            @NotBlank String url,
+            String url,
 
             @Schema(description = "HTTP 메소드", example = "GET")
-            @NotBlank String httpMethod
+            String httpMethod
     ) {
 
         public static ChatActionItem fromEntity(ChatAction chatAction) {
