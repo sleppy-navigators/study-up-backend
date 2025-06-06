@@ -9,7 +9,7 @@ import org.springframework.http.HttpMethod;
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
-public class ChatAction {
+public abstract class ChatAction {
 
     private ChatActionType type;
 
@@ -21,11 +21,7 @@ public class ChatAction {
         return type;
     }
 
-    public String getUrl() {
-        return null;
-    }
+    public abstract String getUrl();
 
-    public HttpMethod getHttpMethod() {
-        return null;
-    }
+    public abstract HttpMethod getHttpMethod();
 }

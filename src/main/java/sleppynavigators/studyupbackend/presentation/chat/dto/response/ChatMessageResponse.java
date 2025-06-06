@@ -41,20 +41,17 @@ public record ChatMessageResponse(
             @NotNull ChatActionType type,
 
             @Schema(description = "URL", example = "/users/1")
-            String url,
+            @NotBlank String url,
 
             @Schema(description = "HTTP 메소드", example = "GET")
-            String httpMethod
+            @NotBlank String httpMethod
     ) {
 
         public static ChatActionItem fromEntity(ChatAction chatAction) {
-            String httpMethod = chatAction.getHttpMethod() != null
-                    ? chatAction.getHttpMethod().toString()
-                    : null;
             return new ChatActionItem(
                     chatAction.getType(),
                     chatAction.getUrl(),
-                    httpMethod);
+                    chatAction.getHttpMethod().toString());
         }
     }
 

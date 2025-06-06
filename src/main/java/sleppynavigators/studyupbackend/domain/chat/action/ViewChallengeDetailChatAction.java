@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpMethod;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -17,5 +18,15 @@ public class ViewChallengeDetailChatAction extends ChatAction {
     public ViewChallengeDetailChatAction(Long challengeId) {
         super(ChatActionType.VIEW_CHALLENGE_DETAIL);
         this.challengeId = challengeId;
+    }
+
+    @Override
+    public String getUrl() {
+        return "/challenges/" + challengeId + "/tasks";
+    }
+
+    @Override
+    public HttpMethod getHttpMethod() {
+        return HttpMethod.GET;
     }
 }
