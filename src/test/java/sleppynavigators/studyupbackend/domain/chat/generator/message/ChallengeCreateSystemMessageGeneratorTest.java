@@ -25,7 +25,8 @@ class ChallengeCreateSystemMessageGeneratorTest {
         String userName = "홍길동";
         String challengeName = "알고리즘 문제 풀기";
         Long groupId = 1L;
-        ChallengeCreateEvent event = new ChallengeCreateEvent(userName, challengeName, groupId);
+        Long challengeId = 1L;
+        ChallengeCreateEvent event = new ChallengeCreateEvent(userName, challengeName, groupId, challengeId);
 
         // when
         String message = generator.generate(event);

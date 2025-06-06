@@ -44,7 +44,9 @@ public class TaskScheduler {
                     task.getChallenge().getOwner().getUserProfile().getUsername(),
                     task.getChallenge().getDetail().getTitle(),
                     task.getDetail().getTitle(),
-                    task.getChallenge().getGroup().getId()
+                    task.getChallenge().getGroup().getId(),
+                    task.getChallenge().getId(),
+                    task.getId()
             );
             eventPublisher.publishEvent(event);
         }

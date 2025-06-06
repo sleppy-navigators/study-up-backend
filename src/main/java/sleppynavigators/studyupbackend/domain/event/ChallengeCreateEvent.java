@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.domain.event;
 
-public record ChallengeCreateEvent(String userName, String challengeName, Long groupId) implements SystemMessageEvent {
+public record ChallengeCreateEvent(String userName, String challengeName, Long groupId, Long challengeId)
+        implements SystemMessageEvent {
 
     @Override
     public EventType getType() {

@@ -24,7 +24,8 @@ class UserJoinSystemMessageGeneratorTest {
         // given
         String userName = "홍길동";
         Long groupId = 1L;
-        UserJoinEvent event = new UserJoinEvent(userName, groupId);
+        Long userId = 1L;
+        UserJoinEvent event = new UserJoinEvent(userName, groupId, userId);
 
         // when
         String message = generator.generate(event);

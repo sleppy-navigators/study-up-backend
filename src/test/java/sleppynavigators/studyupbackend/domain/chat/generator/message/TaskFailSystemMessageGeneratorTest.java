@@ -26,7 +26,9 @@ public class TaskFailSystemMessageGeneratorTest {
         String challengeName = "알고리즘 끝장내기";
         String taskName = "알고리즘 문제 풀기";
         Long groupId = 1L;
-        TaskFailEvent event = new TaskFailEvent(userName, challengeName, taskName, groupId);
+        Long challengeId = 1L;
+        Long taskId = 1L;
+        TaskFailEvent event = new TaskFailEvent(userName, challengeName, taskName, groupId, challengeId, taskId);
 
         // when
         String message = generator.generate(event);

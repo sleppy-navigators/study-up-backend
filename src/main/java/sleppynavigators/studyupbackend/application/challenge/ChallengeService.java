@@ -62,7 +62,8 @@ public class ChallengeService {
         ChallengeCreateEvent event = new ChallengeCreateEvent(
                 user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
-                groupId);
+                groupId,
+                challenge.getId());
         eventPublisher.publishEvent(event);
 
         return ChallengeResponse.fromEntity(challenge);
@@ -121,6 +122,7 @@ public class ChallengeService {
                     task.getDetail().getTitle(),
                     task.getChallenge().getDetail().getTitle(),
                     task.getChallenge().getGroup().getId(),
+                    task.getChallenge().getId(),
                     task.getId()
             );
             eventPublisher.publishEvent(event);

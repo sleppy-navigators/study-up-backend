@@ -132,7 +132,7 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         invitation.getGroup().addMember(user);
 
-        UserJoinEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
+        UserJoinEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId, userId);
         eventPublisher.publishEvent(event);
 
         return GroupInvitationResponse.fromEntity(invitation);
