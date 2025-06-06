@@ -10,7 +10,7 @@ import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 @Schema(description = "채팅 메시지 목록 응답")
 public record ChatMessageListResponse(
         @Schema(description = "채팅 메시지 목록")
-        @NotNull @Valid List<ChatMessageDTO> messages,
+        @NotNull @Valid List<ChatMessageResponse> messages,
 
         @Schema(description = "현재 페이지 번호", example = "1")
         @NotNull Integer currentPage,
@@ -21,10 +21,11 @@ public record ChatMessageListResponse(
         @Schema(description = "총 메시지 수", example = "100")
         @NotNull Long chatMessageCount
 ) {
+
     public static ChatMessageListResponse from(Page<ChatMessage> messagePage) {
 
-        List<ChatMessageDTO> messages = messagePage.getContent().stream()
-                .map(ChatMessageDTO::from)
+        List<ChatMessageResponse> messages = messagePage.getContent().stream()
+                .map(ChatMessageResponse::from)
                 .toList();
 
         return new ChatMessageListResponse(
@@ -34,4 +35,4 @@ public record ChatMessageListResponse(
                 messagePage.getTotalElements()
         );
     }
-} 
+}

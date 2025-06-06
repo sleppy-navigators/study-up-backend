@@ -15,9 +15,6 @@ public record ChatMessageResponse(
         @Schema(description = "메시지 ID", example = "1")
         @NotBlank String id,
 
-        @Schema(description = "그룹 ID", example = "1")
-        @NotNull Long groupId,
-
         @Schema(description = "보낸 사람 ID", example = "1")
         @NotNull Long senderId,
 
@@ -30,10 +27,10 @@ public record ChatMessageResponse(
         @Schema(description = "메시지 생성 시간", example = "2023-10-01T12:00:00Z")
         @NotNull ZonedDateTime createdAt
 ) {
+
     public static ChatMessageResponse from(ChatMessage chatMessage) {
         return ChatMessageResponse.builder()
                 .id(chatMessage.getId().toString())
-                .groupId(chatMessage.getGroupId())
                 .senderId(chatMessage.getSenderId())
                 .senderType(chatMessage.getSenderType())
                 .content(chatMessage.getContent())
