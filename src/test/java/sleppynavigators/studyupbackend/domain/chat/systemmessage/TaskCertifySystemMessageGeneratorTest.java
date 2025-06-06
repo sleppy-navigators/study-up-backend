@@ -26,7 +26,8 @@ public class TaskCertifySystemMessageGeneratorTest {
         String challengeName = "알고리즘 끝장내기";
         String taskName = "알고리즘 문제 풀기";
         Long groupId = 1L;
-        TaskCertifyEvent event = new TaskCertifyEvent(userName, challengeName, taskName, groupId);
+        Long taskId = 1L;
+        TaskCertifyEvent event = new TaskCertifyEvent(userName, challengeName, taskName, groupId, taskId);
 
         // when
         String message = generator.generate(event);

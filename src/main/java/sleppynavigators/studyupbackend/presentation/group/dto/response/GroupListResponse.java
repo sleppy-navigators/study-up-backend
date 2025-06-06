@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.net.URL;
 import java.util.List;
 import sleppynavigators.studyupbackend.application.group.GroupWithLastChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
@@ -30,7 +31,7 @@ public record GroupListResponse(
             @NotBlank String name,
 
             @Schema(description = "그룹 썸네일 URL", example = "https://example.com/thumbnail.jpg")
-            String thumbnailUrl,
+            URL thumbnailUrl,
 
             @Schema(description = "그룹 멤버 수", example = "10")
             @NotNull Integer memberCount,

@@ -6,11 +6,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.application.event.ChallengeEventPublisher;
-import sleppynavigators.studyupbackend.application.event.NotificationEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeQueryOptions;
@@ -22,8 +21,7 @@ import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeReposit
 public class ChallengeScheduler {
 
     private final ChallengeRepository challengeRepository;
-    private final ChallengeEventPublisher challengeEventPublisher;
-    private final NotificationEventPublisher notificationEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${scheduler.challenge.check-expiration.interval-minutes}")
     private long challengeCheckIntervalMinutes;
@@ -48,8 +46,7 @@ public class ChallengeScheduler {
                     challenge.getOwner().getId(),
                     challenge.calcSuccessRate()
             );
-            challengeEventPublisher.publishChallengeCompleteEvent(event);
-            notificationEventPublisher.publish(event);
+            eventPublisher.publishEvent(event);
         }
         log.info("ChallengeScheduler - checkExpiredChallenges() completed");
     }

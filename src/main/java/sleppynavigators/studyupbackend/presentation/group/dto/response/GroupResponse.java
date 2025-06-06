@@ -3,6 +3,7 @@ package sleppynavigators.studyupbackend.presentation.group.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.net.URL;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.vo.GroupDetail;
 
@@ -18,7 +19,7 @@ public record GroupResponse(
         @NotBlank String description,
 
         @Schema(description = "그룹 썸네일 URL", example = "https://example.com/thumbnail.jpg")
-        String thumbnailUrl) {
+        URL thumbnailUrl) {
 
     public static GroupResponse fromEntity(Group group) {
         GroupDetail groupDetail = group.getGroupDetail();

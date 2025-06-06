@@ -13,14 +13,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import sleppynavigators.studyupbackend.common.ApplicationBaseTest;
 import sleppynavigators.studyupbackend.common.support.BotSupport;
@@ -57,7 +53,7 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
     private BotSupport botSupport;
 
     @MockitoBean
-    private SimpMessageSendingOperations messagingTemplate;
+    private SimpMessagingTemplate messagingTemplate;
 
     @BeforeEach
     void setUp() {
@@ -181,15 +177,5 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
         assertThatThrownBy(() -> chatMessageService.sendSystemMessage(event))
                 .isInstanceOf(ChatMessageException.class)
                 .hasMessageContaining("메시지 처리 중 오류가 발생했습니다");
-    }
-
-    @TestConfiguration
-    static class TestConfig {
-
-        @Primary
-        @Bean
-        public SimpMessageSendingOperations messagingTemplate() {
-            return Mockito.mock(SimpMessageSendingOperations.class);
-        }
     }
 }

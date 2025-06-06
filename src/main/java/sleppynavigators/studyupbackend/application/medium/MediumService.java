@@ -15,4 +15,14 @@ public class MediumService {
     public URL getUploadUrl(Long userId, String filename) {
         return mediumStorageClient.getUploadUrl(userId, filename);
     }
+
+    // TODO: implement a batch method to make multiple media permanent at once
+    public void storeMedia(URL mediaUrl) {
+        // There's no need to store/update media if it's not managed by us
+        if (!mediumStorageClient.isManagedByUs(mediaUrl)) {
+            return;
+        }
+
+        mediumStorageClient.updateMediaTag(mediaUrl, "status=" + MediaStatus.PERMANENT);
+    }
 }

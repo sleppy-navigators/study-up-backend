@@ -5,6 +5,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -37,7 +38,7 @@ public class Group extends UserAndTimeAuditBaseEntity {
     // The target of the indirect reference will be the system message, not the group.
 
     @Builder
-    public Group(String name, String description, String thumbnailUrl, User creator) {
+    public Group(String name, String description, URL thumbnailUrl, User creator) {
         this.groupDetail = new GroupDetail(name, description, thumbnailUrl);
         this.members = new ArrayList<>();
         this.challenges = new ArrayList<>();

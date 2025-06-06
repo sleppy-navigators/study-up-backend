@@ -4,9 +4,9 @@ import com.querydsl.core.types.Predicate;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.application.event.SystemMessageEventPublisher;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.challenge.hunting.Hunting;
@@ -42,7 +42,7 @@ public class ChallengeService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
     private final HuntingRepository huntingRepository;
-    private final SystemMessageEventPublisher systemMessageEventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public ChallengeResponse createChallenge(Long userId, Long groupId, ChallengeCreationRequest request) {
@@ -63,7 +63,7 @@ public class ChallengeService {
                 user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
                 groupId);
-        systemMessageEventPublisher.publish(event);
+        eventPublisher.publishEvent(event);
 
         return ChallengeResponse.fromEntity(challenge);
     }
@@ -84,7 +84,7 @@ public class ChallengeService {
                 user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
                 challenge.getGroup().getId());
-        systemMessageEventPublisher.publish(event);
+        eventPublisher.publishEvent(event);
 
         challengeRepository.deleteById(challengeId);
     }
@@ -120,9 +120,10 @@ public class ChallengeService {
                     user.getUserProfile().getUsername(),
                     task.getDetail().getTitle(),
                     task.getChallenge().getDetail().getTitle(),
-                    task.getChallenge().getGroup().getId()
+                    task.getChallenge().getGroup().getId(),
+                    task.getId()
             );
-            systemMessageEventPublisher.publish(event);
+            eventPublisher.publishEvent(event);
 
             return TaskResponse.fromEntity(task);
         } catch (IllegalArgumentException ex) {

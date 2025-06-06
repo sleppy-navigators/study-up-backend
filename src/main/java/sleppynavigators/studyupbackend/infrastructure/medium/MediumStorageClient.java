@@ -1,34 +1,35 @@
 package sleppynavigators.studyupbackend.infrastructure.medium;
 
-import io.awspring.cloud.s3.S3Template;
 import java.net.URL;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
-@Slf4j
-@Component
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class MediumStorageClient {
+/**
+ * Client interface for managing media storage operations.
+ */
+public interface MediumStorageClient {
 
-    private static final String S3_KEY_PATTERN = "%s/%s-%s";
+    /**
+     * Generates a signed URL for uploading media files. User can upload media file using <code>PUT</code> request to
+     * the returned URL.
+     *
+     * @param userId   the ID of the user uploading the media
+     * @param filename the name of the file to be uploaded
+     * @return a signed URL for uploading the media file
+     */
+    URL getUploadUrl(Long userId, String filename);
 
-    private final S3Template s3Template;
-    private final S3Properties s3Properties;
+    /**
+     * Updates the tag information of an existing media file.
+     *
+     * @param mediaUrl the URL of the media file to update
+     * @param tagging  new tag information for the media. format: <code>key=value</code>
+     */
+    void updateMediaTag(URL mediaUrl, String tagging);
 
-    public URL getUploadUrl(Long userId, String filename) {
-        String key = generateKey(userId, filename);
-        String bucketName = s3Properties.bucket();
-        Duration expirationTime = Duration.ofMinutes(s3Properties.expirationInMinutes());
-
-        log.info("Creating signed URL for S3 bucket: {}, key: {}, expires in: {}", bucketName, key, expirationTime);
-        return s3Template.createSignedPutURL(s3Properties.bucket(), key, expirationTime);
-    }
-
-    private String generateKey(Long userId, String filename) {
-        return String.format(S3_KEY_PATTERN, userId, LocalDateTime.now(), filename);
-    }
+    /**
+     * Checks if the media URL is managed by this storage client.
+     *
+     * @param mediaUrl the URL of the media file to check
+     * @return <code>true</code> if the media URL is managed by this client, <code>false</code> otherwise
+     */
+    boolean isManagedByUs(URL mediaUrl);
 }

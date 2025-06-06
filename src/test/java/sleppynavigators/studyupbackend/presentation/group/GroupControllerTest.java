@@ -92,10 +92,10 @@ public class GroupControllerTest extends RestAssuredBaseTest {
 
     @Test
     @DisplayName("사용자가 그룹 생성에 성공한다")
-    void memberGroupCreation_Success() {
+    void memberGroupCreation_Success() throws MalformedURLException {
         // given
         GroupCreationRequest request =
-                new GroupCreationRequest("test group", "test description", "https://test.com");
+                new GroupCreationRequest("test group", "test description", new URL("https://test.com"));
 
         assert groupRepository.findAll().isEmpty();
 
