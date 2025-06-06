@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.domain.chat.generator.message;
 
 import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskCertifyEvent;
 
 @Component
 public class TaskCertifySystemMessageGenerator implements SystemMessageGenerator<TaskCertifyEvent> {

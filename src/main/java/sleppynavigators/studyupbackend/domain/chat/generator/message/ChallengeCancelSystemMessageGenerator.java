@@ -1,7 +1,7 @@
 package sleppynavigators.studyupbackend.domain.chat.generator.message;
 
 import org.springframework.stereotype.Component;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.ChallengeCancelEvent;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 
 @Component

@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.domain.chat.generator.message;
 
 import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
+import sleppynavigators.studyupbackend.domain.event.group.UserJoinEvent;
 
 @Component
 public class UserJoinSystemMessageGenerator implements SystemMessageGenerator<UserJoinEvent> {

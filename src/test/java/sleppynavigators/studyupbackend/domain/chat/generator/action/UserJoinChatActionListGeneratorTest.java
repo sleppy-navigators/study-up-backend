@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import sleppynavigators.studyupbackend.domain.chat.action.ChatAction;
 import sleppynavigators.studyupbackend.domain.chat.action.ChatActionType;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
+import sleppynavigators.studyupbackend.domain.event.group.UserJoinEvent;
 
 public class UserJoinChatActionListGeneratorTest {
 

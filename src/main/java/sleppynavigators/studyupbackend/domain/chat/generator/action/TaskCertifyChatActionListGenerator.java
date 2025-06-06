@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.chat.action.ChatAction;
 import sleppynavigators.studyupbackend.domain.chat.action.ViewTaskDetailChatAction;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskCertifyEvent;
 
 @Component
 public class TaskCertifyChatActionListGenerator implements ChatActionListGenerator<TaskCertifyEvent> {

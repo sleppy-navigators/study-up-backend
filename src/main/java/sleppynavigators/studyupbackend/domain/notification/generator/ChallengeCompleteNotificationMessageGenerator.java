@@ -1,7 +1,7 @@
 package sleppynavigators.studyupbackend.domain.notification.generator;
 
 import org.springframework.stereotype.Component;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 import sleppynavigators.studyupbackend.domain.notification.NotificationMessage;
 

@@ -18,7 +18,7 @@ import sleppynavigators.studyupbackend.common.support.ChallengeSupport;
 import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
-import sleppynavigators.studyupbackend.domain.event.TaskFailEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskFailEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 

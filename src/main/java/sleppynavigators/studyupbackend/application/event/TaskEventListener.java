@@ -10,7 +10,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import sleppynavigators.studyupbackend.application.medium.MediumService;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
-import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 

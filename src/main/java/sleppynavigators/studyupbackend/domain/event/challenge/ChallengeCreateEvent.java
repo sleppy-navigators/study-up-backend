@@ -1,4 +1,7 @@
-package sleppynavigators.studyupbackend.domain.event;
+package sleppynavigators.studyupbackend.domain.event.challenge;
+
+import sleppynavigators.studyupbackend.domain.event.EventType;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 
 public record ChallengeCreateEvent(String userName, String challengeName, Long groupId, Long challengeId)
         implements SystemMessageEvent {

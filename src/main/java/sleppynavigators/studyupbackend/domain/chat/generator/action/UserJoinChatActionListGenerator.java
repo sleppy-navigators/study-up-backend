@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.chat.action.ChatAction;
 import sleppynavigators.studyupbackend.domain.chat.action.ViewMemberProfileChatAction;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
+import sleppynavigators.studyupbackend.domain.event.group.UserJoinEvent;
 
 @Component
 public class UserJoinChatActionListGenerator implements ChatActionListGenerator<UserJoinEvent> {

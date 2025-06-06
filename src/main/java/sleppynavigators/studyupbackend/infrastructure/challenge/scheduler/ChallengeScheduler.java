@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.ChallengeRepository;
 

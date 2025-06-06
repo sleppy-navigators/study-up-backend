@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.domain.chat.generator.message;
 
 import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
+import sleppynavigators.studyupbackend.domain.event.group.UserLeaveEvent;
 
 @Component
 public class UserLeaveSystemMessageGenerator implements SystemMessageGenerator<UserLeaveEvent> {

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
+import sleppynavigators.studyupbackend.domain.event.group.GroupCreateEvent;
 
 class GroupCreateSystemMessageGeneratorTest {
 

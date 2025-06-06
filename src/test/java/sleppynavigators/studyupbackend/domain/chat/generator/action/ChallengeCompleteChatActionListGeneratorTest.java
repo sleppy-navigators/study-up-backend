@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import sleppynavigators.studyupbackend.domain.chat.action.ChatAction;
 import sleppynavigators.studyupbackend.domain.chat.action.ChatActionType;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 
 public class ChallengeCompleteChatActionListGeneratorTest {

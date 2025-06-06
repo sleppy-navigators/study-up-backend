@@ -2,7 +2,7 @@ package sleppynavigators.studyupbackend.domain.chat.generator.message;
 
 import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.TaskFailEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskFailEvent;
 
 @Component
 public class TaskFailSystemMessageGenerator implements SystemMessageGenerator<TaskFailEvent> {

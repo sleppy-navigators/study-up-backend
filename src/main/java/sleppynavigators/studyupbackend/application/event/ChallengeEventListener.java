@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import sleppynavigators.studyupbackend.application.challenge.ChallengeService;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.ChallengeCompleteEvent;
 
 @Slf4j
 @Component

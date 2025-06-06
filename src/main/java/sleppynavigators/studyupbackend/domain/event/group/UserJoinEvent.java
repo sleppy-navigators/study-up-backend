@@ -1,4 +1,7 @@
-package sleppynavigators.studyupbackend.domain.event;
+package sleppynavigators.studyupbackend.domain.event.group;
+
+import sleppynavigators.studyupbackend.domain.event.EventType;
+import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 
 public record UserJoinEvent(String userName, Long groupId, Long userId) implements SystemMessageEvent {
 

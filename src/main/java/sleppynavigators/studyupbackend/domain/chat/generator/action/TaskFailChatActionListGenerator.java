@@ -6,7 +6,7 @@ import sleppynavigators.studyupbackend.domain.chat.action.ChatAction;
 import sleppynavigators.studyupbackend.domain.chat.action.HuntTaskChatAction;
 import sleppynavigators.studyupbackend.domain.chat.action.ViewTaskDetailChatAction;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.TaskFailEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskFailEvent;
 
 @Component
 public class TaskFailChatActionListGenerator implements ChatActionListGenerator<TaskFailEvent> {

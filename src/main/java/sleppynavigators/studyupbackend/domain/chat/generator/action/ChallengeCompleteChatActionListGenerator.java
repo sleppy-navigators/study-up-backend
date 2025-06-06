@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import sleppynavigators.studyupbackend.domain.chat.action.ChatAction;
 import sleppynavigators.studyupbackend.domain.chat.action.ShowOfChallengeChatAction;
 import sleppynavigators.studyupbackend.domain.chat.action.ViewChallengeDetailChatAction;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCompleteEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.ChallengeCompleteEvent;
 import sleppynavigators.studyupbackend.domain.event.EventType;
 
 @Component

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import sleppynavigators.studyupbackend.domain.event.EventType;
-import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskCertifyEvent;
 
 public class TaskCertifySystemMessageGeneratorTest {
 

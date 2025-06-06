@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
-import sleppynavigators.studyupbackend.domain.event.TaskFailEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskFailEvent;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskQueryOptions;
 import sleppynavigators.studyupbackend.infrastructure.challenge.TaskRepository;
 
