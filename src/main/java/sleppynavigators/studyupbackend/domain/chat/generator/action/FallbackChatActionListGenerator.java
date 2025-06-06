@@ -14,6 +14,6 @@ public class FallbackChatActionListGenerator implements ChatActionListGenerator<
 
     @Override
     public EventType supportedEventType() {
-        return null;
+        throw new UnsupportedOperationException("Fallback generator does not support any specific event type");
     }
 }
