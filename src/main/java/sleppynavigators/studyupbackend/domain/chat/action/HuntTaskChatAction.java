@@ -24,6 +24,7 @@ public class HuntTaskChatAction extends ChatAction {
 
     @Override
     public String getUrl() {
+        // TODO: resolve presentation layer dependency
         return "/challenges/" + challengeId + "/tasks/" + taskId + "/hunt";
     }
 
