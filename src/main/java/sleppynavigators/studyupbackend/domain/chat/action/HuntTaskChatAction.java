@@ -2,24 +2,26 @@ package sleppynavigators.studyupbackend.domain.chat.action;
 
 import lombok.AccessLevel;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpMethod;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
-public class HuntTaskChatAction extends ChatAction {
+public class HuntTaskChatAction implements ChatAction {
 
     private Long challengeId;
     private Long taskId;
 
     public HuntTaskChatAction(Long challengeId, Long taskId) {
-        super(ChatActionType.HUNT_TASK);
         this.challengeId = challengeId;
         this.taskId = taskId;
+    }
+
+    @Override
+    public ChatActionType getType() {
+        return ChatActionType.HUNT_TASK;
     }
 
     @Override
