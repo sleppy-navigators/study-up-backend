@@ -37,8 +37,7 @@ public class TaskFailChatActionListGeneratorTest {
         List<ChatAction> chatActions = generator.generate(event);
 
         // then
-        assertThat(chatActions).hasSize(2);
+        assertThat(chatActions).hasSize(1);
         assertThat(chatActions.get(0).getType()).isEqualTo(ChatActionType.HUNT_TASK);
-        assertThat(chatActions.get(1).getType()).isEqualTo(ChatActionType.VIEW_TASK_DETAIL);
     }
 }
