@@ -707,7 +707,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.chatMessageCount()).isEqualTo(3);
                     assertThat(data.messages().stream().map(ChatMessageResponse::chatActionList).toList())
                             .satisfies(actions -> {
-                                assertThat(actions).isNotEmpty().hasSize(1);
+                                assertThat(actions).isNotEmpty().hasSize(2);
                                 assertThat(actions.get(0)).hasOnlyElementsOfType(ChatActionItem.class);
                             });
                     assertThat(data.messages().stream().map(ChatMessageResponse::content).toList())
