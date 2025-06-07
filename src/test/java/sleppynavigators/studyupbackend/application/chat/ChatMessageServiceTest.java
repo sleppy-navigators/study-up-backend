@@ -24,7 +24,7 @@ import sleppynavigators.studyupbackend.common.support.GroupSupport;
 import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
+import sleppynavigators.studyupbackend.domain.event.group.UserJoinEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ChatMessageException;
@@ -137,8 +137,9 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
     void sendSystemMessage() {
         // given
         Long groupId = 1L;
+        Long userId = 1L;
         String username = "testUser";
-        UserJoinEvent event = new UserJoinEvent(username, groupId);
+        UserJoinEvent event = new UserJoinEvent(username, groupId, userId);
 
         clearInvocations(messagingTemplate);
 
@@ -164,8 +165,9 @@ class ChatMessageServiceTest extends ApplicationBaseTest {
     void sendSystemMessage_WhenDeliveryFails_ThrowsChatMessageException() {
         // given
         Long groupId = 1L;
+        Long userId = 1L;
         String username = "testUser";
-        UserJoinEvent event = new UserJoinEvent(username, groupId);
+        UserJoinEvent event = new UserJoinEvent(username, groupId, userId);
 
         doThrow(new RuntimeException("메시지 전송 실패"))
                 .when(messagingTemplate)

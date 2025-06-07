@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import sleppynavigators.studyupbackend.application.medium.MediumService;
-import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
+import sleppynavigators.studyupbackend.domain.event.group.GroupCreateEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.exception.database.EntityNotFoundException;
 import sleppynavigators.studyupbackend.infrastructure.group.GroupRepository;

@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
-import sleppynavigators.studyupbackend.domain.event.GroupCreateEvent;
-import sleppynavigators.studyupbackend.domain.event.UserJoinEvent;
-import sleppynavigators.studyupbackend.domain.event.UserLeaveEvent;
+import sleppynavigators.studyupbackend.domain.event.group.GroupCreateEvent;
+import sleppynavigators.studyupbackend.domain.event.group.UserJoinEvent;
+import sleppynavigators.studyupbackend.domain.event.group.UserLeaveEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
@@ -132,7 +132,7 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         invitation.getGroup().addMember(user);
 
-        UserJoinEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId);
+        UserJoinEvent event = new UserJoinEvent(user.getUserProfile().getUsername(), groupId, userId);
         eventPublisher.publishEvent(event);
 
         return GroupInvitationResponse.fromEntity(invitation);

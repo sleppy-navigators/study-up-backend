@@ -1,7 +1,6 @@
 package sleppynavigators.studyupbackend.application.notification;
 
 import com.google.firebase.messaging.BatchResponse;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -13,8 +12,8 @@ import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.GroupMember;
 import sleppynavigators.studyupbackend.domain.notification.FcmToken;
 import sleppynavigators.studyupbackend.domain.notification.NotificationMessage;
-import sleppynavigators.studyupbackend.domain.notification.NotificationMessageGenerator;
-import sleppynavigators.studyupbackend.domain.notification.NotificationMessageGeneratorFactory;
+import sleppynavigators.studyupbackend.domain.notification.generator.NotificationMessageGenerator;
+import sleppynavigators.studyupbackend.domain.notification.generator.NotificationMessageGeneratorFactory;
 import sleppynavigators.studyupbackend.domain.event.GroupNotificationEvent;
 import sleppynavigators.studyupbackend.domain.event.NotificationEvent;
 import sleppynavigators.studyupbackend.domain.event.PersonalNotificationEvent;

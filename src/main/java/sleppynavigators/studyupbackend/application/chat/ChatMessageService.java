@@ -1,5 +1,6 @@
 package sleppynavigators.studyupbackend.application.chat;
 
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.chat.Bot;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
-import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGenerator;
-import sleppynavigators.studyupbackend.domain.chat.systemmessage.SystemMessageGeneratorFactory;
+import sleppynavigators.studyupbackend.domain.chat.action.ChatAction;
+import sleppynavigators.studyupbackend.domain.chat.generator.action.ChatActionListGenerator;
+import sleppynavigators.studyupbackend.domain.chat.generator.action.ChatActionListGeneratorFactory;
+import sleppynavigators.studyupbackend.domain.chat.generator.message.SystemMessageGenerator;
+import sleppynavigators.studyupbackend.domain.chat.generator.message.SystemMessageGeneratorFactory;
 import sleppynavigators.studyupbackend.domain.event.SystemMessageEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -42,6 +46,7 @@ public class ChatMessageService {
     private final GroupRepository groupRepository;
     private final BotRepository botRepository;
     private final UserRepository userRepository;
+    private final ChatActionListGeneratorFactory chatActionListGeneratorFactory;
 
     public void sendUserMessage(ChatMessageRequest request, String destination, Long senderId) {
         ChatMessage savedMessage = null;
@@ -64,12 +69,15 @@ public class ChatMessageService {
             SystemMessageGenerator<T> systemMessageGenerator = systemMessageGeneratorFactory.get(event);
             String content = systemMessageGenerator.generate(event);
 
+            ChatActionListGenerator<T> actionListGenerator = chatActionListGeneratorFactory.get(event);
+            List<ChatAction> chatActionList = actionListGenerator.generate(event);
+
             Long groupId = event.getGroupId();
             Bot bot = botRepository.findByGroupId(groupId)
                     .orElseThrow(() -> new EntityNotFoundException("Bot not found - groupId: " + groupId));
             String destination = String.format(GROUP_DESTINATION, groupId);
 
-            ChatMessage chatMessage = ChatMessage.fromBot(bot.getId(), groupId, content);
+            ChatMessage chatMessage = ChatMessage.fromBot(bot.getId(), groupId, content, chatActionList);
 
             savedMessage = chatMessageRepository.save(chatMessage);
             sendToWebSocket(destination, savedMessage);

@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.challenge.hunting.Hunting;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCancelEvent;
-import sleppynavigators.studyupbackend.domain.event.ChallengeCreateEvent;
-import sleppynavigators.studyupbackend.domain.event.TaskCertifyEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.ChallengeCancelEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.ChallengeCreateEvent;
+import sleppynavigators.studyupbackend.domain.event.challenge.TaskCertifyEvent;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.user.User;
 import sleppynavigators.studyupbackend.exception.business.ForbiddenContentException;
@@ -62,7 +62,8 @@ public class ChallengeService {
         ChallengeCreateEvent event = new ChallengeCreateEvent(
                 user.getUserProfile().getUsername(),
                 challenge.getDetail().getTitle(),
-                groupId);
+                groupId,
+                challenge.getId());
         eventPublisher.publishEvent(event);
 
         return ChallengeResponse.fromEntity(challenge);
@@ -121,6 +122,7 @@ public class ChallengeService {
                     task.getDetail().getTitle(),
                     task.getChallenge().getDetail().getTitle(),
                     task.getChallenge().getGroup().getId(),
+                    task.getChallenge().getId(),
                     task.getId()
             );
             eventPublisher.publishEvent(event);
