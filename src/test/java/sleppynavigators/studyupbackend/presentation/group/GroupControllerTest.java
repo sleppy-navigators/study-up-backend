@@ -30,7 +30,6 @@ import sleppynavigators.studyupbackend.common.support.UserSupport;
 import sleppynavigators.studyupbackend.domain.challenge.Challenge;
 import sleppynavigators.studyupbackend.domain.chat.ChatMessage;
 import sleppynavigators.studyupbackend.domain.chat.action.HuntTaskChatAction;
-import sleppynavigators.studyupbackend.domain.chat.action.ViewTaskDetailChatAction;
 import sleppynavigators.studyupbackend.domain.group.Group;
 import sleppynavigators.studyupbackend.domain.group.invitation.GroupInvitation;
 import sleppynavigators.studyupbackend.domain.user.User;
@@ -686,8 +685,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
         Long pageSize = 2L;
         List<ChatMessage> messages = groupSupport.registerChatMessagesToDB(groupToQuery, currentUser,
                 List.of("첫 번째 메시지", "두 번째 메시지", "세 번째 메시지"),
-                List.of(List.of(), List.of(),
-                        List.of(new HuntTaskChatAction(1L, 1L), new ViewTaskDetailChatAction(1L, 1L))));
+                List.of(List.of(), List.of(), List.of(new HuntTaskChatAction(1L, 1L))));
 
         // when
         ExtractableResponse<?> response = with()
@@ -709,7 +707,7 @@ public class GroupControllerTest extends RestAssuredBaseTest {
                     assertThat(data.chatMessageCount()).isEqualTo(3);
                     assertThat(data.messages().stream().map(ChatMessageResponse::chatActionList).toList())
                             .satisfies(actions -> {
-                                assertThat(actions).isNotEmpty().hasSize(2);
+                                assertThat(actions).isNotEmpty().hasSize(1);
                                 assertThat(actions.get(0)).hasOnlyElementsOfType(ChatActionItem.class);
                             });
                     assertThat(data.messages().stream().map(ChatMessageResponse::content).toList())
