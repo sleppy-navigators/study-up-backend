@@ -244,8 +244,7 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.FORBIDDEN_CONTENT.getCode());
-        assertThat(response.jsonPath().getString("message"))
-                .contains("Task is not failed");
+        assertThat(response.jsonPath().getString("message")).contains("Task is not huntable");
     }
 
     @Test
@@ -270,7 +269,6 @@ public class ChallengeControllerTest extends RestAssuredBaseTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_BAD_REQUEST);
         assertThat(response.jsonPath().getString("code")).isEqualTo(ErrorCode.FORBIDDEN_CONTENT.getCode());
-        assertThat(response.jsonPath().getString("message"))
-                .contains("Hunting limit reached for this task");
+        assertThat(response.jsonPath().getString("message")).contains("Task is not huntable");
     }
 }
