@@ -36,6 +36,6 @@ public class TaskCertifyNotificationMessageGeneratorTest {
 
         // then
         assertThat(message.title()).isEqualTo("테스크 인증 알림");
-        assertThat(message.body()).isEqualTo("홍길동님이 '알고리즘 문제 풀기' 테스크를 완료했습니다. (알고리즘 끝장내기)");
+        assertThat(message.body()).isEqualTo("홍길동님이 '알고리즘 문제 풀기' 테스크를 인증했습니다. (알고리즘 끝장내기)");
     }
 }
