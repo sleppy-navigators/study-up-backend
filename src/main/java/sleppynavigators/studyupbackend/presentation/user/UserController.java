@@ -61,7 +61,7 @@ public class UserController {
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
-    @GetMapping("/me/tasks/bounties")
+    @GetMapping("/me/bounties")
     @Operation(summary = "유저의 헌팅 가능한 테스크 목록 조회", description = "유저가 헌팅할 수 있는 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<HuntableTaskListResponse>> getHuntableTasks(
             @AuthenticationPrincipal UserPrincipal userPrincipal) {

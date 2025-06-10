@@ -31,6 +31,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.response.TaskG
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse.GroupListItem;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.FollowerListResponse;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.HuntableTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse.UserTaskListItem;
@@ -259,6 +260,42 @@ public class UserControllerTest extends RestAssuredBaseTest {
                             .map(UserTaskListItem::groupDetail)
                             .map(TaskGroupDTO::currentlyJoined)
                             .containsExactly(true, true, true, true, true);
+                });
+    }
+
+    @Test
+    @DisplayName("사용자가 헌팅 가능한 테스크 목록 조회에 성공한다")
+    void getHuntableTasks_Success() {
+        // given
+        User anotherUser1 = userSupport.registerUserToDB();
+        User anotherUser2 = userSupport.registerUserToDB();
+
+        Group groupCurrentlyJoined = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser1, anotherUser2));
+        Group groupWillNotJoined = groupSupport.callToMakeGroup(List.of(currentUser, anotherUser1, anotherUser2));
+
+        Challenge challenge1 = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupCurrentlyJoined, 3, anotherUser1);
+        Challenge challenge2 = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupCurrentlyJoined, 4, anotherUser1);
+        Challenge challenge3 = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupCurrentlyJoined, 4, currentUser);
+        Challenge challenge4 = challengeSupport
+                .callToMakeChallengeWithFailedTasks(groupWillNotJoined, 2, anotherUser1);
+
+        groupSupport.callToLeaveGroup(currentUser, groupWillNotJoined.getId());
+
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/users/me/bounties")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", HuntableTaskListResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.tasks()).hasSize(7);
                 });
     }
 
