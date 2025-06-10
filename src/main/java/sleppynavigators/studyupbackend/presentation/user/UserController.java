@@ -21,6 +21,7 @@ import sleppynavigators.studyupbackend.presentation.common.argument.SearchParam;
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.FollowerListResponse;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.HuntableTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 
@@ -57,6 +58,15 @@ public class UserController {
     ) {
         Long userId = userPrincipal.userId();
         UserTaskListResponse response = userService.getTasks(userId, taskSearch);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
+    @GetMapping("/me/tasks/bounties")
+    @Operation(summary = "유저의 헌팅 가능한 테스크 목록 조회", description = "유저가 헌팅할 수 있는 테스크 목록을 조회합니다.")
+    public ResponseEntity<SuccessResponse<HuntableTaskListResponse>> getHuntableTasks(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        Long userId = userPrincipal.userId();
+        HuntableTaskListResponse response = userService.getHuntableTasks(userId);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
