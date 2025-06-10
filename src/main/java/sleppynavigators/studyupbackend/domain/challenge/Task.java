@@ -96,11 +96,11 @@ public class Task extends TimeAuditBaseEntity {
                 .anyMatch(hunting -> hunting.isHunter(user));
     }
 
-    private boolean isHuntable() {
+    public boolean isHuntable() {
         return isFailed() && getHuntingCount() < calcHuntingCountLimit();
     }
 
-    private boolean canHunt(User hunter) {
+    public boolean canHunt(User hunter) {
         return challenge.canAccess(hunter) && !challenge.isOwner(hunter) && !isAlreadyHunt(hunter);
     }
 
