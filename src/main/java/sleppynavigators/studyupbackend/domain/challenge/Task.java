@@ -66,6 +66,10 @@ public class Task extends TimeAuditBaseEntity {
     }
 
     public Long calcHuntingReward() {
+        if (challenge.getTasks().isEmpty() || calcHuntingCountLimit() == 0) {
+            return 0L;
+        }
+
         return challenge.getDeposit().getInitialAmount() / challenge.getTasks().size() / calcHuntingCountLimit();
     }
 
