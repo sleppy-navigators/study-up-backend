@@ -33,6 +33,15 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/me")
+    @Operation(summary = "내 정보 조회", description = "로그인한 유저의 정보를 조회합니다.")
+    public ResponseEntity<SuccessResponse<UserResponse>> getMyInfo(
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        Long userId = userPrincipal.userId();
+        UserResponse response = userService.getUser(userId);
+        return ResponseEntity.ok(new SuccessResponse<>(response));
+    }
+
     @GetMapping("/{userId}")
     @Operation(summary = "유저 정보 조회", description = "유저 정보를 조회합니다.")
     public ResponseEntity<SuccessResponse<UserResponse>> getUserInfo(@PathVariable Long userId) {
