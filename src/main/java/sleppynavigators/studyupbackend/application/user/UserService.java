@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.application.group.GroupChatMessageAggregator;
 import sleppynavigators.studyupbackend.application.group.GroupWithLastChatMessage;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
@@ -22,6 +23,7 @@ import sleppynavigators.studyupbackend.presentation.challenge.dto.request.TaskSe
 import sleppynavigators.studyupbackend.presentation.group.dto.request.GroupSearch;
 import sleppynavigators.studyupbackend.presentation.group.dto.response.GroupListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.FollowerListResponse;
+import sleppynavigators.studyupbackend.presentation.user.dto.response.HuntableTaskListResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserResponse;
 import sleppynavigators.studyupbackend.presentation.user.dto.response.UserTaskListResponse;
 
@@ -57,6 +59,18 @@ public class UserService {
                 .and(TaskQueryOptions.getStatusPredicate(search.status()));
         List<Task> tasks = taskRepository.findAll(predicate, search.pageNum(), search.pageSize());
         return UserTaskListResponse.fromEntities(tasks);
+    }
+
+    public HuntableTaskListResponse getHuntableTasks(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
+
+        Predicate predicate = TaskQueryOptions.getStatusPredicate(TaskCertificationStatus.FAILED);
+        List<Task> tasks = taskRepository.findAll(predicate).stream()
+                .filter(Task::isHuntable)
+                .filter(task -> task.canHunt(user))
+                .toList();
+        return HuntableTaskListResponse.fromEntities(tasks);
     }
 
     public FollowerListResponse getFollowers(Long userId) {

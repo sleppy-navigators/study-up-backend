@@ -54,7 +54,7 @@ public class GroupMember extends TimeAuditBaseEntity {
                 .filter(challenge -> !challenge.isOwner(user))
                 .flatMap(challenge -> challenge.getTasks().stream())
                 .filter(Task::isFailed)
-                .filter(task -> task.isHunter(user))
+                .filter(task -> task.isAlreadyHunt(user))
                 .count();
     }
 }

@@ -29,6 +29,8 @@ import sleppynavigators.studyupbackend.exception.business.OveredDeadlineExceptio
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Task extends TimeAuditBaseEntity {
 
+    private static final double HUNTER_LIMIT_PER_TASK_RATIO = 0.3;
+
     @Immutable
     @Embedded
     private TaskDetail detail;
@@ -63,22 +65,26 @@ public class Task extends TimeAuditBaseEntity {
         this.certification = new TaskCertification(externalLinks, imageUrls, LocalDateTime.now());
     }
 
-    public Integer getHuntingCount() {
-        return huntings.size();
-    }
-
-    public Hunting addHunting(Long amount, User hunter) {
-        if (isHunter(hunter)) {
-            throw new ForbiddenContentException("User has already hunted this task. - userId: " + hunter.getId());
+    public Long calcHuntingReward() {
+        if (challenge.getTasks().isEmpty() || calcHuntingCountLimit() == 0) {
+            return 0L;
         }
 
-        Hunting hunting = new Hunting(amount, this, hunter);
-        huntings.add(hunting);
-        return hunting;
+        return challenge.getDeposit().getInitialAmount() / challenge.getTasks().size() / calcHuntingCountLimit();
     }
 
-    public boolean isCompleted() {
-        return isSucceed() || isFailed();
+    public Hunting hunt(User hunter) {
+        if (!isHuntable()) {
+            throw new ForbiddenContentException("Task is not huntable - taskId: " + getId());
+        }
+
+        if (!canHunt(hunter)) {
+            throw new ForbiddenContentException("User is not allowed to hunt this task - userId: " + hunter.getId());
+        }
+
+        Hunting hunting = new Hunting(calcHuntingReward(), this, hunter);
+        huntings.add(hunting);
+        return hunting;
     }
 
     public boolean isSucceed() {
@@ -89,8 +95,24 @@ public class Task extends TimeAuditBaseEntity {
         return detail.isOverdue() && !certification.isCertified();
     }
 
-    public boolean isHunter(User user) {
+    public boolean isAlreadyHunt(User user) {
         return huntings.stream()
                 .anyMatch(hunting -> hunting.isHunter(user));
+    }
+
+    public boolean isHuntable() {
+        return isFailed() && getHuntingCount() < calcHuntingCountLimit();
+    }
+
+    public boolean canHunt(User hunter) {
+        return challenge.canAccess(hunter) && !challenge.isOwner(hunter) && !isAlreadyHunt(hunter);
+    }
+
+    private Integer getHuntingCount() {
+        return huntings.size();
+    }
+
+    private Long calcHuntingCountLimit() {
+        return Math.round(challenge.getGroup().getNumOfMembers() * HUNTER_LIMIT_PER_TASK_RATIO);
     }
 }

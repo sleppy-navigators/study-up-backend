@@ -139,19 +139,16 @@ public class ChallengeService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
         Challenge challenge = challengeRepository.findByIdForUpdate(challengeId)
                 .orElseThrow(() -> new EntityNotFoundException("Challenge not found - challengeId: " + challengeId));
-
-        if (!challenge.canHunt(user)) {
-            throw new ForbiddenContentException(
-                    "User cannot hunt this challenge - userId: " + userId + ", challengeId: " + challengeId);
-        }
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found - taskId: " + taskId));
 
         // Caution!
         // This includes calculating the cap on the number of hunters per task,
         // which requires you to watch out for Phantom Leads.
         // (We use InnoDB's Repeatable Read isolation level)
-        Hunting hunting = challenge.rewardToHunter(taskId, user);
-        Hunting saved = huntingRepository.save(hunting);
-        return HuntingResponse.fromEntity(saved);
+        Hunting hunting = huntingRepository.save(task.hunt(user));
+        challenge.rewardToHunter(hunting.getReward().getAmount(), user);
+        return HuntingResponse.fromEntity(hunting);
     }
 
     @Transactional
