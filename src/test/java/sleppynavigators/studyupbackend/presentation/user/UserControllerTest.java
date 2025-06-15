@@ -63,6 +63,24 @@ public class UserControllerTest extends RestAssuredBaseTest {
     }
 
     @Test
+    @DisplayName("내 정보 조회에 성공한다")
+    void getMyInfo_Success() {
+        // when
+        ExtractableResponse<?> response = with()
+                .when().request(GET, "/users/me")
+                .then()
+                .log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.SC_OK);
+        assertThat(response.jsonPath().getObject("data", UserResponse.class))
+                .satisfies(data -> {
+                    assertThat(this.validator.validate(data)).isEmpty();
+                    assertThat(data.id()).isEqualTo(currentUser.getId());
+                });
+    }
+
+    @Test
     @DisplayName("사용자 정보 조회에 성공한다")
     void getUserInfo_Success() {
         // given
