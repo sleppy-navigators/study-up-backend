@@ -2,6 +2,7 @@ package sleppynavigators.studyupbackend.common.support;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,23 @@ public class AuthSupport {
                 .serialize(accessTokenProperties);
     }
 
+    public String createExpiredAccessToken(User user) {
+        List<String> authorities = List.of("profile");
+        AccessTokenProperties expiredProperties =
+                new AccessTokenProperties(accessTokenProperties.secret(), 100L);
+        String willBeExpiredToken = new AccessToken(user.getId(), user.getUserProfile(), authorities, expiredProperties)
+                .serialize(expiredProperties);
+
+        // Wait for the token to be expired
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        return willBeExpiredToken;
+    }
+
     /**
      * <b>Caution!</b> This method do directly access the database. There's no consideration about side effects.
      *
@@ -52,7 +70,7 @@ public class AuthSupport {
         UserSession userSession = UserSession.builder()
                 .user(user)
                 .refreshToken(createRefreshToken())
-                .accessToken(createAccessToken(user))
+                .accessToken(createExpiredAccessToken(user))
                 .expiration(expiration)
                 .build();
         return userSessionRepository.save(userSession);

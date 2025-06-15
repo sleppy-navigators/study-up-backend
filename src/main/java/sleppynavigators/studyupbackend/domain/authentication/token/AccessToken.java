@@ -1,6 +1,7 @@
 package sleppynavigators.studyupbackend.domain.authentication.token;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -43,6 +44,23 @@ public class AccessToken {
                     .getPayload();
 
             return new AccessToken(claims);
+        } catch (JwtException | IllegalArgumentException ex) {
+            throw new InvalidCredentialException("Invalid access token", ex);
+        }
+    }
+
+    public static AccessToken deserializeEvenIfExpired(String token, AccessTokenProperties properties) {
+        try {
+            String secret = properties.secret();
+            Claims claims = Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return new AccessToken(claims);
+        } catch (ExpiredJwtException ex) {
+            return new AccessToken(ex.getClaims());
         } catch (JwtException | IllegalArgumentException ex) {
             throw new InvalidCredentialException("Invalid access token", ex);
         }

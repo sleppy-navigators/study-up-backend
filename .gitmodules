@@ -1,3 +1,7 @@
-[submodule "src/main/resources/config"]
+[submodule "secret-properties"]
 	path = src/main/resources/config
 	url = https://github.com/sleppy-navigators/study-up-private-key.git
+
+[submodule "performance-test"]
+    path = qa
+    url = https://github.com/sleppy-navigators/study-up-quality-assurance.git
