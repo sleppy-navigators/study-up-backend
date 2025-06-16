@@ -44,7 +44,8 @@ public class AuthService {
 
     @Transactional
     public TokenResponse refresh(RefreshRequest request) {
-        AccessToken accessToken = AccessToken.deserialize(request.accessToken(), accessTokenProperties);
+        AccessToken accessToken = AccessToken
+                .deserializeEvenIfExpired(request.accessToken(), accessTokenProperties);
         RefreshToken refreshToken = RefreshToken.deserialize(request.refreshToken());
 
         Long userId = accessToken.getUserId();

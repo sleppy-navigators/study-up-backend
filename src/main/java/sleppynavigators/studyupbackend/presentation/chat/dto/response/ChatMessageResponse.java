@@ -56,12 +56,15 @@ public record ChatMessageResponse(
     }
 
     public static ChatMessageResponse from(ChatMessage chatMessage) {
+        List<ChatAction> chatActions = chatMessage.getActionList();
         return ChatMessageResponse.builder()
                 .id(chatMessage.getId().toString())
                 .senderId(chatMessage.getSenderId())
                 .senderType(chatMessage.getSenderType())
                 .content(chatMessage.getContent())
-                .chatActionList(chatMessage.getActionList().stream().map(ChatActionItem::fromEntity).toList())
+                .chatActionList(chatActions != null
+                        ? chatMessage.getActionList().stream().map(ChatActionItem::fromEntity).toList()
+                        : List.of())
                 .createdAt(chatMessage.getCreatedAt().atZone(ZoneId.systemDefault()))
                 .build();
     }
