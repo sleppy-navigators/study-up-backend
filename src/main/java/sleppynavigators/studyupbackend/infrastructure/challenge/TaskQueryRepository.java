@@ -6,7 +6,7 @@ import sleppynavigators.studyupbackend.domain.challenge.Task;
 
 public interface TaskQueryRepository {
 
-    List<Task> findAll(Predicate predicate);
-
     List<Task> findAll(Predicate predicate, Long pageNum, Integer pageSize);
+
+    List<Task> findHuntableTasks(Long userId, Integer pageSize);
 }

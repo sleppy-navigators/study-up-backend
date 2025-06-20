@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.application.group.GroupChatMessageAggregator;
 import sleppynavigators.studyupbackend.application.group.GroupWithLastChatMessage;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
@@ -61,15 +60,8 @@ public class UserService {
         return UserTaskListResponse.fromEntities(tasks);
     }
 
-    public HuntableTaskListResponse getHuntableTasks(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found - userId: " + userId));
-
-        Predicate predicate = TaskQueryOptions.getStatusPredicate(TaskCertificationStatus.FAILED);
-        List<Task> tasks = taskRepository.findAll(predicate).stream()
-                .filter(Task::isHuntable)
-                .filter(task -> task.canHunt(user))
-                .toList();
+    public HuntableTaskListResponse getHuntableTasks(Long userId, Integer pageSize) {
+        List<Task> tasks = taskRepository.findHuntableTasks(userId, pageSize);
         return HuntableTaskListResponse.fromEntities(tasks);
     }
 
