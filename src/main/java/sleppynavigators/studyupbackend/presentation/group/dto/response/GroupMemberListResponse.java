@@ -4,12 +4,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import sleppynavigators.studyupbackend.domain.group.GroupMember;
 
 @Schema(description = "그룹 멤버 목록 응답")
 public record GroupMemberListResponse(
         @Schema(description = "그룹 멤버 목록")
         @NotNull List<GroupMemberListItem> members
 ) {
+
+    public static GroupMemberListResponse fromEntities(List<GroupMember> groupMembers) {
+        return new GroupMemberListResponse(
+                groupMembers.stream()
+                        .map(GroupMemberListItem::fromEntity)
+                        .toList());
+    }
 
     @Schema(description = "그룹 멤버")
     public record GroupMemberListItem(
@@ -28,5 +36,15 @@ public record GroupMemberListResponse(
             @Schema(description = "멤버 헌팅 횟수", example = "5")
             @NotNull Long huntingCount
     ) {
+
+        public static GroupMemberListItem fromEntity(GroupMember groupMember) {
+            return new GroupMemberListItem(
+                    groupMember.getUser().getId(),
+                    groupMember.getUser().getUserProfile().getUsername(),
+                    groupMember.getUser().getPoint().getAmount(),
+                    groupMember.calcAvgChallengeCompletionRate(),
+                    groupMember.calcHuntingCount()
+            );
+        }
     }
 }
