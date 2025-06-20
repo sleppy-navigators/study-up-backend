@@ -3,9 +3,9 @@ package sleppynavigators.studyupbackend.infrastructure.challenge;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import sleppynavigators.studyupbackend.application.challenge.TaskCertificationStatus;
 import sleppynavigators.studyupbackend.domain.challenge.QChallenge;
 import sleppynavigators.studyupbackend.domain.challenge.QTask;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
@@ -53,8 +53,7 @@ public class TaskQueryRepositoryImpl implements TaskQueryRepository {
                 .join(challenge.group, group)
                 .where(
                         // isFailed(): deadline is over and not certified
-                        task.detail.deadline.loe(LocalDateTime.now()),
-                        task.certification.certifiedAt.isNull(),
+                        TaskQueryOptions.getStatusPredicate(TaskCertificationStatus.FAILED),
 
                         // canHunt(user): user can access, not owner, and not already hunted
                         challenge.group.members.any().user.id.eq(userId),
