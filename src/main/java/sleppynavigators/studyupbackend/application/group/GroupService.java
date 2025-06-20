@@ -187,26 +187,8 @@ public class GroupService {
                     "User cannot access this group - userId: " + userId + ", groupId: " + groupId);
         }
 
-        List<GroupMember> members = groupMemberRepository.findAllByGroupId(group.getId());
-        List<GroupMember> sortedMembers = sortGroupMemberListResponse(members, groupMemberSearch.sortBy());
-        return GroupMemberListResponse.fromEntities(sortedMembers);
-    }
-
-    // TODO: Consider de-normalizing the GroupMember entity and sorting directly in the database query.
-    private List<GroupMember> sortGroupMemberListResponse(List<GroupMember> members, GroupMemberSortType sortType) {
-        return switch (sortType) {
-            case POINT -> members.stream()
-                    .sorted((m1, m2) -> Long.compare(m2.getPoints(), m1.getPoints()))
-                    .toList();
-            case AVERAGE_CHALLENGE_COMPLETION_RATE -> members.stream()
-                    .sorted((m1, m2) ->
-                            Double.compare(m2.calcAvgChallengeCompletionRate(), m1.calcAvgChallengeCompletionRate()))
-                    .toList();
-            case HUNTING_COUNT -> members.stream()
-                    .sorted((m1, m2) ->
-                            Long.compare(m2.calcHuntingCount(), m1.calcHuntingCount()))
-                    .toList();
-            case NONE -> members; // No sorting, return as is
-        };
+        List<GroupMemberListResponse.GroupMemberListItem> members =
+                groupMemberRepository.findByGroupIdWithSort(group.getId(), groupMemberSearch.sortBy());
+        return new GroupMemberListResponse(members);
     }
 }
