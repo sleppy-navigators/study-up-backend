@@ -10,7 +10,6 @@ import sleppynavigators.studyupbackend.domain.challenge.QChallenge;
 import sleppynavigators.studyupbackend.domain.challenge.QTask;
 import sleppynavigators.studyupbackend.domain.challenge.Task;
 import sleppynavigators.studyupbackend.domain.group.QGroup;
-import sleppynavigators.studyupbackend.domain.user.QUser;
 import sleppynavigators.studyupbackend.domain.challenge.hunting.QHunting;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,7 +41,6 @@ public class TaskQueryRepositoryImpl implements TaskQueryRepository {
     public List<Task> findHuntableTasks(Long userId, Integer pageSize) {
         QTask task = QTask.task;
         QChallenge challenge = QChallenge.challenge;
-        QUser user = QUser.user;
         QHunting hunting = QHunting.hunting;
         QGroup group = QGroup.group;
 
@@ -51,27 +49,24 @@ public class TaskQueryRepositoryImpl implements TaskQueryRepository {
         // This leaves room for future issues, such as inconsistency.
         return queryFactory
                 .selectFrom(task)
-                .join(task.challenge, challenge).fetchJoin()
-                .join(challenge.group, group).fetchJoin()
-                .leftJoin(task.huntings, hunting).fetchJoin()
+                .join(task.challenge, challenge)
+                .join(challenge.group, group)
                 .where(
                         // isFailed(): deadline is over and not certified
-                        task.detail.deadline.before(LocalDateTime.now()),
+                        task.detail.deadline.loe(LocalDateTime.now()),
                         task.certification.certifiedAt.isNull(),
 
                         // canHunt(user): user can access, not owner, and not already hunted
-                        challenge.group.members.any().user.eq(user),
-                        challenge.owner.ne(user),
+                        challenge.group.members.any().user.id.eq(userId),
+                        challenge.owner.id.ne(userId),
                         queryFactory
                                 .selectOne()
                                 .from(hunting)
-                                .where(hunting.target.eq(task).and(hunting.hunter.eq(user)))
-                                .notExists())
-                .groupBy(task)
-                .having(
+                                .where(hunting.target.eq(task).and(hunting.hunter.id.eq(userId)))
+                                .notExists(),
+
                         // isHuntable(): hunting count is less than the limit
-                        task.huntings.size().longValue().lt(
-                                challenge.group.members.size().multiply(0.3).round()))
+                        task.huntings.size().lt(challenge.group.members.size().doubleValue().multiply(0.3).round()))
                 .limit(pageSize)
                 .fetch();
     }
