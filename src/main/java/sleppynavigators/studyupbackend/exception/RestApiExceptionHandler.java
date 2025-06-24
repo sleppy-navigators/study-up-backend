@@ -44,7 +44,7 @@ public class RestApiExceptionHandler {
     @ExceptionHandler(NetworkBaseException.class)
     public ResponseEntity<ErrorResponse> handleRequestException(
             HttpServletRequest request, NetworkBaseException exception) {
-        if (exception.getStatus() / 100 == 5) {
+        if (exception.isServerException()) {
             log.error("Network exception : {}", exception.getMessage(), exception);
         }
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
@@ -53,7 +53,7 @@ public class RestApiExceptionHandler {
     @ExceptionHandler(BusinessBaseException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(
             HttpServletRequest request, BusinessBaseException exception) {
-        if (exception.getStatus() / 100 == 5) {
+        if (exception.isServerException()) {
             log.error("Business exception : {}", exception.getMessage(), exception);
         }
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
@@ -62,7 +62,7 @@ public class RestApiExceptionHandler {
     @ExceptionHandler(ClientBaseException.class)
     public ResponseEntity<ErrorResponse> handleClientException(
             HttpServletRequest request, ClientBaseException exception) {
-        if (exception.getStatus() / 100 == 5) {
+        if (exception.isServerException()) {
             log.error("Client exception : {}", exception.getMessage(), exception);
         }
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());
@@ -71,7 +71,7 @@ public class RestApiExceptionHandler {
     @ExceptionHandler(DatabaseBaseException.class)
     public ResponseEntity<ErrorResponse> handleDatabaseException(
             HttpServletRequest request, DatabaseBaseException exception) {
-        if (exception.getStatus() / 100 == 5) {
+        if (exception.isServerException()) {
             log.error("Database exception : {}", exception.getMessage());
         }
         return ErrorResponse.toResponseEntity(exception, request.getRequestURI());

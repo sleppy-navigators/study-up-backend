@@ -8,6 +8,10 @@ public abstract class BaseException extends RuntimeException {
     private final int status;
     private final String code;
 
+    public final Boolean isServerException() {
+        return status / 100 == 5;
+    }
+
     protected BaseException(ErrorCode errorCode) {
         this(errorCode, errorCode.getDefaultMessage());
     }
