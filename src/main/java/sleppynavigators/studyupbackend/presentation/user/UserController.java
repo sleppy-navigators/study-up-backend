@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sleppynavigators.studyupbackend.application.user.UserService;
 import sleppynavigators.studyupbackend.presentation.authentication.filter.UserPrincipal;
@@ -73,9 +74,10 @@ public class UserController {
     @GetMapping("/me/bounties")
     @Operation(summary = "유저의 헌팅 가능한 테스크 목록 조회", description = "유저가 헌팅할 수 있는 테스크 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<HuntableTaskListResponse>> getHuntableTasks(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(defaultValue = "20") Integer pageSize) {
         Long userId = userPrincipal.userId();
-        HuntableTaskListResponse response = userService.getHuntableTasks(userId);
+        HuntableTaskListResponse response = userService.getHuntableTasks(userId, pageSize);
         return ResponseEntity.ok(new SuccessResponse<>(response));
     }
 
